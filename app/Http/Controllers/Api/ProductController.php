@@ -25,7 +25,6 @@ class ProductController extends Controller
     public function productDetail($slug)
     {
 
-
         $product = Product::with(['images', 'variants.variantImage'])
             ->where('slug', $slug)
             ->first();

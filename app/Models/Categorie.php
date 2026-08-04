@@ -15,8 +15,13 @@ class Categorie extends Model
 
     public function children()
     {
-        return $this->hasMany(Categorie::class, 'parent_id');
+        return $this->hasMany(Categorie::class, 'parent_id','id');
     }
 
-   
+    public function allChildren()
+    {
+        return $this->children()->with('allChildren');
+    }
+
+
 }

@@ -1,42 +1,84 @@
-<header class="bg-black flex justify-between items-center h-16 text-white px-4 sticky top-0 z-50 shadow-lg">
+@php
+    // Store data fallback if not passed directly from controller
+    $store = $store ?? \App\Models\Store::first();
+    // Ensure categories collection exists to avoid null errors
+    $categories = $categories ?? collect();
+@endphp
+
+<!-- ================= MAIN HEADER (Scrolls away normally, NOT sticky) ================= -->
+<header class="bg-black flex justify-between items-center h-20 text-white px-4 z-50 shadow-lg relative">
 
     <!-- Mobile Menu Button -->
     <button class="lg:hidden" onclick="OpenNav()">
         <i class="fa fa-bars text-xl"></i>
     </button>
 
-    <!-- Logo -->
-    <a href="{{ route('index') }}">
-        <h1 class="text-xl font-bold ms-5">ShopNest</h1>
+    <!-- Dynamic Store Logo & Title Section -->
+    <a href="{{ route('index') }}" class="flex items-center gap-2.5 hover:opacity-90 transition-opacity ms-2 sm:ms-5 shrink-0">
+        @if($store)
+            {{-- Show Logo if enabled --}}
+            @if($store->is_logo && $store->logo)
+                <img src="{{ asset('storage/' . $store->logo) }}"
+                     alt="{{ $store->title ?? 'ShopNest' }}"
+                     class="h-9 w-auto max-w-[150px] object-contain rounded-md">
+            @endif
+
+            {{-- Show Title if enabled --}}
+            @if($store->is_title && $store->title)
+                <span class="text-xl font-bold tracking-tight">
+                    {{ $store->title }}
+                </span>
+            @endif
+
+            {{-- Fallback if both toggles are off --}}
+            @if(!$store->is_logo && !$store->is_title)
+                <span class="text-xl font-bold">ShopNest</span>
+            @endif
+        @else
+            <h1 class="text-xl font-bold">ShopNest</h1>
+        @endif
     </a>
 
+    <!-- Center Search Bar (Exact AliExpress Style from Screenshot) -->
+    <div class="hidden md:flex flex-1 max-w-2xl mx-6">
+        <form action="{{ route('frontendProduct') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 p-1 shadow-inner relative">
 
-    <!-- Desktop Menu -->
-    <div class="hidden lg:flex gap-5 ms-18">
-        <a href="{{ url('/') }}">Home</a>
-        <a href="{{ url('/product') }}">Product</a>
-        <a href="{{ url('/categories') }}" class="hover:text-gray-300">Categories</a>
-        <a href="{{ route('contact') }}">Contact</a>
+            <!-- Input Field -->
+            <input type="text"
+                   name="search"
+                   value="{{ request('search') }}"
+                   placeholder="Search products, brands and more..."
+                   class="w-full pl-5 pr-3 py-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+
+            <!-- QR / Image Scanner Icon inside Input -->
+            <button type="button" class="px-3 text-gray-500 hover:text-black transition" title="Search by Image">
+                <i class="fa-solid fa-qrcode text-lg"></i>
+            </button>
+
+            <!-- Black Circular Search Submit Button -->
+            <button type="submit" class="bg-black hover:bg-gray-800 text-white w-11 h-11 rounded-full flex items-center justify-center transition shrink-0">
+                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            </button>
+        </form>
     </div>
 
-    <!-- Right Side -->
-    <div class="flex items-center gap-2 sm:gap-4">
+    <!-- Right Side Icons & Sign In Hover Dropdown -->
+    <div class="flex items-center gap-3 sm:gap-5 shrink-0">
 
-        <!-- Search -->
-        <button class="text-lg hover:text-gray-300">
+        <!-- Mobile Search Button Icon -->
+        <button class="text-lg hover:text-gray-300 md:hidden">
             <i class="fa-solid fa-magnifying-glass fa-sm"></i>
         </button>
 
-        <!-- Wishlist -->
+        <!-- Wishlist: Desktop Only -->
         <a href="{{route('wishlist')}}">
             <button class="text-lg hover:text-red-500 hidden sm:block">
                 <i class="fa-regular fa-heart fa-sm"></i>
             </button>
         </a>
 
-
-        <!-- Cart -->
-        <a href="{{ route('cart') }}" class="relative text-lg hover:text-gray-300">
+        <!-- Cart: Desktop Only -->
+        <a href="{{ route('cart') }}" class="relative text-lg hover:text-gray-300 hidden sm:block">
             <i class="fa-solid fa-cart-shopping fa-sm"></i>
 
             <span class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5">
@@ -45,43 +87,63 @@
         </a>
 
         <!-- Divider -->
-        <div class="hidden sm:block h-8 border-l border-gray-500"></div>
+        <div class="hidden sm:block h-8 border-l border-gray-700"></div>
 
-        <!-- Profile -->
-        <div class="relative me-5">
+        <!-- AliExpress Style Sign in / Register Hover Dropdown Container -->
+        <div class="relative group/userdropdown me-2 sm:me-5 py-2">
 
-            <div onclick="toggleDropdown()"
-                class="cursor-pointer w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#22c55e] text-white font-semibold">
+            <!-- Trigger Header Element (Hoverable) -->
+            <a href="{{ auth()->check() ? route('frontend.user_info.index') : route('login') }}"
+               class="flex items-center gap-2 text-white hover:text-emerald-400 transition text-sm font-medium cursor-pointer select-none">
+                <i class="fa-regular fa-user text-lg"></i>
+                <div class="leading-tight text-left hidden sm:block">
+                    <span class="block text-[10px] text-gray-400">Welcome</span>
+                    <span class="font-semibold">
+                        @auth
+                            {{ Str::limit(Auth::user()->name, 10) }}
+                        @else
+                            Sign in / Register
+                        @endauth
+                    </span>
+                </div>
+            </a>
 
-                @auth
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                @else
-                G
-                @endauth
+            <!-- Dropdown Box (Appears on Hover) -->
+            <div class="hidden group-hover/userdropdown:block absolute right-0 top-full w-55 overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-800 shadow-xl z-50">
 
-            </div>
-
-            <!-- Dropdown -->
-            <div id="myDropdown"
-                class="hidden absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl z-50">
-
-                <div class="border-b border-gray-200 px-4 py-3">
-
+                <div class="border-b border-gray-200 px-4 py-3 bg-gray-50">
                     <p class="truncate font-semibold text-gray-800 capitalize">
                         @auth
-                        {{ Auth::user()->name }}
+                            {{ Auth::user()->name }}
+                        @else
+                            Hello, Guest
                         @endauth
                     </p>
-
-                    <p class="truncate text-sm text-gray-500">
+                    <p class="truncate text-xs text-gray-500">
                         @auth
-                        {{ Auth::user()->email }}
+                            {{ Auth::user()->email }}
+                        @else
+                            Welcome to our store!
                         @endauth
                     </p>
-
                 </div>
 
-                <a href="#" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                <a href="{{ route('wishlist') }}" class="flex sm:hidden items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                    <i class="fa-regular fa-heart text-red-500"></i>
+                    Wishlist
+                </a>
+
+                <a href="{{ route('cart') }}" class="flex sm:hidden items-center justify-between px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        Cart
+                    </span>
+                    <span class="bg-green-100 text-green-700 mt-1 font-bold text-xs rounded-full px-2 py-0.5">
+                        {{ $cartCount ?? 0 }}
+                    </span>
+                </a>
+
+                <a href="{{ route('frontend.user_info.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
                     <i class="fa-solid fa-user"></i>
                     My Profile
                 </a>
@@ -92,38 +154,259 @@
                 </a>
 
                 @auth
+                    <a href="{{ route('logout') }}"
+                       class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-100 border-t border-gray-100"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </a>
 
-                <a href="{{ route('logout') }}"
-                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-gray-100"
-                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    Logout
-                </a>
-
-                <form id="logout-form"
-                    action="{{ route('logout') }}"
-                    method="POST"
-                    class="hidden">
-                    @csrf
-                </form>
-
+                    <form id="logout-form"
+                          action="{{ route('logout') }}"
+                          method="POST"
+                          class="hidden">
+                        @csrf
+                    </form>
                 @endauth
 
-
                 @guest
-
-                <a href="{{ route('login') }}"
-                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-blue-600 hover:bg-gray-100">
-
-                    <i class="fa-solid fa-right-to-bracket"></i>
-                    Login
-                </a>
-
+                    <a href="{{ route('login') }}"
+                       class="flex items-center gap-2 px-4 py-2.5 text-sm text-emerald-600 font-semibold hover:bg-gray-100 border-t border-gray-100">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Sign in / Register
+                    </a>
                 @endguest
 
             </div>
+
         </div>
 
     </div>
 </header>
+<!-- ================= END MAIN HEADER ================= -->
+
+
+<!-- ================= STICKY SUB-HEADER CATEGORIES & CENTER NAV BAR (In Max-W-7xl Container) ================= -->
+<div class="bg-white border-b border-gray-200 shadow-md sticky top-0 z-40 hidden lg:block">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-12">
+
+        <!-- Left Side: All Categories Dropdown Button -->
+        <div class="relative w-64 shrink-0"
+             x-data="{ activeMain: null, activeSub: null }"
+             @mouseleave="activeMain = null; activeSub = null;">
+
+            <div class="relative group/dropdown inline-block w-full">
+
+                <!-- Toggle Button -->
+                <div class="flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer select-none">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bars text-gray-800"></i>
+                        <span class="font-semibold text-sm text-gray-900">All Categories</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-500 ml-1"></i>
+                </div>
+
+                <!-- MAIN DROPDOWN WRAPPER -->
+                <div class="hidden group-hover/dropdown:flex absolute left-0 top-full mt-0 z-50 shadow-lg">
+
+                    <!-- LEVEL 1: Main Categories Box -->
+                    <div class="w-72 bg-white border border-gray-200 h-[440px] overflow-y-auto custom-scrollbar p-2">
+                        <div class="mb-1">
+                            <a href="{{ route('categories', request()->except('category')) }}"
+                               class="flex items-center justify-between py-2 px-3 rounded-md text-sm font-semibold transition {{ !request('category') ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                <span>All Products</span>
+                            </a>
+                        </div>
+
+                        <ul class="space-y-0.5 relative">
+                            @foreach($categories->where('parent_id',0) as $mainCat)
+                                @php
+                                    $isMainActive = request('category') == $mainCat->slug;
+                                    $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
+                                @endphp
+
+                                <li class="relative">
+                                    <!-- Main Category Item -->
+                                    <div @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = null;"
+                                         class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isMainActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
+                                         :class="{ 'bg-emerald-50 text-emerald-600': activeMain === {{ $mainCat->id }} }">
+
+                                        <a href="{{ route('categories', ['category' => $mainCat->slug] + request()->except('category')) }}"
+                                           class="flex-1 text-sm font-semibold">
+                                            {{ $mainCat->name }}
+                                        </a>
+
+                                        @if($subCategories->count() > 0)
+                                            <i class="fa-solid fa-chevron-right text-xs"
+                                               :class="activeMain === {{ $mainCat->id }} ? 'text-emerald-500' : 'text-gray-400'"></i>
+                                        @endif
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <!-- LEVEL 2 & 3 CONTAINERS -->
+                    <div class="relative">
+                    @foreach($categories->where('parent_id',0) as $mainCat)
+                        @php
+                            $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
+                        @endphp
+
+                        @if($subCategories->count() > 0)
+                            <!-- LEVEL 2: Sub Categories Box -->
+                                <div x-show="activeMain === {{ $mainCat->id }}"
+                                     x-cloak
+                                     @mouseenter="activeMain = {{ $mainCat->id }}"
+                                     class="absolute left-0 top-0 w-64 h-[440px] bg-white border-y border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar shadow-md">
+
+                                    <ul class="space-y-0.5">
+                                        @foreach($subCategories as $subCat)
+                                            @php
+                                                $isSubActive = request('category') == $subCat->slug;
+                                                $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
+                                            @endphp
+
+                                            <li class="relative">
+                                                <!-- Sub Category Item -->
+                                                <div @mouseenter="activeSub = {{ $subCat->id }}"
+                                                     class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
+                                                     :class="{ 'bg-emerald-50 text-emerald-600': activeSub === {{ $subCat->id }} }">
+
+                                                    <a href="{{ route('categories', ['category' => $subCat->slug] + request()->except('category')) }}"
+                                                       class="flex-1 text-sm font-semibold">
+                                                        {{ $subCat->name }}
+                                                    </a>
+
+                                                    @if($childCategories->count() > 0)
+                                                        <i class="fa-solid fa-chevron-right text-xs"
+                                                           :class="activeSub === {{ $subCat->id }} ? 'text-emerald-500' : 'text-gray-400'"></i>
+                                                    @endif
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+
+                                <!-- LEVEL 3: Child Categories Box -->
+                                @foreach($subCategories as $subCat)
+                                    @php
+                                        $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
+                                    @endphp
+
+                                    @if($childCategories->count() > 0)
+                                        <div x-show="activeMain === {{ $mainCat->id }} && activeSub === {{ $subCat->id }}"
+                                             x-cloak
+                                             @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
+                                             class="absolute left-64 top-0 w-64 h-[440px] bg-white border-y border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar shadow-md">
+
+                                            <ul class="space-y-0.5">
+                                                @foreach($childCategories as $childCat)
+                                                    @php
+                                                        $isChildActive = request('category') == $childCat->slug;
+                                                    @endphp
+                                                    <li>
+                                                        <a href="{{ route('categories', ['category' => $childCat->slug] + request()->except('category')) }}"
+                                                           class="block py-2 px-3 text-sm font-semibold rounded-md transition {{ $isChildActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                                            {{ $childCat->name }}
+                                                        </a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                @endforeach
+
+                            @endif
+                        @endforeach
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Center: Navigation Links -->
+        <div class="flex items-center gap-8 text-sm font-semibold text-gray-800">
+            <a href="{{ url('/') }}" class="hover:text-emerald-600 transition">Home</a>
+            <a href="{{ url('/product') }}" class="hover:text-emerald-600 transition">Products</a>
+            <a href="{{ url('/categories') }}" class="hover:text-emerald-600 transition">Categories</a>
+            <a href="{{ route('contact') }}" class="hover:text-emerald-600 transition">Contact Us</a>
+        </div>
+
+        <!-- Spacer element to balance out the left category width for absolute center alignment -->
+        <div class="w-64 shrink-0 hidden lg:block"></div>
+
+    </div>
+</div>
+
+<style>
+    /* Custom Thin Scrollbar for Categories Dropdown */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #999;
+    }
+</style>
+<!-- ================= END SUB-HEADER ================= -->
+
+
+<!-- ================= MOBILE SIDEBAR MENU ================= -->
+<div id="mobileNav" class="fixed inset-y-0 left-[-100%] w-72 bg-black text-white shadow-2xl z-50 transition-all duration-300 ease-in-out lg:hidden flex flex-col justify-between">
+    <div>
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-800 bg-gray-900">
+            <span class="text-base font-bold tracking-wide">Navigation Menu</span>
+            <button onclick="CloseNav()" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:text-white transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <div class="flex flex-col px-3 py-3 space-y-1 text-sm font-medium">
+            <a href="{{ route('index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
+                <i class="fa-solid fa-house w-5 text-center text-gray-400"></i> Home
+            </a>
+            <a href="{{ url('/product') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
+                <i class="fa-solid fa-bag-shopping w-5 text-center text-gray-400"></i> Products
+            </a>
+            <a href="{{ url('/categories') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
+                <i class="fa-solid fa-list w-5 text-center text-gray-400"></i> Categories
+            </a>
+            <a href="{{ route('contact') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
+                <i class="fa-solid fa-headset w-5 text-center text-gray-400"></i> Contact Us
+            </a>
+        </div>
+    </div>
+
+    <div class="p-4 border-t border-gray-800 bg-gray-900">
+        @auth
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();"
+               class="flex items-center justify-center gap-2 w-full bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white transition py-2.5 rounded-lg text-xs font-semibold">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+            <form id="sidebar-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+        @else
+            <div class="grid grid-cols-2 gap-2">
+                <a href="{{ route('login') }}" class="text-center bg-gray-800 hover:bg-gray-700 text-white py-2.5 rounded-lg font-semibold text-xs transition">Login</a>
+                <a href="{{ route('register') }}" class="text-center bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg font-semibold text-xs transition">Register</a>
+            </div>
+        @endauth
+    </div>
+</div>
+
+<!-- Backdrop Overlay for Sidebar -->
+<div id="sidebarBackdrop" onclick="CloseNav()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden transition-opacity"></div>
+<!-- ================= END MOBILE SIDEBAR ================= -->

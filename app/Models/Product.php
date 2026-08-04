@@ -53,4 +53,24 @@ class Product extends Model
                 $query->where('is_main', 1);
             });
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+
+    public function getPriceAttribute()
+    {
+        return $this->variants->first()->price;
+    }
+
+    public function getCutPriceAttribute()
+    {
+        return $this->variants->first()->cut_price;
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

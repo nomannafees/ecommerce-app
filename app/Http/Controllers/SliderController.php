@@ -15,14 +15,13 @@ class SliderController extends Controller
     {
         $query = Slider::query();
 
-        // Wishlists interface ke mutabik search filter
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
             $query->where('heading', 'LIKE', "%{$searchTerm}%")
                 ->orWhere('description', 'LIKE', "%{$searchTerm}%");
         }
 
-        $sliders = $query->latest()->paginate(5);
+        $sliders = $query->latest()->paginate(10);
         return view('slider.index', compact('sliders'));
     }
 
@@ -40,34 +39,22 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'heading' => 'nullable|string',
+            'heading'     => 'nullable|string',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-
             $file = $request->file('image');
-
-            $filename = time() . '_' . $file->getClientOriginalName();
-
-            $folder = storage_path('app/public/sliders');
-
-            if (!file_exists($folder)) {
-                mkdir($folder, 0777, true);
-            }
-
-            $file->move($folder, $filename);
-
-            $imagePath = 'sliders/' . $filename;
+            $imagePath = str_replace('\\', '/', $file->store('sliders', 'public'));
         }
 
         Slider::create([
-            'heading' => $request->heading,
+            'heading'     => $request->heading,
             'description' => $request->description,
-            'image' => $imagePath,
+            'image'       => $imagePath,
         ]);
 
         return redirect()
@@ -100,51 +87,29 @@ class SliderController extends Controller
         $slider = Slider::findOrFail($id);
 
         $request->validate([
-            'heading' => 'nullable|string',
+            'heading'     => 'nullable|string',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $imagePath = $slider->image;
 
-
         if ($request->hasFile('image')) {
-
-
             // Delete old image
-            if (!empty($slider->image)) {
-
-                $oldImage = storage_path('app/public/' . $slider->image);
-
-                if (file_exists($oldImage)) {
-                    unlink($oldImage);
-                }
+            if (!empty($slider->image) && Storage::disk('public')->exists($slider->image)) {
+                Storage::disk('public')->delete($slider->image);
             }
-
 
             // Upload new image
             $file = $request->file('image');
-
-            $filename = time() . '_' . $file->getClientOriginalName();
-
-            $folder = storage_path('app/public/sliders');
-
-            if (!file_exists($folder)) {
-                mkdir($folder, 0777, true);
-            }
-
-            $file->move($folder, $filename);
-
-            $imagePath = 'sliders/' . $filename;
+            $imagePath = str_replace('\\', '/', $file->store('sliders', 'public'));
         }
 
-
         $slider->update([
-            'heading' => $request->heading,
+            'heading'     => $request->heading,
             'description' => $request->description,
-            'image' => $imagePath,
+            'image'       => $imagePath,
         ]);
-
 
         return redirect()
             ->route('sliders.index')
@@ -158,16 +123,15 @@ class SliderController extends Controller
     {
         $slider = Slider::findOrFail($id);
 
-        if (!empty($slider->image)) {
-            $image = storage_path('app/public/' . $slider->image);
-            if (file_exists($image)) {
-                unlink($image);
-            }
+        // Delete image from public storage
+        if (!empty($slider->image) && Storage::disk('public')->exists($slider->image)) {
+            Storage::disk('public')->delete($slider->image);
         }
 
         $slider->delete();
 
         return redirect()
-            ->route('sliders.index');
+            ->route('sliders.index')
+            ->with('success', 'Slider deleted successfully.');
     }
 }

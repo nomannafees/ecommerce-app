@@ -2,137 +2,163 @@
 
 @section('content')
 
-<div class="container max-w-7xl mx-auto p-6">
+    <div class=" mx-auto p-6">
 
-    <div class="bg-white shadow rounded-xl border border-gray-200 overflow-hidden">
+        <div class="bg-white shadow-sm rounded-2xl border border-gray-200 overflow-hidden">
 
-        <!-- Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50/50">
-            <h2 class="text-2xl font-bold text-gray-800">
-                Wishlists
-            </h2>
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50/50">
+                <h2 class="text-2xl font-bold text-gray-800">
+                    Wishlists
+                </h2>
 
-            <a href="{{ route('wishlists.create') }}"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-sm">
-                Add Wishlist
-            </a>
-        </div>
-
-        <form method="GET" action="{{ route('wishlists.index') }}"
-            class="p-6">
-
-            <div class="grid grid-cols-1 md:grid-cols-[280px_auto_auto] gap-3 items-center">
-
-                <!-- Search Input -->
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Search user..."
-                    class="w-70 border border-gray-300 rounded-lg px-4 py-2">
-
-                <div>
-                    <!-- Search Button -->
-                    <button
-                        type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
-                        Search
-                    </button>
-
-                    <!-- Clear Button -->
-                    <a href="{{ route('wishlists.index') }}"
-                        class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded-lg text-center">
-                        Clear
-                    </a>
-                </div>
-
-
+                <a href="{{ route('wishlists.create') }}"
+                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl transition-all duration-200 shadow-xs text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 active:scale-[0.98]">
+                    <i class="fa-solid fa-folder-plus text-sm"></i>
+                    <span>Add Wishlist</span>
+                </a>
             </div>
 
-        </form>
+            <!-- Filter / Search Form -->
+            <form method="GET" action="{{ route('wishlists.index') }}" class="p-6">
 
-        <!-- Table -->
-        <div class="bg-white px-6 rounded shadow-lg overflow-x-auto">
+                <div class="flex flex-wrap items-center gap-3">
 
-            <table class="w-full border border-gray-100">
+                    <!-- Search Input with Floating Border Style -->
+                    <div class="relative w-full sm:w-80">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 pointer-events-none z-10">
+                            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                        </span>
 
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="border border-gray-200 px-4 py-3 text-left">#</th>
-                        <th class="border border-gray-200 px-4 py-3 text-left">User</th>
-                        <th class="border border-gray-200 px-4 py-3 text-left">Product</th>
-                        <th class="border border-gray-200 px-4 py-3 text-left">Created At</th>
-                        <th class="border border-gray-200 px-4 py-3 text-left">Action</th>
+                        <input
+                            type="text"
+                            name="search"
+                            id="wishlist_search"
+                            value="{{ request('search') }}"
+                            placeholder=" "
+                            class="peer w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
+
+                        <label for="wishlist_search"
+                               class="absolute left-11 top-3 text-gray-400 text-sm pointer-events-none transition-all duration-200 z-10
+                               peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-5.5 peer-focus:left-3 peer-focus:bg-white peer-focus:px-1.5 peer-focus:font-medium
+                               peer-[:not(:placeholder-shown)]:-translate-y-5.5 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:font-medium">
+                            Search user...
+                        </label>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2">
+                        <!-- Search Button -->
+                        <button
+                            type="submit"
+                            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/20 transition duration-200 shadow-xs cursor-pointer active:scale-[0.98]">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                            <span>Search</span>
+                        </button>
+
+                        <!-- Clear Button (Always Visible) -->
+                        <a href="{{ route('wishlists.index') }}"
+                           class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium text-sm text-white bg-red-500 hover:bg-red-600 transition duration-200 cursor-pointer active:scale-[0.98]">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                            <span>Clear</span>
+                        </a>
+                    </div>
+
+                </div>
+
+            </form>
+
+            <!-- Table Container -->
+
+            <div class="px-6 pb-6 overflow-x-auto">
+
+                <!-- Table with Outer Border and Sharp Edges -->
+                <table class="w-full text-left border-collapse border border-gray-200">
+
+                    <!-- Table Head -->
+                    <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200 text-gray-700 text-xs uppercase font-semibold">
+                        <th class="px-4 py-3.5 border-r border-gray-200 w-16">#</th>
+                        <th class="px-4 py-3.5 border-r border-gray-200">User</th>
+                        <th class="px-4 py-3.5 border-r border-gray-200">Product</th>
+                        <th class="px-4 py-3.5 border-r border-gray-200">Created At</th>
+                        <th class="px-4 py-3.5 text-center w-32">Action</th>
                     </tr>
-                </thead>
+                    </thead>
 
-                <tbody>
+                    <!-- Table Body -->
+                    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
 
                     @forelse($records as $key => $record)
 
-                    <tr>
+                        <tr class="hover:bg-gray-50/50 transition-colors duration-150">
 
-                        <td class="border border-gray-200 px-4 py-3 text-left">
-                            {{ $key + 1 }}
-                        </td>
+                            <td class="px-4 py-3.5 border-r border-gray-200 text-gray-500 font-medium">
+                                {{ $records->firstItem() + $key }}
+                            </td>
 
-                        <td class="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-800">
-                            {{ $record->user->name ?? '-' }}
-                        </td>
+                            <td class="px-4 py-3.5 border-r border-gray-200 font-semibold text-gray-800">
+                                {{ $record->user->name ?? '-' }}
+                            </td>
 
-                        <td class="border border-gray-200 px-4 py-3 text-left">
-                            {{ $record->product->name ?? '-' }}
-                        </td>
+                            <td class="px-4 py-3.5 border-r border-gray-200">
+                                {{ $record->product->name ?? '-' }}
+                            </td>
 
-                        <td class="border border-gray-200 px-4 py-3 text-left">
-                            {{ $record->created_at?->format('Y-m-d') ?? '-' }}
-                        </td>
+                            <td class="px-4 py-3.5 border-r border-gray-200 text-gray-500">
+                                {{ $record->created_at?->format('Y-m-d') ?? '-' }}
+                            </td>
 
-                        <td class="border border-gray-200 px-4 py-3 text-left">
+                            <td class="px-4 py-3.5">
 
-                            <div class="flex items-center gap-3">
+                                <div class="flex items-center justify-center gap-2">
 
-                                <a href="{{ route('wishlists.edit', $record->id) }}"
-                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </a>
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('wishlists.edit', $record->id) }}"
+                                       class="w-9 h-9 flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl hover:bg-emerald-100 transition-all duration-200 shadow-xs cursor-pointer"
+                                       title="Edit Wishlist">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </a>
 
-                                <form action="{{ route('wishlists.destroy', $record->id) }}"
-                                    method="POST">
+                                    <!-- Delete Form with SweetAlert Integration -->
+                                    <form action="{{ route('wishlists.destroy', $record->id) }}" method="POST">
 
-                                    @csrf
-                                    @method('DELETE')
+                                        @csrf
+                                        @method('DELETE')
 
-                                    <button type="submit"
-                                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                                        <button type="button"
+                                                class="delete-btn w-9 h-9 flex items-center justify-center bg-red-50 text-red-600 border border-red-100 rounded-xl hover:bg-red-100 transition-all duration-200 shadow-xs cursor-pointer"
+                                                title="Delete Wishlist">
+                                            <i class="fa-solid fa-trash text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                     @empty
 
-                    <tr>
-                        <td colspan="5" class="px-6 py-6 text-center">
-                            No Wishlists Found
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fa-solid fa-heart-crack text-3xl mb-2 block text-gray-300"></i>
+                                <span>No Wishlists Found</span>
+                            </td>
+                        </tr>
 
                     @endforelse
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
 
-            <div class="p-4 border-t border-gray-200 bg-gray-50">
-                {{ $records->links() }}
+                @if($records->hasPages())
+                    <div class="pt-4 border-t border-gray-200 mt-4">
+                        {{ $records->links() }}
+                    </div>
+                @endif
+
             </div>
-
         </div>
 
     </div>
-
-</div>
 
 @endsection

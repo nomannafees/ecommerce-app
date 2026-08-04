@@ -47,7 +47,10 @@ class WishlistController extends Controller
     public function store(Request $request)
     {
         Wishlist::create($request->all());
-        return redirect()->route('wishlists.index');
+
+        return redirect()
+            ->route('wishlists.index')
+            ->with('success', 'Wishlist item created successfully!');
     }
 
     /**
@@ -77,7 +80,10 @@ class WishlistController extends Controller
             'user_id' => $request->user_id,
             'product_id' => $request->product_id,
         ]);
-        return redirect()->route('wishlists.index');
+
+        return redirect()
+            ->route('wishlists.index')
+            ->with('success', 'Wishlist item updated successfully!');
     }
 
     /**
@@ -86,6 +92,9 @@ class WishlistController extends Controller
     public function destroy(Wishlist $wishlist)
     {
         $wishlist->delete();
-        return redirect()->route('wishlists.index');
+
+        return redirect()
+            ->route('wishlists.index')
+            ->with('success', 'Wishlist item deleted successfully!');
     }
 }

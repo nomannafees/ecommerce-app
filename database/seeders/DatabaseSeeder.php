@@ -19,11 +19,19 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::create([
-            'name' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('admin1234561'),
-            'role' => 'admin',
-        ]);
+//        User::create([
+//            'name' => 'admin',
+//            'email' => 'admin@gmail.com',
+//            'password' => Hash::make('admin1234561'),
+//            'role' => 'admin',
+//        ]);
+
+        $this->call(CountriesTableSeeder::class);
+        $this->call(StatesTableSeeder::class);
+        $this->call(CitiesTableChunkOneSeeder::class);
+        $this->call(CitiesTableChunkTwoSeeder::class);
+        $this->call(CitiesTableChunkThreeSeeder::class);
+        $this->call(CitiesTableChunkFourSeeder::class);
+        $this->call(CitiesTableChunkFiveSeeder::class);
     }
 }

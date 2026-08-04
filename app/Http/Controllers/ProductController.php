@@ -48,11 +48,13 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category_id' => 'required',
-            'name'        => 'required|string|max:255',
+            'category_id'  => 'required',
+            'name'         => 'required|string|max:255',
+            // Is line ko update karein:
+            'product_type' => 'required|string|in:normal,featured,trending,bestseller,new_arrival,hot_deal,special_offer,top_rated,limited_edition,upcoming',
         ]);
 
-        // Slug
+        // Slug Generation
         $slug = Str::slug($request->name);
 
         $count = Product::where('slug', 'LIKE', "{$slug}%")->count();
@@ -63,13 +65,14 @@ class ProductController extends Controller
 
         // Product Save
         $product = Product::create([
-            'category_id' => $request->category_id,
-            'name'        => $request->name,
-            'slug'        => $slug,
-            'description' => $request->description,
-            'brand_id'    => $request->brand_id,
-            'is_featured' => $request->has('is_featured') ? 1 : 0,
-            'status'      => $request->status ?? 'active',
+            'category_id'  => $request->category_id,
+            'name'         => $request->name,
+            'slug'         => $slug,
+            'description'  => $request->description,
+            'brand_id'     => $request->brand_id,
+            'product_type' => $request->product_type ?? 'normal',
+            'is_featured'  => $request->has('is_featured') ? 1 : 0,
+            'status'       => $request->status ?? 'active',
         ]);
 
         // Variant Save
@@ -154,9 +157,7 @@ class ProductController extends Controller
     {
         $parent_data = Categorie::with('children')->whereNull('parent_id')->get();
         $brands = Brand::all();
-        $product->with('variants.variantImage');
-
-//        dd($product);
+        $product->load('variants.variantImage');
 
         return view('product.create-edit', compact('parent_data', 'product', 'brands'));
     }
@@ -166,6 +167,13 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $request->validate([
+            'category_id'  => 'required',
+            'name'         => 'required|string|max:255',
+            // Is line ko update karein:
+            'product_type' => 'required|string|in:normal,featured,trending,bestseller,new_arrival,hot_deal,special_offer,top_rated,limited_edition,upcoming',
+        ]);
+
         // Slug update logic
         $slug = Str::slug($request->name);
         if ($slug !== $product->slug) {
@@ -177,31 +185,26 @@ class ProductController extends Controller
             $slug = $product->slug;
         }
 
-
-
         // Main Image update handler
         if ($request->hasFile('main_image')) {
-            // Purani file delete karein (Using direct storage path)
             if (!empty($product->main_image)) {
                 $oldMainImagePath = storage_path('app/public/products/' . $product->main_image);
                 if (file_exists($oldMainImagePath)) {
                     @unlink($oldMainImagePath);
                 }
             }
-
-
         }
 
         // Product update
         $product->update([
-            'category_id' => $request->category_id,
-            'name'        => $request->name,
-            'slug'        => $slug,
-            'description' => $request->description,
-            'brand_id'    => $request->brand_id,
-            'is_featured' => $request->has('is_featured') ? 1 : 0,
-            'status'      => $request->status ?? 'active',
-
+            'category_id'  => $request->category_id,
+            'name'         => $request->name,
+            'slug'         => $slug,
+            'description'  => $request->description,
+            'brand_id'     => $request->brand_id,
+            'product_type' => $request->product_type ?? 'normal',
+            'is_featured'  => $request->has('is_featured') ? 1 : 0,
+            'status'       => $request->status ?? 'active',
         ]);
 
         if ($request->has('variants_group')) {
@@ -227,7 +230,6 @@ class ProductController extends Controller
                     if ($variantImageId) {
                         $oldImgRecord = VariantImage::find($variantImageId);
                         if ($oldImgRecord) {
-                            // Purani variant image direct file system se delete karein
                             $oldVariantPath = storage_path('app/public/' . $oldImgRecord->image_path);
                             if (file_exists($oldVariantPath)) {
                                 @unlink($oldVariantPath);
@@ -239,7 +241,6 @@ class ProductController extends Controller
                     $vImage = $request->file('variants_group')[$index]['color_image'];
                     $vImageName = time() . '_variant_' . $index . '_' . preg_replace('/[^A-Za-z0-9\-.]/', '_', $vImage->getClientOriginalName());
 
-                    // Same store method wala path folder aur movement logic
                     $folder = storage_path('app/public/products/variants');
                     if (!file_exists($folder)) {
                         mkdir($folder, 0777, true);
@@ -248,7 +249,7 @@ class ProductController extends Controller
 
                     $variantImageRecord = VariantImage::create([
                         'product_id' => $product->id,
-                        'image_path' => 'products/variants/' . $vImageName, // Store format ke mutabik relative path save kiya
+                        'image_path' => 'products/variants/' . $vImageName,
                         'is_main'    => 0,
                     ]);
 
@@ -259,7 +260,7 @@ class ProductController extends Controller
                     }
                 }
 
-                // Variants items (Sizes, Price, Stock) loop
+                // Variants items loop
                 if (isset($group['items']) && is_array($group['items'])) {
                     foreach ($group['items'] as $item) {
                         $sku = !empty($item['sku']) ? $item['sku'] : 'SKU-' . strtoupper(Str::random(8));
@@ -284,7 +285,7 @@ class ProductController extends Controller
                 }
             }
 
-            // Jo variants form mein nahi aaye unhe database se remove karein
+            // Remove unselected variants
             ProductVariant::where('product_id', $product->id)
                 ->whereNotIn('id', $keepVariantIds)
                 ->delete();
@@ -295,7 +296,7 @@ class ProductController extends Controller
                 VariantImage::where('id', $selectedMainImageId)->update(['is_main' => 1]);
             }
 
-            // Unused images clean up direct file system se
+            // Unused images cleanup
             $usedImageIds = ProductVariant::where('product_id', $product->id)
                 ->whereNotNull('variant_image_id')
                 ->pluck('variant_image_id')
@@ -322,7 +323,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // 1. Main Image Delete karein (Using direct storage path)
+        // 1. Main Image Delete
         if ($product->main_image) {
             $mainImagePath = storage_path('app/public/products/' . $product->main_image);
             if (file_exists($mainImagePath)) {
@@ -330,7 +331,7 @@ class ProductController extends Controller
             }
         }
 
-        // 2. Variant Images Delete karein (Using direct storage path based on image_path)
+        // 2. Variant Images Delete
         $variant_images = VariantImage::where('product_id', $product->id)->get();
         foreach ($variant_images as $v_img) {
             $variantImagePath = storage_path('app/public/' . $v_img->image_path);
@@ -343,6 +344,8 @@ class ProductController extends Controller
         $product->variants()->delete();
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Product and all its variants deleted successfully!');
+        return redirect()
+            ->route('products.index')
+            ->with('success', 'Product and all its variants deleted successfully!');
     }
 }

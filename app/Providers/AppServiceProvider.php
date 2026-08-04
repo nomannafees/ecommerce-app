@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Categorie;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
+use App\Models\AdminStore; // <-- Store Model Import Kiya
 use Illuminate\Support\ServiceProvider;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
 
+            // 1. Cart Count Logic
             $cartCount = 0;
 
             if (Auth::check()) {
@@ -32,7 +34,19 @@ class AppServiceProvider extends ServiceProvider
                     ->sum('quantity');
             }
 
-            $view->with('cartCount', $cartCount);
+            // 2. Store Data Logic
+            $store = AdminStore::first();
+
+            $categories = Categorie::where('parent_id',0)
+                ->with('children.children')
+                ->get();
+
+            // Both variables passed to all Blade views
+            $view->with([
+                'cartCount' => $cartCount,
+                'store'     => $store,
+                'categories'     => $categories,
+            ]);
         });
     }
 }

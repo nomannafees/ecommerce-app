@@ -49,25 +49,9 @@
                             <!-- LEFT SIDE -->
                             <div class="flex-1">
 
-                                <div class="flex items-center gap-3">
-                                    <h3 class="text-lg font-bold text-gray-800 group-hover:text-green-600 transition">
-                                        Order #{{ $order->order_number ?? $order->id }}
-                                    </h3>
-
-                                    <!-- STATUS BADGE WITH UPDATED COLORS -->
-                                    <span class="text-xs px-3 py-1 rounded-full font-semibold border
-                            @if($order->status == 'pending')
-                                        bg-amber-50 text-amber-700 border-amber-200
-@elseif($order->status == 'delivered')
-                                        bg-emerald-50 text-emerald-700 border-emerald-200
-@elseif($order->status == 'completed')
-                                        bg-emerald-50 text-emerald-700 border-emerald-200
-@else
-                                        bg-rose-50 text-rose-700 border-rose-200
-@endif">
-                            {{ ucfirst($order->status) }}
-                        </span>
-                                </div>
+                                <h3 class="text-lg font-bold text-gray-800 group-hover:text-green-600 transition">
+                                    Order #{{ $order->order_number ?? $order->id }}
+                                </h3>
 
                                 <p class="text-sm text-gray-500 mt-2">
                                     Placed on {{ $order->created_at->format('d M Y') }}
@@ -80,13 +64,29 @@
                             </div>
 
                             <!-- RIGHT SIDE -->
-                            <div class="text-right">
+                            <div class="text-left md:text-right flex flex-col md:items-end justify-between">
+
+                                <!-- STATUS BADGE (MOVED TO RIGHT) -->
+                                <div class="mb-2 mt-1">
+                                    <span class="inline-block text-xs px-3 py-1 rounded-full font-semibold border
+                                    @if($order->status == 'pending')
+                                        bg-amber-50 text-amber-700 border-amber-200
+                                    @elseif($order->status == 'delivered')
+                                        bg-emerald-50 text-emerald-700 border-emerald-200
+                                    @elseif($order->status == 'completed')
+                                        bg-emerald-50 text-emerald-700 border-emerald-200
+                                    @else
+                                        bg-rose-50 text-rose-700 border-rose-200
+                                    @endif">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </div>
 
                                 <p class="text-2xl font-bold text-green-600">
                                     Rs {{ number_format($order->total) }}
                                 </p>
 
-                                <p class="text-xs text-gray-400 mt-1">
+                                <p class="text-xs text-gray-400 mt-0.5">
                                     Total Amount
                                 </p>
 

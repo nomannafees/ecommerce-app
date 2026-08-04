@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="max-w-7xl mx-auto p-6">
+    <div class="container  mx-auto p-6">
 
         <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
 
@@ -12,7 +12,7 @@
                 </h2>
 
                 <a href="{{ route('products.index') }}"
-                   class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors">
                     Back To Products
                 </a>
             </div>
@@ -42,8 +42,8 @@
                         @if($variantImages->count() > 0)
                             <div class="flex flex-wrap gap-3 mt-4">
                                 @foreach($variantImages as $index => $vImage)
-                                    <div class="cursor-pointer border-2 {{ $index === 0 ? 'border-gray-300' : 'border-gray-200' }} hover:border-blue-500 rounded-lg overflow-hidden h-20 w-20 thumbnail-btn"
-                                         onclick="changeImage('{{ asset('upload/product/variants/'.$vImage->image_path) }}', this)">
+                                    <div class="cursor-pointer border-2 {{ $index === 0 ? 'border-blue-500' : 'border-gray-200' }} hover:border-blue-500 rounded-lg overflow-hidden h-20 w-20 thumbnail-btn transition-all"
+                                         onclick="changeImage('{{ asset('storage/'.$vImage->image_path) }}', this)">
                                         <img src="{{ asset('storage/'.$vImage->image_path) }}"
                                              class="w-full h-full object-cover">
                                     </div>
@@ -75,16 +75,16 @@
                             </div>
 
                             <div class="bg-gray-50 p-4 rounded-xl">
-                                <p class="text-sm text-gray-500">Regular Price</p>
+                                <p class="text-sm text-gray-500">Price</p>
                                 <p class="font-semibold text-green-600">
-                                    Rs {{ number_format($product->regular_price,2) }}
+                                    Rs {{ number_format($product->variants->first()->price ?? 0, 2) }}
                                 </p>
                             </div>
 
                             <div class="bg-gray-50 p-4 rounded-xl">
-                                <p class="text-sm text-gray-500">Base Price</p>
-                                <p class="font-semibold text-blue-600">
-                                    Rs {{ number_format($product->base_price,2) }}
+                                <p class="text-sm text-gray-500">Cut Price</p>
+                                <p class="font-semibold text-gray-400 line-through">
+                                    Rs {{ number_format($product->variants->first()->cut_price ?? 0, 2) }}
                                 </p>
                             </div>
 
@@ -94,13 +94,13 @@
                             <span class="font-semibold">Status:</span>
 
                             @if($product->status == 'active')
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
-                            Active
-                        </span>
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    Active
+                                </span>
                             @else
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm">
-                            Inactive
-                        </span>
+                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    Inactive
+                                </span>
                             @endif
                         </div>
 
@@ -108,13 +108,13 @@
                             <span class="font-semibold">Featured:</span>
 
                             @if($product->is_featured)
-                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-                            Yes
-                        </span>
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    Yes
+                                </span>
                             @else
-                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
-                            No
-                        </span>
+                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                                    No
+                                </span>
                             @endif
                         </div>
 
@@ -123,9 +123,9 @@
                                 Description
                             </h4>
 
-                            <p class="text-gray-600 leading-relaxed">
-                                {{ $product->description }}
-                            </p>
+                            <div class="text-gray-600 leading-relaxed">
+                                {!! $product->description !!}
+                            </div>
                         </div>
 
                     </div>
@@ -158,7 +158,6 @@
 
                             @if($product->variants->count() > 0)
                                 @php
-                                    // Variants ko image path ke mutabiq group kar rahe hain
                                     $groupedVariants = $product->variants->groupBy(function($variant) {
                                         return $variant->variantImage ? $variant->variantImage->image_path : 'no-image';
                                     });
@@ -169,20 +168,18 @@
                                     @foreach($variants as $index => $variant)
                                         <tr class="hover:bg-gray-50/80 transition-colors">
 
-                                            {{-- Serial Number --}}
                                             <td class="border border-gray-300 px-4 py-3 text-gray-800 align-middle">{{ $serialNumber++ }}</td>
 
-                                            {{-- Image column: Isme p-0 use kiya hai taaki white space bilkul khatam ho jaye --}}
                                             @if($index === 0)
-                                                <td class="border border-gray-300 p-0 text-center align-middle bg-white" rowspan="{{ $variants->count() }}" style="width: 100px; min-width: 100px;">
-                                                    <div class="w-full h-24 overflow-hidden relative group p-2">
+                                                <td class="border border-gray-300 p-2 text-center align-middle bg-white" rowspan="{{ $variants->count() }}" style="width: 100px;">
+                                                    <div class="w-20 h-20 mx-auto overflow-hidden rounded-lg border border-gray-200 shadow-sm">
                                                         @if($imagePath !== 'no-image')
                                                             <img src="{{ asset('storage/'.$imagePath) }}"
-                                                                 class="w-80 p-1 h-full object-cover transform  transition-transform duration-200 cursor-pointer rounded-lg border border-gray-200 shadow-sm"
+                                                                 class="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform"
+                                                                 onclick="changeImage('{{ asset('storage/'.$imagePath) }}', null)"
                                                                  alt="Variant Thumbnail">
                                                         @else
-                                                            <div class="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-[11px] text-gray-400 font-medium rounded-lg border border-dashed border-gray-200">
-                                                                <i class="fa-regular fa-image text-lg mb-1 opacity-60"></i>
+                                                            <div class="w-full h-full bg-gray-50 flex flex-col items-center justify-center text-[11px] text-gray-400 font-medium">
                                                                 <span>No Image</span>
                                                             </div>
                                                         @endif
@@ -225,18 +222,22 @@
 
     <script>
         function changeImage(imageSrc, element) {
-            // 1. Main image source replace karein
-            document.getElementById('mainProductImage').src = imageSrc;
+            // Main image source update
+            const mainImg = document.getElementById('mainProductImage');
+            if(mainImg) {
+                mainImg.src = imageSrc;
+            }
 
-            // 2. Pehle se active thumbnail borders ko hata kar gray karein
-            document.querySelectorAll('.thumbnail-btn').forEach(btn => {
-                btn.classList.remove('border-blue-500');
-                btn.classList.add('border-gray-200');
-            });
+            // Highlighting update agar thumbnail click hua ho
+            if (element) {
+                document.querySelectorAll('.thumbnail-btn').forEach(btn => {
+                    btn.classList.remove('border-blue-500');
+                    btn.classList.add('border-gray-200');
+                });
 
-            // 3. Current select kiye gaye thumbnail ko blue border lagayein
-            element.classList.remove('border-gray-200');
-            element.classList.add('border-blue-500');
+                element.classList.remove('border-gray-200');
+                element.classList.add('border-blue-500');
+            }
         }
     </script>
 

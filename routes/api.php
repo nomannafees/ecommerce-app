@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
@@ -14,3 +15,16 @@ Route::get('/product/{slug}', [\App\Http\Controllers\Api\ProductController::clas
 
 Route::get('/brands', [\App\Http\Controllers\Api\BrandController::class,'index']);
 Route::post('/add-to-cart', [\App\Http\Controllers\Api\OrderController::class,'addToCart']);
+Route::get('/cart', [\App\Http\Controllers\Api\CartController::class,'cart']);
+Route::post('/cart-remove-item/{id}', [\App\Http\Controllers\Api\CartController::class,'cartRemove']);
+Route::put('/cart-update-quantity/{id}', [\App\Http\Controllers\Api\CartController::class, 'updateQuantity']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::get('/wish-list', [\App\Http\Controllers\Api\WishlistController::class, 'index']);
+Route::post('/wish-list-add', [\App\Http\Controllers\Api\WishlistController::class, 'storeWishList']);
+Route::post('/place-order', [\App\Http\Controllers\Api\CheckoutController::class, 'checkoutStore']);
+Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
+Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
+
+

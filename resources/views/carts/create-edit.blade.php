@@ -2,14 +2,14 @@
 
 @section('content')
 
-<div class="max-w-6xl mx-auto p-6">
+<div class="mx-auto p-6">
 
     <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
 
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
 
-            <h2 class="text-3xl font-bold text-gray-800">
+            <h2 class="text-2xl font-bold text-gray-800">
                 {{ !empty($cart) ? 'Edit Cart' : 'Create Cart' }}
             </h2>
 

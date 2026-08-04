@@ -83,7 +83,7 @@ class BrandController extends Controller
     {
         $request->validate([
             'name'  => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
 
         $imagePath = $brand->image;
@@ -142,7 +142,6 @@ class BrandController extends Controller
     public function destroy(Brand $brand)
     {
         if (!empty($brand->image)) {
-
             $image = storage_path('app/public/' . $brand->image);
 
             if (file_exists($image)) {

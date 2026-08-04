@@ -101,8 +101,9 @@
                             <div class="flex items-center gap-3">
 
                                 <a href="{{ route('carts.edit', $record->id) }}"
-                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                                   class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-100 transition-all duration-300 shadow-xs cursor-pointer"
+                                   title="Edit Cart">
+                                    <i class="fa-solid fa-pen-to-square text-sm"></i>
                                 </a>
 
                                 <form action="{{ route('carts.destroy', $record->id) }}"
@@ -112,8 +113,9 @@
                                     @method('DELETE')
 
                                     <button type="submit"
-                                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                                        <i class="fa-solid fa-trash"></i>
+                                            class="w-10 h-10 flex items-center justify-center bg-red-50 text-red-600 border border-red-100 rounded-xl hover:bg-red-100 transition-all duration-300 shadow-xs cursor-pointer"
+                                            title="Delete">
+                                        <i class="fa-solid fa-trash text-sm"></i>
                                     </button>
 
                                 </form>
