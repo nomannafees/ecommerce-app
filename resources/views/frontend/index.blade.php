@@ -72,7 +72,7 @@
         </div>
     </div>
     <!-- 2. TOP 8 MOST ORDERED PRODUCTS (BESTSELLERS) -->
-    <div class="px-3 sm:px-12 mt-7 mb-6 flex justify-between items-center">
+    <div class="px-3 max-w-8xl mx-auto sm:px-12 mt-7 mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <i class="fa-solid fa-fire text-rose-500"></i> Bestselling Products
@@ -81,7 +81,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 3xl:grid-cols-6 px-3 sm:px-12 gap-3 sm:gap-6">
+    <div class="max-w-8xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 3xl:grid-cols-6 px-3 sm:px-12 gap-3 sm:gap-6">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -195,7 +195,7 @@
     </div>
 
     <!-- 3. PROMOTIONAL MID BANNERS GRID -->
-    <div class="px-3 sm:px-12 mt-8">
+    <div class="max-w-8xl mx-auto px-3 sm:px-12 mt-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
             <div class="relative rounded-xl sm:rounded-2xl overflow-hidden group h-[280px] sm:h-[400px] lg:h-[500px]">
@@ -236,7 +236,7 @@
 
     <!-- 4. FEATURED PRODUCTS -->
     @if($featuredProducts->isNotEmpty())
-        <div class="px-3 sm:px-12 mb-6 mt-6 sm:mt-8 flex justify-between items-center">
+        <div class="max-w-8xl mx-auto px-3 sm:px-12 mb-6 mt-6 sm:mt-8 flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <i class="fa-solid fa-star text-amber-500"></i> Featured Products
@@ -350,11 +350,11 @@
     @endif
 
     <!-- 4.1 STICKY BACKGROUND FULL-WIDTH CONTAINER -->
-    <div class="relative w-full my-6 sm:my-8 bg-fixed bg-center bg-cover h-[350px] sm:h-[400px] flex items-center justify-center"
+    <div class="relative max-w-8xl mx-auto w-full my-6 sm:my-8 bg-fixed bg-center bg-cover h-[350px] sm:h-[400px] flex items-center justify-center"
          style="background-image: url('{{ asset('storage/banner/1721825245.png') }}');">
         <div class="absolute inset-0 bg-black/85"></div>
         <div class="relative z-10 text-center text-white px-4 sm:px-6 max-w-3xl mx-auto">
-<span
+        <span
     class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-2 sm:mb-3 inline-block">Special Selection</span>
             <h2 class="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight mb-2 sm:mb-4">Discover Excellence in Every Detail</h2>
             <p class="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-6">Our handpicked featured collection brings
@@ -369,7 +369,7 @@
     </div>
 
     <!-- 5. TOP BRANDS SECTION -->
-    <div class="px-3 sm:px-12 mt-6 sm:mt-8 mb-1">
+    <div class="max-w-8xl mx-auto px-3 sm:px-12 mt-6 sm:mt-8 mb-1">
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
@@ -380,7 +380,7 @@
         </div>
     </div>
 
-    <div class="px-6 sm:px-12 pt-0 mb-12 sm:mb-8 mb-6 lg:mb-12">
+    <div class="max-w-8xl mx-auto px-6 sm:px-12 pt-0 mb-12 sm:mb-8 mb-6 lg:mb-12">
         @php $brandCount = count($brands ?? []); @endphp
         @if($brandCount > 6)
             <div class="brands-carousel relative">
@@ -421,7 +421,7 @@
     </div>
 
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
-    <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
+    <div class=" max-w-8xl mx-auto relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
         <div class="grid grid-cols-1 lg:grid-cols-2 min-h-[420px] sm:min-h-[480px]">
             <div
                 class="flex flex-col justify-center px-6 sm:px-8 md:px-16 py-10 sm:py-12 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
@@ -456,7 +456,7 @@
 
     <!-- 6. "FOR YOU" PERSONALIZED PRODUCTS SECTION -->
     @if(isset($products) && $products->isNotEmpty())
-        <div class="px-3 sm:px-12 mt-4 sm:mt-6 last:mb-9 md:last:mb-4 flex justify-between items-center">
+        <div class="px-3 max-w-8xl mx-auto sm:px-12 mt-4 sm:mt-6 last:mb-9 md:last:mb-4 flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <!-- Icon Color Changed to Emerald Green -->
