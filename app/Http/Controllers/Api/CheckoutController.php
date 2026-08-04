@@ -8,12 +8,59 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use App\Models\Country;
+use App\Models\State;
+use App\Models\City;
+use App\Models\CustomerInfo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CheckoutController extends Controller
 {
+
+    public function checkout()
+    {
+        $user_id = Auth::id();
+
+        // Fetch user cart items with variant and product relations
+        $carts = Cart::with('variant.product')
+            ->where('user_id', $user_id)
+            ->get();
+
+        // 1. Pakistan (ID: 167) and its states
+        $country = Country::find(167);
+        $states = State::where('country_id', 167)->orderBy('name', 'asc')->get();
+
+        // 2. Default state cities setup
+        $defaultState = $states->first();
+        $cities = collect();
+
+        if ($defaultState) {
+            $cities = City::where('state_id', $defaultState->id)->orderBy('name', 'asc')->get();
+        }
+
+        // Fetch saved customer info if available
+        $customer_info = CustomerInfo::where('user_id', $user_id)->first();
+
+        if ($customer_info && isset($customer_info->state_id)) {
+            $cities = City::where('state_id', $customer_info->state_id)->orderBy('name', 'asc')->get();
+        }
+
+        // Return JSON response for API
+        return response()->json([
+            'status' => true,
+            'message' => 'Checkout data fetched successfully',
+            'data' => [
+                'carts' => $carts,
+                'country' => $country,
+                'states' => $states,
+                'cities' => $cities,
+                'customer_info' => $customer_info,
+            ]
+        ], 200);
+    }
+
     public function checkoutStore(Request $request)
     {
         $user_id = $request->user_id;

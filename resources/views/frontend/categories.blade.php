@@ -2,96 +2,6 @@
 
 @section('content')
 
-    {{--            <div class="flex justify-between items-center border-b border-gray-200 pb-3">--}}
-    {{--                <h2 class="font-bold text-lg text-gray-800">Categories</h2>--}}
-
-    {{--                @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort') || request()->has('category'))--}}
-    {{--                    <a href="{{ route('categories') }}"--}}
-    {{--                       class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">--}}
-    {{--                        Clear Filters--}}
-    {{--                    </a>--}}
-    {{--                @endif--}}
-    {{--            </div>--}}
-
-    {{--            <!-- Seamless Category Tree -->--}}
-    {{--            <div class="mb-2 mt-2 text-sm">--}}
-    {{--                <!-- All Products Option -->--}}
-    {{--                <div class="mb-2">--}}
-    {{--                    <a href="{{ route('categories', request()->except('category')) }}"--}}
-    {{--                       class="flex items-center justify-between py-2 px-3 rounded-lg transition {{ !request('category') ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-700 hover:bg-gray-100' }}">--}}
-    {{--                        <span>All Products</span>--}}
-    {{--                    </a>--}}
-    {{--                </div>--}}
-
-    {{--                <ul class="space-y-0.5">--}}
-    {{--                @foreach($categories as $mainCat)--}}
-    {{--                    @php--}}
-    {{--                        $isMainActive = request('category') == $mainCat->slug;--}}
-    {{--                    @endphp--}}
-
-    {{--                    <!-- LEVEL 1: MAIN CATEGORY -->--}}
-    {{--                        <li class="relative group">--}}
-    {{--                            <div class="flex items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition {{ $isMainActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-700 hover:bg-gray-100 hover:text-black' }}">--}}
-    {{--                                <a href="{{ route('categories', ['category' => $mainCat->slug] + request()->except('category')) }}" class="flex-1 text-sm font-medium">--}}
-    {{--                                    📁 {{ $mainCat->name }}--}}
-    {{--                                </a>--}}
-
-    {{--                                @if($mainCat->children && $mainCat->children->count() > 0)--}}
-    {{--                                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-400 group-hover:text-black mt-1"></i>--}}
-    {{--                                @endif--}}
-    {{--                            </div>--}}
-
-    {{--                            <!-- LEVEL 2: SUB-CATEGORIES -->--}}
-    {{--                            @if($mainCat->children && $mainCat->children->count() > 0)--}}
-    {{--                                <div class="hidden group-hover:block absolute left-full top-0 w-52 z-50">--}}
-    {{--                                    <ul class="relative bg-white border border-gray-200 shadow-xl rounded-none p-1 space-y-0.5">--}}
-    {{--                                    @foreach($mainCat->children as $subCat)--}}
-    {{--                                        @php--}}
-    {{--                                            $isSubActive = request('category') == $subCat->slug;--}}
-    {{--                                        @endphp--}}
-
-    {{--                                        <!-- LEVEL 2 ITEM -->--}}
-    {{--                                            <li class="group/sub">--}}
-    {{--                                                <div class="flex items-center justify-between py-1.5 px-2.5 rounded-none cursor-pointer transition {{ $isSubActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-600 hover:bg-gray-100 hover:text-black' }}">--}}
-    {{--                                                    <a href="{{ route('categories', ['category' => $subCat->slug] + request()->except('category')) }}" class="flex-1 text-xs">--}}
-    {{--                                                        {{ $subCat->name }}--}}
-    {{--                                                    </a>--}}
-
-    {{--                                                    @if($subCat->children && $subCat->children->count() > 0)--}}
-    {{--                                                        <i class="fa-solid fa-chevron-right text-[9px] text-gray-400 group-hover/sub:text-black"></i>--}}
-    {{--                                                    @endif--}}
-    {{--                                                </div>--}}
-
-    {{--                                                <!-- LEVEL 3: CHILD CATEGORIES (Slight Overlap & No Rounded Corners) -->--}}
-    {{--                                                @if($subCat->children && $subCat->children->count() > 0)--}}
-    {{--                                                    <div class="hidden group-hover/sub:block absolute left-[calc(100%-2px)] top-0 bottom-0 w-48 z-50">--}}
-    {{--                                                        <ul class="bg-white border border-gray-200 shadow-xl rounded-none p-1 space-y-0.5 h-full">--}}
-    {{--                                                            @foreach($subCat->children as $childCat)--}}
-    {{--                                                                @php--}}
-    {{--                                                                    $isChildCatActive = request('category') == $childCat->slug;--}}
-    {{--                                                                @endphp--}}
-    {{--                                                                <li>--}}
-    {{--                                                                    <a href="{{ route('categories', ['category' => $childCat->slug] + request()->except('category')) }}"--}}
-    {{--                                                                       class="block py-1.5 px-2.5 text-xs rounded-none transition {{ $isChildCatActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-500 hover:bg-gray-100 hover:text-black' }}">--}}
-    {{--                                                                        {{ $childCat->name }}--}}
-    {{--                                                                    </a>--}}
-    {{--                                                                </li>--}}
-    {{--                                                            @endforeach--}}
-    {{--                                                        </ul>--}}
-    {{--                                                    </div>--}}
-    {{--                                                @endif--}}
-
-    {{--                                            </li>--}}
-    {{--                                        @endforeach--}}
-    {{--                                    </ul>--}}
-    {{--                                </div>--}}
-    {{--                            @endif--}}
-
-    {{--                        </li>--}}
-    {{--                    @endforeach--}}
-    {{--                </ul>--}}
-    {{--            </div>--}}
-
     <!-- FILTER FORM (PRICE, COLOR, SIZE, BRANDS) -->
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -112,6 +22,96 @@
 
             <!-- LEFT SIDEBAR (Desktop Only) -->
             <aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible">
+
+                {{--            <div class="flex justify-between items-center border-b border-gray-200 pb-3">--}}
+                {{--                <h2 class="font-bold text-lg text-gray-800">Categories</h2>--}}
+
+                {{--                @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort') || request()->has('category'))--}}
+                {{--                    <a href="{{ route('categories') }}"--}}
+                {{--                       class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">--}}
+                {{--                        Clear Filters--}}
+                {{--                    </a>--}}
+                {{--                @endif--}}
+                {{--            </div>--}}
+
+                {{--            <!-- Seamless Category Tree -->--}}
+                {{--            <div class="mb-2 mt-2 text-sm">--}}
+                {{--                <!-- All Products Option -->--}}
+                {{--                <div class="mb-2">--}}
+                {{--                    <a href="{{ route('categories', request()->except('category')) }}"--}}
+                {{--                       class="flex items-center justify-between py-2 px-3 rounded-lg transition {{ !request('category') ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-700 hover:bg-gray-100' }}">--}}
+                {{--                        <span>All Products</span>--}}
+                {{--                    </a>--}}
+                {{--                </div>--}}
+
+                {{--                <ul class="space-y-0.5">--}}
+                {{--                @foreach($categories as $mainCat)--}}
+                {{--                    @php--}}
+                {{--                        $isMainActive = request('category') == $mainCat->slug;--}}
+                {{--                    @endphp--}}
+
+                {{--                    <!-- LEVEL 1: MAIN CATEGORY -->--}}
+                {{--                        <li class="relative group">--}}
+                {{--                            <div class="flex items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition {{ $isMainActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-700 hover:bg-gray-100 hover:text-black' }}">--}}
+                {{--                                <a href="{{ route('categories', ['category' => $mainCat->slug] + request()->except('category')) }}" class="flex-1 text-sm font-medium">--}}
+                {{--                                    📁 {{ $mainCat->name }}--}}
+                {{--                                </a>--}}
+
+                {{--                                @if($mainCat->children && $mainCat->children->count() > 0)--}}
+                {{--                                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-400 group-hover:text-black mt-1"></i>--}}
+                {{--                                @endif--}}
+                {{--                            </div>--}}
+
+                {{--                            <!-- LEVEL 2: SUB-CATEGORIES -->--}}
+                {{--                            @if($mainCat->children && $mainCat->children->count() > 0)--}}
+                {{--                                <div class="hidden group-hover:block absolute left-full top-0 w-52 z-50">--}}
+                {{--                                    <ul class="relative bg-white border border-gray-200 shadow-xl rounded-none p-1 space-y-0.5">--}}
+                {{--                                    @foreach($mainCat->children as $subCat)--}}
+                {{--                                        @php--}}
+                {{--                                            $isSubActive = request('category') == $subCat->slug;--}}
+                {{--                                        @endphp--}}
+
+                {{--                                        <!-- LEVEL 2 ITEM -->--}}
+                {{--                                            <li class="group/sub">--}}
+                {{--                                                <div class="flex items-center justify-between py-1.5 px-2.5 rounded-none cursor-pointer transition {{ $isSubActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-600 hover:bg-gray-100 hover:text-black' }}">--}}
+                {{--                                                    <a href="{{ route('categories', ['category' => $subCat->slug] + request()->except('category')) }}" class="flex-1 text-xs">--}}
+                {{--                                                        {{ $subCat->name }}--}}
+                {{--                                                    </a>--}}
+
+                {{--                                                    @if($subCat->children && $subCat->children->count() > 0)--}}
+                {{--                                                        <i class="fa-solid fa-chevron-right text-[9px] text-gray-400 group-hover/sub:text-black"></i>--}}
+                {{--                                                    @endif--}}
+                {{--                                                </div>--}}
+
+                {{--                                                <!-- LEVEL 3: CHILD CATEGORIES (Slight Overlap & No Rounded Corners) -->--}}
+                {{--                                                @if($subCat->children && $subCat->children->count() > 0)--}}
+                {{--                                                    <div class="hidden group-hover/sub:block absolute left-[calc(100%-2px)] top-0 bottom-0 w-48 z-50">--}}
+                {{--                                                        <ul class="bg-white border border-gray-200 shadow-xl rounded-none p-1 space-y-0.5 h-full">--}}
+                {{--                                                            @foreach($subCat->children as $childCat)--}}
+                {{--                                                                @php--}}
+                {{--                                                                    $isChildCatActive = request('category') == $childCat->slug;--}}
+                {{--                                                                @endphp--}}
+                {{--                                                                <li>--}}
+                {{--                                                                    <a href="{{ route('categories', ['category' => $childCat->slug] + request()->except('category')) }}"--}}
+                {{--                                                                       class="block py-1.5 px-2.5 text-xs rounded-none transition {{ $isChildCatActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-500 hover:bg-gray-100 hover:text-black' }}">--}}
+                {{--                                                                        {{ $childCat->name }}--}}
+                {{--                                                                    </a>--}}
+                {{--                                                                </li>--}}
+                {{--                                                            @endforeach--}}
+                {{--                                                        </ul>--}}
+                {{--                                                    </div>--}}
+                {{--                                                @endif--}}
+
+                {{--                                            </li>--}}
+                {{--                                        @endforeach--}}
+                {{--                                    </ul>--}}
+                {{--                                </div>--}}
+                {{--                            @endif--}}
+
+                {{--                        </li>--}}
+                {{--                    @endforeach--}}
+                {{--                </ul>--}}
+                {{--            </div>--}}
 
                 <form method="GET" action="{{ route('categories') }}" id="filterForm" class="space-y-4">
 
@@ -180,23 +180,37 @@
                         @endforeach
                     </div>
 
-                    <!-- Brands Filter -->
-                    <h2 class="font-bold text-sm mt-4">Brands</h2>
-                    <div class="flex flex-col gap-2 my-2 pb-3 max-h-40 overflow-y-auto custom-scrollbar">
-                        @foreach($availableBrands as $brand)
-                            @php
-                                $isBrandSelected = request('brand') == $brand->slug;
-                            @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group text-xs sm:text-sm text-gray-700 hover:text-black">
-                                <input type="checkbox"
-                                       onchange="selectBrand('{{ $brand->slug }}')"
-                                       {{ $isBrandSelected ? 'checked' : '' }}
-                                       class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
-                                <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
-                                {{ ucfirst($brand->name) }}
-                            </span>
-                            </label>
-                        @endforeach
+                    <!-- Brands Filter (With Modern Styled Toggle Button) -->
+                    <div x-data="{ showAllBrands: false, brandLimit: 6 }">
+                        <h2 class="font-bold text-sm mt-4 mb-2">Brands</h2>
+
+                        <div class="flex flex-col gap-2 pb-1">
+                            @foreach($availableBrands as $index => $brand)
+                                @php
+                                    $isBrandSelected = request('brand') == $brand->slug;
+                                @endphp
+                                <label x-show="showAllBrands || {{ $index }} < brandLimit"
+                                       class="flex items-center gap-2.5 cursor-pointer group text-xs sm:text-sm text-gray-700 hover:text-black">
+                                    <input type="checkbox"
+                                           onchange="selectBrand('{{ $brand->slug }}')"
+                                           {{ $isBrandSelected ? 'checked' : '' }}
+                                           class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
+                                    <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
+                        {{ ucfirst($brand->name) }}
+                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        <!-- Stylish Full-Width Button -->
+                        @if(count($availableBrands) > 6)
+                            <button type="button"
+                                    @click="showAllBrands = !showAllBrands"
+                                    class="mt-2 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
+                                <span x-text="showAllBrands ? 'See Less' : 'See More ({{ count($availableBrands) - 6 }})'"></span>
+                                <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllBrands ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                            </button>
+                        @endif
                     </div>
 
                 </form>

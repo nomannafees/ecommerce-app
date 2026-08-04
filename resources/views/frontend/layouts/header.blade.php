@@ -41,7 +41,8 @@
 
     <!-- Center Search Bar (Exact AliExpress Style from Screenshot) -->
     <div class="hidden md:flex flex-1 max-w-2xl mx-6">
-        <form action="{{ route('frontendProduct') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 p-1 shadow-inner relative">
+        <!-- Action attribute updated to route('categories') -->
+        <form action="{{ route('categories') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 p-1 shadow-inner relative">
 
             <!-- Input Field -->
             <input type="text"
@@ -198,7 +199,7 @@
             <div class="relative group/dropdown inline-block w-full">
 
                 <!-- Toggle Button -->
-                <div class="flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer select-none">
+                <div class="flex ms-2 items-center justify-between bg-gray-100 hover:bg-gray-200 transition border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer select-none">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-bars text-gray-800"></i>
                         <span class="font-semibold text-sm text-gray-900">All Categories</span>

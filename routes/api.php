@@ -26,5 +26,6 @@ Route::post('/wish-list-add', [\App\Http\Controllers\Api\WishlistController::cla
 Route::post('/place-order', [\App\Http\Controllers\Api\CheckoutController::class, 'checkoutStore']);
 Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
 Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
+Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
 
 
