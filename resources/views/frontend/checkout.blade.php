@@ -581,7 +581,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" form="checkout-form"
-                            class="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all duration-200 text-center block">
+                            class="w-full cursor-pointer mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all duration-200 text-center block">
                         Place Order Now
                     </button>
 
