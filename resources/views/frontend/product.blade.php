@@ -19,7 +19,7 @@
         </div>
 
         <!-- GRID (Screen Responsive: Mobile=2, Tablet=3, Laptop=4, Desktop=5) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 mb-8 gap-3 sm:gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 mb-8 gap-3">
 
         @forelse($products as $product)
 
@@ -60,7 +60,7 @@
                         </div>
 
                         <!-- CONTENT -->
-                        <div class="px-4 py-2 flex-grow flex flex-col justify-between gap-1">
+                        <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-1">
 
                             <div>
                                 <!-- NAME -->
@@ -109,7 +109,7 @@
                                 </span>
                                     @else
                                         <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    <span class="text-emerald-800 font-bold text-[10px] sm:text-xs">{{ $totalStock }}</span> In Stock
+                                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
                                 </span>
                                     @endif
                                 </div>
