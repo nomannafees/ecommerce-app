@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- MAIN CONTAINER (Header alignment ke sath aligned max-w-7xl) -->
-    <div class="md:max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-10">
+    <div class="md:max-w-7xl  lg:max-w-full mx-auto px-3 sm:px-6 py-8 sm:py-10">
 
         <!-- TITLE -->
         <div class="text-center mb-6 sm:mb-8">
@@ -19,7 +19,7 @@
         </div>
 
         <!-- GRID (Screen Responsive: Mobile=2, Tablet=3, Laptop=4, Desktop=5) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mb-8 gap-3 sm:gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-5 mb-8 gap-3 sm:gap-6">
 
         @forelse($products as $product)
 
