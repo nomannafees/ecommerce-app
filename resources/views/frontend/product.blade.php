@@ -19,7 +19,7 @@
         </div>
 
         <!-- GRID (Screen Responsive: Mobile=2, Tablet=3, Laptop=4, Desktop=5) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 mb-8 gap-3 sm:gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 mb-8 gap-3 sm:gap-6">
 
         @forelse($products as $product)
 
