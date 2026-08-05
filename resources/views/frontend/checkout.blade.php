@@ -111,7 +111,7 @@
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                                         <i class="fa-regular fa-user"></i>
                                     </span>
-                                        <input  type="text" name="name" id="name" placeholder=" " required
+                                        <input type="text" name="name" id="name" placeholder=" " required
                                                value="{{\Illuminate\Support\Facades\Auth::user()->name}}"
                                                class="peer w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
                                         <label for="name"

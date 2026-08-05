@@ -213,12 +213,12 @@
 
                     <!-- LEVEL 1: Main Categories Box -->
                     <div class="w-72 bg-white border border-gray-200 h-[440px] overflow-y-auto custom-scrollbar p-2">
-                        <div class="mb-1">
-                            <a href="{{ route('categories', request()->except('category')) }}"
-                               class="flex items-center justify-between py-2 px-3 rounded-md text-sm font-semibold transition {{ !request('category') ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
-                                <span>All Products</span>
-                            </a>
-                        </div>
+{{--                        <div class="mb-1">--}}
+{{--                            <a href="{{ route('categories', request()->except('category')) }}"--}}
+{{--                               class="flex items-center justify-between py-2 px-3 rounded-md text-sm font-semibold transition {{ !request('category') ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">--}}
+{{--                                <span>All Products</span>--}}
+{{--                            </a>--}}
+{{--                        </div>--}}
 
                         <ul class="space-y-0.5 relative">
                             @foreach($categories->where('parent_id',0) as $mainCat)

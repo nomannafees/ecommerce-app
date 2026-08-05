@@ -430,7 +430,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="p-2.5 sm:p-4 flex-grow flex flex-col justify-between gap-2">
+                                <div class="p-2.5 sm:p-2 flex-grow flex flex-col justify-between gap-2">
                                     <div>
                                         <!-- NAME -->
                                         <h4 class="font-medium xs:text[14px] md:text[16px] text-gray-800 truncate group-hover:text-black capitalize">
@@ -438,7 +438,7 @@
                                         </h4>
 
                                         <!-- DESCRIPTION -->
-                                        <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-1 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed text-justify">
+                                        <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-1 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed">
                                             {!! Str::limit(strip_tags($product->description), 150) !!}
                                         </p>
                                     </div>
@@ -515,7 +515,7 @@
                     @endforelse
                 </div>
 
-                <div class=" -mt-6 mb-5 sm:mb-10">{{ $records->links() }}</div>
+                <div class=" -mt-6 mb-5 lg:mt-8 lg:mb-2 sm:mb-10">{{ $records->links() }}</div>
             </div>
         </div>
     </div>
