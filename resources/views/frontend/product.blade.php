@@ -69,7 +69,7 @@
                                 </h4>
 
                                 <!-- DESCRIPTION -->
-                                <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-2 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed text-justify">
+                                <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-1 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed">
                                     {!! Str::limit(strip_tags($product->description), 150) !!}
                                 </p>
                             </div>
