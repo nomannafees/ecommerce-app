@@ -60,11 +60,11 @@
                         </div>
 
                         <!-- CONTENT -->
-                        <div class="p-2.5 sm:p-4 flex-grow flex flex-col justify-between gap-2">
+                        <div class="px-4 py-2 flex-grow flex flex-col justify-between gap-1">
 
                             <div>
                                 <!-- NAME -->
-                                <h4 class="font-medium text-xs sm:text-lg text-gray-800 truncate group-hover:text-black">
+                                <h4 class="font-medium xs:text[14px] md:text[16px] text-gray-800 truncate group-hover:text-black capitalize">
                                     {{ $product->name }}
                                 </h4>
 
