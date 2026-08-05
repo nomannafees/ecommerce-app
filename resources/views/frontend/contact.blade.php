@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- MAIN CONTAINER WITH MAX-W-7XL -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
 
         <!-- HEADER -->
         <div class="text-center mt-6 sm:mt-12 mb-6 sm:mb-10 px-4">

@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- MAIN CONTAINER (Header alignment ke sath aligned max-w-7xl) -->
-    <div class="md:max-w-7xl  lg:max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-10">
+    <div class="md:max-w-7xl  lg:max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6 py-8 sm:py-10">
 
         <!-- TITLE -->
         <div class="text-center mb-6 sm:mb-8">
@@ -19,7 +19,7 @@
         </div>
 
         <!-- GRID (Screen Responsive: Mobile=2, Tablet=3, Laptop=4, Desktop=5) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 mb-8 gap-3">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mb-8 gap-3">
 
         @forelse($products as $product)
 
@@ -43,7 +43,7 @@
 
                                 <button type="submit"
                                         class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
-                                        style="padding-bottom: 2px !important; padding-top: 0px; padding-left: 6px; padding-right: 6px;">
+                                        style="padding: 4px 9px 4px 9px !important;">
 
                                     <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200
                                 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}">
@@ -72,6 +72,26 @@
                                 <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-1 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed">
                                     {!! Str::limit(strip_tags($product->description), 150) !!}
                                 </p>
+                            </div>
+
+                            @php
+                                $avgRating = $product->avgRating ?? 0;
+                            @endphp
+
+                            {{-- Rating Section Blade Code --}}
+                            <div class="flex items-center gap-1">
+                                <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($avgRating))
+                                            <i class="fa-solid fa-star"></i>
+                                        @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                            <i class="fa-solid fa-star-half-stroke"></i>
+                                        @else
+                                            <i class="fa-regular fa-star text-gray-300"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
                             </div>
 
                             <!-- PRICE + STOCK -->

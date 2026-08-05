@@ -204,20 +204,51 @@ class FrontendController extends Controller
 
     public function frontendProduct()
     {
+        // 1. Products with variants, images, and reviews
+        $products = Product::with(['variants', 'mainVariantImage', 'reviews'])->latest()->get();
 
-        $products = Product::with('variants')->latest()->get();
+        // --- YEAH WALA CODE MISSING THA (Rating calculate karne ke liye) ---
+        $products->each(function ($product) {
+            $product->avgRating = $product->reviews->isNotEmpty() ? $product->reviews->avg('rating') : 0;
+        });
+        // -----------------------------------------------------------------
 
+        // 2. Wishlist IDs logic
         $wishlistProductIds = [];
-
         if (Auth::check()) {
             $wishlistProductIds = Wishlist::where('user_id', Auth::id())
                 ->pluck('product_id')
                 ->toArray();
         }
 
+        // 3. Sidebar Filter Variables (Jo index() mein use ho rahe hain)
+        $availableColors = ProductVariant::whereNotNull('color_name')
+            ->where('color_name', '!=', '')
+            ->distinct()
+            ->pluck('color_name')
+            ->toArray();
+
+        $availableSizes = ProductVariant::whereNotNull('size')
+            ->where('size', '!=', '')
+            ->distinct()
+            ->pluck('size')
+            ->toArray();
+
+        $availableBrands = Brand::whereNotNull('name')
+            ->where('name', '!=', '')
+            ->get();
+
+        $brands = Brand::latest()->get();
+
+        // Return view with all required variables
         return view('frontend.product', compact(
             'products',
-            'wishlistProductIds'
+            $wishlistProductIds ? 'wishlistProductIds' : [], // safe check
+            'wishlistProductIds',
+            'availableColors',
+            'availableSizes',
+            'availableBrands',
+            'brands'
         ));
     }
 
@@ -245,8 +276,8 @@ class FrontendController extends Controller
             ->where('name', '!=', '')
             ->get();
 
-        // 💡 Eager loading mein 'variant_images' ko bhi shamil kiya taake performance behtar ho
-        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images']);
+        // 💡 Eager loading mein 'reviews' ko bhi shamil kiya taake rating show ho sake
+        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews']);
 
         if ($request->filled('search')) {
             $searchTerm = $request->search;
@@ -312,7 +343,6 @@ class FrontendController extends Controller
         // Sorting ke liye Join laga kar variants ki price use karenge
         if ($request->filled('sort')) {
             if ($request->sort === 'price_low_high') {
-                // Har product ke sabse saste variant ki price ke mutabiq sort karein
                 $query->orderBy(
                     \App\Models\ProductVariant::select('price')
                         ->whereColumn('product_id', 'products.id')
@@ -321,7 +351,6 @@ class FrontendController extends Controller
                     'asc'
                 );
             } elseif ($request->sort === 'price_high_low') {
-                // Har product ke sabse mehnge variant ki price ke mutabiq sort karein
                 $query->orderBy(
                     \App\Models\ProductVariant::select('price')
                         ->whereColumn('product_id', 'products.id')
@@ -338,7 +367,7 @@ class FrontendController extends Controller
 
         $records = $query->paginate(12);
 
-        // 👇 DYNAMIC VARIANT AND IMAGE LOGIC FOR FRONTEND
+        // 👇 DYNAMIC VARIANT, IMAGE & RATING LOGIC FOR FRONTEND
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
         $records->getCollection()->transform(function ($product) use ($selectedColor) {
@@ -364,6 +393,9 @@ class FrontendController extends Controller
             $product->custom_image_path = $matchedImage
                 ? $matchedImage->image_path
                 : ($product->mainVariantImage ? $product->mainVariantImage->image_path : '');
+
+            // 3. Average Rating calculation for each product
+            $product->avgRating = $product->reviews->isNotEmpty() ? $product->reviews->avg('rating') : 0;
 
             return $product;
         });

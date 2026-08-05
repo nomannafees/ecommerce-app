@@ -188,8 +188,9 @@
 
 
 <!-- ================= STICKY SUB-HEADER CATEGORIES & CENTER NAV BAR (In Max-W-7xl Container) ================= -->
+@if (!request()->is('login'))
 <div class="bg-white border-b border-gray-200 shadow-md sticky top-0 z-40 hidden lg:block">
-    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-12">
+    <div class="max-w-7xl px-3 sm:px-6 md:px-7 py-4 sm:py-6 mx-auto  flex items-center justify-between h-12">
 
         <!-- Left Side: All Categories Dropdown Button -->
         <div class="relative w-64 shrink-0"
@@ -199,7 +200,7 @@
             <div class="relative group/dropdown inline-block w-full">
 
                 <!-- Toggle Button -->
-                <div class="flex ms-2 items-center justify-between bg-gray-100 hover:bg-gray-200 transition border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer select-none">
+                <div class="flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer select-none">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-bars text-gray-800"></i>
                         <span class="font-semibold text-sm text-gray-900">All Categories</span>
@@ -339,6 +340,7 @@
 
     </div>
 </div>
+@endif
 
 <style>
     /* Custom Thin Scrollbar for Categories Dropdown */

@@ -6,7 +6,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
 
         <div class="text-center mt-5 lg:mt-7 px-4 lg:px-10">
             <h1 class="text-2xl lg:text-4xl font-bold text-gray-900">
@@ -394,7 +394,7 @@
                 </div>
 
                 <!-- PRODUCTS GRID (4 columns on lg) -->
-                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-10 md:mb-5 sm:gap-6">
+                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-10 md:mb-5 sm:gap-3">
                     @forelse($records as $product)
                         @php
                             $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -412,8 +412,8 @@
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
                                         class="wishlistBtn bg-white rounded-full shadow hover:scale-110 transition flex items-center justify-center"
-                                        style="padding-bottom: 2px !important; padding-top: 0px; padding-left: 7px; padding-right: 7px;">
-                                    <i style="margin: 9px 1px 4px 2px !important;" class="wishlistIcon fa-heart text-xs sm:text-lg transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
+                                        style="padding: 4px 9px 4px 9px !important;">
+                                    <i style="margin: 6px -1px 3px 0px !important;" class="wishlistIcon fa-heart text-xs sm:text-lg transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
 
@@ -433,14 +433,33 @@
                                 <div class="p-2.5 sm:p-4 flex-grow flex flex-col justify-between gap-2">
                                     <div>
                                         <!-- NAME -->
-                                        <h4 class="font-medium text-xs sm:text-lg text-gray-800 truncate group-hover:text-black">
+                                        <h4 class="font-medium xs:text[14px] md:text[16px] text-gray-800 truncate group-hover:text-black capitalize">
                                             {{ $product->name }}
                                         </h4>
 
                                         <!-- DESCRIPTION -->
-                                        <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-2 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed text-justify">
+                                        <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-1 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed text-justify">
                                             {!! Str::limit(strip_tags($product->description), 150) !!}
                                         </p>
+                                    </div>
+                                    @php
+                                        $avgRating = $product->avgRating ?? 0;
+                                    @endphp
+
+                                    {{-- Rating Section Blade Code --}}
+                                    <div class="flex items-center gap-1">
+                                        <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($avgRating))
+                                                    <i class="fa-solid fa-star"></i>
+                                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                                @else
+                                                    <i class="fa-regular fa-star text-gray-300"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
                                     </div>
 
                                     <div class="flex items-center justify-between mt-auto gap-2">
@@ -496,7 +515,7 @@
                     @endforelse
                 </div>
 
-                <div class="mt-6">{{ $records->links() }}</div>
+                <div class=" -mt-6 mb-5 sm:mb-10">{{ $records->links() }}</div>
             </div>
         </div>
     </div>

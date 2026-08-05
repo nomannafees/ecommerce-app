@@ -2,7 +2,8 @@
 
 @section('content')
 
-    <div class="max-w-5xl mx-auto px-4 py-10 space-y-6">
+
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10 space-y-6">
 
         <!-- ORDER HEADER -->
         <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">

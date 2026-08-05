@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-10 py-6 sm:py-10">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10">
 
         <div class="mb-6 sm:mb-8 text-center">
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">My Cart</h2>
@@ -122,7 +122,7 @@
                 </div>
 
                 <!-- Right Column: Cart Summary & Checkout Card (Takes 1 Column on Large Screens, sticky) -->
-                <div class="lg:col-span-1 lg:sticky lg:top-24">
+                <div class="lg:col-span-1 lg:sticky lg:top-24 mb-10 sm:mb-20">
 
                     <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-gray-100">
 

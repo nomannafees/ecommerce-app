@@ -63,7 +63,7 @@
         }
     </style>
 
-    <div class="max-w-6xl mx-auto px-4 py-10">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10">
 
         <div class="text-center mb-10 max-w-2xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight">

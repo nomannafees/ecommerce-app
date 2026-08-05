@@ -32,19 +32,22 @@ class CheckoutController extends Controller
         $country = Country::find(167);
         $states = State::where('country_id', 167)->orderBy('name', 'asc')->get();
 
-        // 2. Default state cities setup
-        $defaultState = $states->first();
-        $cities = collect();
-
-        if ($defaultState) {
-            $cities = City::where('state_id', $defaultState->id)->orderBy('name', 'asc')->get();
-        }
-
         // Fetch saved customer info if available
         $customer_info = CustomerInfo::where('user_id', $user_id)->first();
 
+        // Determine state for initial cities load (Customer saved state or Default first state)
+        $targetStateId = null;
+
         if ($customer_info && isset($customer_info->state_id)) {
-            $cities = City::where('state_id', $customer_info->state_id)->orderBy('name', 'asc')->get();
+            $targetStateId = $customer_info->state_id;
+        } elseif ($states->isNotEmpty()) {
+            $targetStateId = $states->first()->id;
+        }
+
+        // Fetch cities based on determined state
+        $cities = collect();
+        if ($targetStateId) {
+            $cities = City::where('state_id', $targetStateId)->orderBy('name', 'asc')->get();
         }
 
         // Return JSON response for API
@@ -58,6 +61,17 @@ class CheckoutController extends Controller
                 'cities' => $cities,
                 'customer_info' => $customer_info,
             ]
+        ], 200);
+    }
+
+    public function getCitiesByState($id)
+    {
+        $cities = City::where('state_id', $id)
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return response()->json([
+            $cities
         ], 200);
     }
 

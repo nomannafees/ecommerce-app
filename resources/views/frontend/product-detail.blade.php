@@ -9,9 +9,11 @@
             Home / Products / <span class="text-black font-medium">{{ $product->name }}</span>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+        <!-- Grid: Left column ka size kam (max width constraint ke sath) aur right column ko bara kar diya hai -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
 
-            <div>
+            <!-- LEFT COLUMN: Image & Swiper (Width reduced to lg:col-span-5) -->
+            <div class="lg:col-span-5">
                 <!-- SWIPER MAIN SLIDER -->
                 <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group">
                     <div class="swiper-wrapper cursor-pointer">
@@ -71,8 +73,8 @@
                 </div>
             </div>
 
-            <!-- PRODUCT DETAILS SIDE -->
-            <div class="lg:sticky lg:top-24 h-fit">
+            <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
+            <div class="lg:col-span-7 lg:sticky lg:top-24 h-fit">
 
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 capitalize">
                     {{ $product->name }}
@@ -108,20 +110,20 @@
                 @endphp
 
                 <div class="mt-3 flex items-end gap-3">
-            <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-green-600">
-                Rs {{ number_format($initialPrice) }}
-            </span>
+                <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-green-600">
+                    Rs {{ number_format($initialPrice) }}
+                </span>
                     <span id="displayCutPrice"
                           class="text-xs sm:text-base text-gray-400 line-through {{ $initialCutPrice ? '' : 'hidden' }}">
-                Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
-            </span>
+                    Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
+                </span>
                 </div>
 
                 <div class="mt-2">
-            <span id="stockBadge"
-                  class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
-            </span>
+                <span id="stockBadge"
+                      class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                    {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
+                </span>
                 </div>
 
                 <div class="mt-4">
@@ -268,8 +270,8 @@
 
                                         <span
                                             class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
-                            <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
-                        </span>
+                                        <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
+                                    </span>
                                     </div>
 
                                     <!-- Comment Content -->

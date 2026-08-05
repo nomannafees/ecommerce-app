@@ -27,5 +27,6 @@ Route::post('/place-order', [\App\Http\Controllers\Api\CheckoutController::class
 Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
 Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
 Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
+Route::get('/cities/{id}', [\App\Http\Controllers\Api\CheckoutController::class, 'getCitiesByState']);
 
 
