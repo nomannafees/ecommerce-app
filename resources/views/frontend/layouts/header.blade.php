@@ -6,69 +6,69 @@
 @endphp
 
 <!-- ================= MAIN HEADER (Scrolls away normally, NOT sticky) ================= -->
-<header class="bg-black flex justify-between items-center h-20 text-white px-4 z-50 shadow-lg relative">
+<header class="bg-black flex justify-between items-center h-14 md:h-20 text-white px-3 sm:px-4 z-50 shadow-lg relative">
 
     <!-- Mobile Menu Button -->
-    <button class="lg:hidden" onclick="OpenNav()">
-        <i class="fa fa-bars text-xl"></i>
+    <button class="lg:hidden text-sm p-1" onclick="OpenNav()">
+        <i class="fa fa-bars text-base"></i>
     </button>
 
     <!-- Dynamic Store Logo & Title Section -->
-    <a href="{{ route('index') }}" class="flex items-center gap-2.5 hover:opacity-90 transition-opacity ms-2 sm:ms-5 shrink-0">
+    <a href="{{ route('index') }}" class="flex items-center gap-1.5 hover:opacity-90 transition-opacity ms-1 sm:ms-3 shrink-0">
         @if($store)
             {{-- Show Logo if enabled --}}
             @if($store->is_logo && $store->logo)
                 <img src="{{ asset('storage/' . $store->logo) }}"
                      alt="{{ $store->title ?? 'ShopNest' }}"
-                     class="h-9 w-auto max-w-[150px] object-contain rounded-md">
+                     class="h-6 sm:h-9 w-auto max-w-[110px] sm:max-w-[150px] object-contain rounded-md">
             @endif
 
             {{-- Show Title if enabled --}}
             @if($store->is_title && $store->title)
-                <span class="text-xl font-bold tracking-tight">
+                <span class="text-base sm:text-xl font-bold tracking-tight">
                     {{ $store->title }}
                 </span>
             @endif
 
             {{-- Fallback if both toggles are off --}}
             @if(!$store->is_logo && !$store->is_title)
-                <span class="text-xl font-bold">ShopNest</span>
+                <span class="text-base sm:text-xl font-bold">ShopNest</span>
             @endif
         @else
-            <h1 class="text-xl font-bold">ShopNest</h1>
+            <h1 class="text-base sm:text-xl font-bold">ShopNest</h1>
         @endif
     </a>
 
     <!-- Center Search Bar (Exact AliExpress Style from Screenshot) -->
-    <div class="hidden md:flex flex-1 max-w-2xl mx-6">
+    <div class="hidden md:flex ms-20 flex-1 max-w-xl mx-6 justify-center">
         <!-- Action attribute updated to route('categories') -->
-        <form action="{{ route('categories') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 p-1 shadow-inner relative">
+        <form action="{{ route('categories') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
             <!-- Input Field -->
             <input type="text"
                    name="search"
                    value="{{ request('search') }}"
                    placeholder="Search products, brands and more..."
-                   class="w-full pl-5 pr-3 py-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+                   class="w-full pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
             <!-- QR / Image Scanner Icon inside Input -->
-            <button type="button" class="px-3 text-gray-500 hover:text-black transition" title="Search by Image">
-                <i class="fa-solid fa-qrcode text-lg"></i>
+            <button type="button" class="px-2.5 text-gray-500 hover:text-black transition" title="Search by Image">
+                <i class="fa-solid fa-qrcode text-base"></i>
             </button>
 
             <!-- Black Circular Search Submit Button -->
-            <button type="submit" class="bg-black hover:bg-gray-800 text-white w-11 h-11 rounded-full flex items-center justify-center transition shrink-0">
-                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+            <button type="submit" class="bg-black hover:bg-gray-800 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
             </button>
         </form>
     </div>
 
     <!-- Right Side Icons & Sign In Hover Dropdown -->
-    <div class="flex items-center gap-3 sm:gap-5 shrink-0">
+    <div class="flex items-center gap-2 sm:gap-5 shrink-0">
 
         <!-- Mobile Search Button Icon -->
-        <button class="text-lg hover:text-gray-300 md:hidden">
-            <i class="fa-solid fa-magnifying-glass fa-sm"></i>
+        <button class="text-sm hover:text-gray-300 md:hidden p-1">
+            <i class="fa-solid fa-magnifying-glass"></i>
         </button>
 
         <!-- Wishlist: Desktop Only -->
@@ -91,12 +91,12 @@
         <div class="hidden sm:block h-8 border-l border-gray-700"></div>
 
         <!-- AliExpress Style Sign in / Register Hover Dropdown Container -->
-        <div class="relative group/userdropdown me-2 sm:me-5 py-2">
+        <div class="relative group/userdropdown me-1 sm:me-5 py-1">
 
             <!-- Trigger Header Element (Hoverable) -->
             <a href="{{ auth()->check() ? route('frontend.user_info.index') : route('login') }}"
-               class="flex items-center gap-2 text-white hover:text-emerald-400 transition text-sm font-medium cursor-pointer select-none">
-                <i class="fa-regular fa-user text-lg"></i>
+               class="flex items-center gap-1.5 sm:gap-2 text-white hover:text-emerald-400 transition text-sm font-medium cursor-pointer select-none">
+                <i class="fa-regular fa-user text-sm sm:text-lg"></i>
                 <div class="leading-tight text-left hidden sm:block">
                     <span class="block text-[10px] text-gray-400">Welcome</span>
                     <span class="font-semibold">

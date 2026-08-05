@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- MAIN CONTAINER (Header alignment ke sath aligned max-w-7xl) -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-10">
+    <div class="md:max-w-7xl mx-auto px-3 sm:px-6 py-8 sm:py-10">
 
         <!-- TITLE -->
         <div class="text-center mb-6 sm:mb-8">
