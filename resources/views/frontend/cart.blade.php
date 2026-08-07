@@ -2,11 +2,11 @@
 
 @section('content')
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:pb-10 sm:pt-6">
 
-        <div class="mb-6 sm:mb-8 text-center">
+        <div class="mb-2 sm:mb-4 text-center">
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">My Cart</h2>
-            <p class="text-xs sm:text-sm text-gray-500 mt-1">
+            <p class="text-xs sm:text-sm text-gray-500">
                 Review your items before checkout
             </p>
         </div>

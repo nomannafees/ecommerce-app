@@ -6,7 +6,7 @@
         <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10 space-y-6">
 
         <!-- ORDER HEADER -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+        <div class="bg-white rounded-2xl p-6 border border-gray-100">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900 tracking-tight">
@@ -47,7 +47,7 @@
         </div>
 
         <!-- PRODUCTS -->
-        <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+        <div class="bg-white rounded-2xl  p-6 border border-gray-100">
             <h3 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
                 <i class="fa-solid fa-box text-gray-400 text-base"></i>
                 Order Items ({{ $order->items->count() }})
@@ -171,10 +171,10 @@
                     <!-- CANCEL BUTTON -->
                     @if($order->status == 'pending')
                         <form id="cancelForm-{{ $order->id }}" action="{{ route('order.cancel', $order->id) }}"
-                              method="POST" class="w-full flex justify-center my-2">
+                              method="POST" class="w-full flex justify-end mt-2">
                             @csrf
                             <button type="button"
-                                    class="cancel-btn px-6 py-3 font-semibold text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] transition-all shadow-md shadow-rose-500/10 flex items-center justify-center gap-2"
+                                    class="cancel-btn px-4 py-2 font-semibold text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] transition-all shadow-md shadow-rose-500/10 flex items-center justify-center gap-2"
                                     data-id="{{ $order->id }}">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                                 Cancel Order
@@ -185,10 +185,10 @@
                 <!-- RESTORE BUTTON -->
                     @if($order->status == 'cancelled')
                         <form id="restoreForm-{{ $order->id }}" action="{{ route('order.restore', $order->id) }}"
-                              method="POST" class="w-full sm:w-auto">
+                              method="POST" class="w-full sm:w-auto mt-2">
                             @csrf
                             <button type="button"
-                                    class="restore-btn w-full sm:w-auto px-6 py-3 font-semibold text-sm rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md shadow-indigo-600/10 flex items-center justify-center gap-2"
+                                    class="restore-btn w-full sm:w-auto p-3 py-2 font-semibold text-sm rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md shadow-indigo-600/10 flex items-center justify-center gap-2"
                                     data-id="{{ $order->id }}">
                                 <i class="fa-solid fa-rotate-left text-xs"></i>
                                 Restore Order

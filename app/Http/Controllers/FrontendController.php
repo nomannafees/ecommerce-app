@@ -252,12 +252,46 @@ class FrontendController extends Controller
         ));
     }
 
+    public function categoriesProduct(Request $request)
+    {
+        $categories = Categorie::where('parent_id', 0)->with('children')->get();
+
+        $currentCategory = null;
+        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews'])->latest();
+
+        if ($request->filled('category')) {
+            $currentCategory = Categorie::where('slug', $request->category)->with('children.children')->first();
+
+            if ($currentCategory) {
+                $getAllIds = function ($cat) use (&$getAllIds) {
+                    $ids = [];
+                    foreach ($cat->children as $child) {
+                        $ids[] = $child->id;
+                        if ($child->children->isNotEmpty()) {
+                            $ids = array_merge($ids, $getAllIds($child));
+                        }
+                    }
+                    return $ids;
+                };
+
+                $categoryIds = array_merge([$currentCategory->id], $getAllIds($currentCategory));
+                $query->whereIn('category_id', $categoryIds);
+            }
+        }
+
+        $products = $query->get();
+
+        return view('frontend.category-products', compact(
+            'categories',
+            'currentCategory',
+            'products'
+        ));
+    }
+
     public function allCategories(Request $request)
     {
-        // 💡 UPDATE 1: Sub-categories aur Child categories ko Eager Load kiya taake Blade views mein Nesting chale
-        $categories = Categorie::whereNull('parent_id')
-            ->with('children.children')
-            ->get();
+        // Default main categories
+        $categories = Categorie::where('parent_id', 0)->with('allChildren')->get();
 
         $availableColors = ProductVariant::whereNotNull('color_name')
             ->where('color_name', '!=', '')
@@ -271,13 +305,18 @@ class FrontendController extends Controller
             ->pluck('size')
             ->toArray();
 
-        // Brand table se saare brands lekar aayenge dropdown/sidebar ke liye
         $availableBrands = Brand::whereNotNull('name')
             ->where('name', '!=', '')
             ->get();
 
-        // 💡 Eager loading mein 'reviews' ko bhi shamil kiya taake rating show ho sake
-        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews']);
+        $query = Product::with([
+            'variants',
+            'prod_brand',
+            'mainVariantImage',
+            'mainVariant',
+            'variant_images',
+            'reviews'
+        ]);
 
         if ($request->filled('search')) {
             $searchTerm = $request->search;
@@ -287,77 +326,55 @@ class FrontendController extends Controller
             });
         }
 
+        $currentCategory = null;
         $category = null;
+
         if ($request->filled('category')) {
-            $category = Categorie::where('slug', $request->category)->first();
-            if ($category) {
-                // 💡 UPDATE 2: Main, Sub aur Grandchild (Level 3) sabhi ki Category IDs collection bana ke query kar rahe hain
-                $allCategoryIds = collect([$category->id]);
+            // children ke sath children bhi load kar rahe hain deep nesting ke liye
+            $currentCategory = Categorie::where('slug', $request->category)->with('children.children')->first();
 
-                // Direct children (Sub-categories)
-                $subCategories = Categorie::where('parent_id', $category->id)->get();
-                $subCategoryIds = $subCategories->pluck('id')->toArray();
-                $allCategoryIds = $allCategoryIds->merge($subCategoryIds);
+            if ($currentCategory) {
+                $category = $currentCategory;
 
-                // Child categories (Level 3)
-                if (!empty($subCategoryIds)) {
-                    $childCategoryIds = Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
-                    $allCategoryIds = $allCategoryIds->merge($childCategoryIds);
-                }
+                $getSubIds = function ($cat) use (&$getSubIds) {
+                    $ids = [];
+                    foreach ($cat->children as $child) {
+                        $ids[] = $child->id;
+                        if ($child->children->isNotEmpty()) {
+                            $ids = array_merge($ids, $getSubIds($child));
+                        }
+                    }
+                    return $ids;
+                };
 
-                $query->whereIn('category_id', $allCategoryIds->unique()->toArray());
+                $categoryIds = array_merge([$currentCategory->id], $getSubIds($currentCategory));
+                $query->whereIn('category_id', $categoryIds);
             }
         }
 
-        // Price Filters ab 'product_variants' table par chalenge
+        // Filters (Price, Color, Size, Brand)
         if ($request->filled('min_price')) {
-            $query->whereHas('variants', function ($q) use ($request) {
-                $q->where('price', '>=', $request->min_price);
-            });
+            $query->whereHas('variants', fn($q) => $q->where('price', '>=', $request->min_price));
         }
-
         if ($request->filled('max_price')) {
-            $query->whereHas('variants', function ($q) use ($request) {
-                $q->where('price', '<=', $request->max_price);
-            });
+            $query->whereHas('variants', fn($q) => $q->where('price', '<=', $request->max_price));
         }
-
         if ($request->filled('color')) {
-            $query->whereHas('variants', function ($q) use ($request) {
-                $q->where('color_name', $request->color);
-            });
+            $query->whereHas('variants', fn($q) => $q->where('color_name', $request->color));
         }
-
         if ($request->filled('size')) {
-            $query->whereHas('variants', function ($q) use ($request) {
-                $q->where('size', $request->size);
-            });
+            $query->whereHas('variants', fn($q) => $q->where('size', $request->size));
         }
-
         if ($request->filled('brand')) {
-            $query->whereHas('prod_brand', function ($q) use ($request) {
-                $q->where('slug', $request->brand);
-            });
+            $query->whereHas('prod_brand', fn($q) => $q->where('slug', $request->brand));
         }
 
-        // Sorting ke liye Join laga kar variants ki price use karenge
+        // Sorting
         if ($request->filled('sort')) {
             if ($request->sort === 'price_low_high') {
-                $query->orderBy(
-                    \App\Models\ProductVariant::select('price')
-                        ->whereColumn('product_id', 'products.id')
-                        ->orderBy('price', 'asc')
-                        ->limit(1),
-                    'asc'
-                );
+                $query->orderBy(\App\Models\ProductVariant::select('price')->whereColumn('product_id', 'products.id')->orderBy('price', 'asc')->limit(1), 'asc');
             } elseif ($request->sort === 'price_high_low') {
-                $query->orderBy(
-                    \App\Models\ProductVariant::select('price')
-                        ->whereColumn('product_id', 'products.id')
-                        ->orderBy('price', 'desc')
-                        ->limit(1),
-                    'desc'
-                );
+                $query->orderBy(\App\Models\ProductVariant::select('price')->whereColumn('product_id', 'products.id')->orderBy('price', 'desc')->limit(1), 'desc');
             } else {
                 $query->latest('products.created_at');
             }
@@ -366,52 +383,38 @@ class FrontendController extends Controller
         }
 
         $records = $query->paginate(12);
-
-        // 👇 DYNAMIC VARIANT, IMAGE & RATING LOGIC FOR FRONTEND
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
         $records->getCollection()->transform(function ($product) use ($selectedColor) {
-            // 1. Matching variant nikalen agar color select ho
             $variant = null;
             if ($selectedColor) {
-                $variant = $product->variants->first(function ($v) use ($selectedColor) {
-                    return strtolower(trim($v->color_name)) === $selectedColor;
-                });
+                $variant = $product->variants->first(fn($v) => strtolower(trim($v->color_name)) === $selectedColor);
             }
 
-            // Fallback variants (agar color select na ho ya match na mile)
             $product->active_variant = $variant ?? ($product->mainVariant ?? $product->variants->first());
 
-            // 2. Image Path logic jo select kiye variant ki image nikalega
             $matchedImage = null;
             if ($product->active_variant) {
-                $matchedImage = $product->variant_images->first(function ($img) use ($product) {
-                    return $img->id == $product->active_variant->variant_image_id;
-                });
+                $matchedImage = $product->variant_images->first(fn($img) => $img->id == $product->active_variant->variant_image_id);
             }
 
             $product->custom_image_path = $matchedImage
                 ? $matchedImage->image_path
                 : ($product->mainVariantImage ? $product->mainVariantImage->image_path : '');
 
-            // 3. Average Rating calculation for each product
             $product->avgRating = $product->reviews->isNotEmpty() ? $product->reviews->avg('rating') : 0;
 
             return $product;
         });
 
-        $wishlistProductIds = [];
-        if (Auth::check()) {
-            $wishlistProductIds = Wishlist::where('user_id', \Auth::id())
-                ->pluck('product_id')
-                ->toArray();
-        }
+        $wishlistProductIds = Auth::check() ? Wishlist::where('user_id', Auth::id())->pluck('product_id')->toArray() : [];
 
         return view('frontend.categories', compact(
             'categories',
             'records',
             'wishlistProductIds',
             'category',
+            'currentCategory', // Yeh variable view mein bhejna zaroori hai
             'availableColors',
             'availableSizes',
             'availableBrands'

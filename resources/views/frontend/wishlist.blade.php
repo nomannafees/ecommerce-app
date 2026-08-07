@@ -2,10 +2,10 @@
 
 @section('content')
 
-    <div class="px-4 md:px-10 py-10 bg-gray-50">
+    <div class="px-4 md:px-10 pb-10 pt-6 bg-gray-50">
 
         <!-- HEADER -->
-        <div class="mb-8 text-center">
+        <div class="mb-4 text-center">
             <h2 class="text-3xl font-bold text-gray-800">My Wishlist</h2>
             <p class="text-sm text-gray-500 mt-1">
                 Save your favorite products and purchase them later anytime
@@ -23,7 +23,7 @@
 
         @else
 
-            <div class="space-y-4 max-w-7xl mx-auto">
+            <div class="space-y-4 max-w-7xl sm:px-6 md:px-7 mx-auto">
 
             @foreach($wishlists as $item)
 

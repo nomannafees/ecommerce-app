@@ -69,8 +69,35 @@ class Product extends Model
     {
         return $this->variants->first()->cut_price;
     }
+
+
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

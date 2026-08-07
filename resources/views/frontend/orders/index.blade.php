@@ -2,14 +2,14 @@
 
 @section('content')
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-8">
 
         <!-- HEADER -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-6">
             <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">
                 My Orders
             </h2>
-            <p class="text-gray-500 mt-2 text-sm">
+            <p class="text-gray-500 mt-1 text-sm">
                 Track your purchases and order status in real-time
             </p>
         </div>

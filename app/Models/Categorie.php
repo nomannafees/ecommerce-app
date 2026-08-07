@@ -22,6 +22,9 @@ class Categorie extends Model
     {
         return $this->children()->with('allChildren');
     }
-
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'category_id');
+    }
 
 }

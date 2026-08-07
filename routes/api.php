@@ -10,8 +10,11 @@ Route::get('/user', function (Request $request) {
 
 
 Route::get('/sliders', [\App\Http\Controllers\Api\SliderController::class,'index']);
-Route::get('/products', [\App\Http\Controllers\Api\ProductController::class,'index']);
+Route::get('/all-products', [\App\Http\Controllers\Api\ProductController::class,'index']);
 Route::get('/product/{slug}', [\App\Http\Controllers\Api\ProductController::class,'productDetail']);
+Route::get('/products/bestselling', [\App\Http\Controllers\Api\ProductController::class, 'bestsellingProducts']);
+Route::get('/products/featured', [\App\Http\Controllers\Api\ProductController::class, 'featuredProducts']);
+Route::get('/products/for-you', [\App\Http\Controllers\Api\ProductController::class, 'forYouProducts']);
 
 Route::get('/brands', [\App\Http\Controllers\Api\BrandController::class,'index']);
 Route::post('/add-to-cart', [\App\Http\Controllers\Api\OrderController::class,'addToCart']);
@@ -28,5 +31,6 @@ Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'o
 Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
 Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
 Route::get('/cities/{id}', [\App\Http\Controllers\Api\CheckoutController::class, 'getCitiesByState']);
+
 
 

@@ -32,13 +32,22 @@
                 overflow: hidden;
             }
         }
+
+        .brands-carousel .flickity-page-dots {
+            bottom: -25px; /* Isay -30px se -25px ya -20px kar dein */
+            position: relative; /* Absolute ki jagah relative ya absolute with proper spacing */
+        }
+        .brands-carousel .flickity-page-dots {
+            bottom: -14px !important;
+            margin-bottom: -16px !important;
+        }
     </style>
 
 
 
     <div class="w-full">
         <div
-            class="swiper heroSwiper w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] relative overflow-hidden shadow-sm">
+            class="swiper heroSwiper w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] relative overflow-hidden">
             <div class="swiper-wrapper">
                 @forelse($sliders as $slider)
                     <div class="swiper-slide relative">
@@ -76,7 +85,8 @@
         </div>
     </div>
     <!-- 2. TOP 8 MOST ORDERED PRODUCTS (BESTSELLERS) -->
-    <div class=" max-w-7xl px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 mx-auto  flex justify-between items-center">
+    <div
+        class=" max-w-7xl px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 mx-auto  flex justify-between items-center">
         <div>
             <h2 class="text-xl sm:text-2xl mt-2 sm:mt-4 font-bold text-gray-900 flex items-center gap-2">
                 <i class="fa-solid fa-fire text-rose-500"></i> Bestselling Products
@@ -86,7 +96,7 @@
     </div>
 
     <div
-        class="max-w-7xl px-3 sm:px-6 md:px-7  sm:pt-3 mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 mb-8 gap-3">
+        class="max-w-7xl px-3 sm:px-6 md:px-7  sm:pt-3 mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  xl:grid-cols-5 mb-4 gap-3">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -204,7 +214,7 @@
     </div>
 
     <!-- 3. PROMOTIONAL MID BANNERS GRID -->
-    <div class="max-w-7xl px-3 sm:px-6 md:px-7  sm:py-2 mx-auto">
+    <div class="max-w-7xl px-3 sm:px-6 md:px-7  sm:py-2 mb-2 mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
             <div class="relative rounded-xl sm:rounded-2xl overflow-hidden group h-[280px] sm:h-[400px] lg:h-[500px]">
@@ -245,17 +255,18 @@
 
     <!-- 4. FEATURED PRODUCTS -->
     @if($featuredProducts->isNotEmpty())
-        <div class="max-w-7xl px-3 sm:px-6 md:px-7 sm:py-1 mt-2 sm:mt-4 lg:mt-3 mx-auto  flex justify-between items-center">
+        <div
+            class="max-w-7xl px-3 sm:px-6 md:px-7 sm:py-1 mt-2 sm:mt-4 lg:mt-3 mx-auto  flex justify-between items-center">
             <div>
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center mt-1 gap-2">
                     <i class="fa-solid fa-star text-amber-500"></i> Featured Products
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500">Handpicked top quality items selected just for you</p>
+                <p class="text-xs sm:text-sm text-gray-500 ">Handpicked top quality items selected just for you</p>
             </div>
         </div>
 
         <div
-            class="max-w-7xl px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 3xl:grid-cols-7 gap-3 mb-6 sm:mb-8">
+            class="max-w-7xl px-6 sm:px-10 md:px-7 py-2 sm:py-2 mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 3xl:grid-cols-7 gap-3 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -287,7 +298,8 @@
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
-                                        class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 p-1.5 sm:p-2" style="padding: 4px 9px 4px 9px !important;">
+                                        class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 p-1.5 sm:p-2"
+                                        style="padding: 4px 9px 4px 9px !important;">
                                     <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
@@ -371,20 +383,28 @@
 
     <!-- 4.1 STICKY BACKGROUND FULL-WIDTH CONTAINER -->
     <div
-        class="relative  w-full  sm:my-1 bg-fixed bg-center bg-cover h-[350px] sm:h-[400px] flex items-center justify-center"
+        class="relative w-full sm:my-1 bg-fixed bg-center bg-cover h-[220px] sm:h-[350px] md:h-[400px] flex items-center justify-center"
         style="background-image: url('{{ asset('storage/banner/1721825245.png') }}');">
+
         <div class="absolute inset-0 bg-black/85"></div>
+
         <div class="relative z-10 text-center text-white px-4 sm:px-6 max-w-3xl mx-auto">
         <span
-            class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-2 sm:mb-3 inline-block">Special Selection</span>
-            <h2 class="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight mb-2 sm:mb-4">Discover Excellence
-                in Every Detail</h2>
-            <p class="text-gray-300 text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-6">Our handpicked
-                featured collection brings
-                you unmatched quality, trendsetting designs, and everyday reliability. Upgrade your style and elevate
-                your lifestyle today.</p>
+            class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-1 sm:mb-3 inline-block">
+            Special Selection
+        </span>
+
+            <h2 class="text-xl sm:text-3xl md:text-5xl font-extrabold tracking-tight mb-1 sm:mb-4">
+                Discover Excellence in Every Detail
+            </h2>
+
+            <p class="text-gray-300 text-[11px] sm:text-sm md:text-base leading-relaxed mb-3 sm:mb-6 line-clamp-2 sm:line-clamp-none">
+                Our handpicked featured collection brings you unmatched quality, trendsetting designs, and everyday
+                reliability. Upgrade your style and elevate your lifestyle today.
+            </p>
+
             <a href="{{ route('frontendProduct') }}"
-               class="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl hover:bg-amber-400 hover:text-black transition duration-300 shadow-lg group text-xs sm:text-base">
+               class="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-5 sm:px-8 py-2 sm:py-3.5 rounded-xl hover:bg-amber-400 hover:text-black transition duration-300 shadow-lg group text-xs sm:text-base">
                 <i class="fa-solid fa-cart-shopping transition-transform group-hover:scale-105"></i>
                 <span>Explore Featured Range</span>
             </a>
@@ -392,24 +412,25 @@
     </div>
 
     <!-- 5. TOP BRANDS SECTION -->
-    <div class="max-w-7xl px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto  sm:mt-4">
+    <div class="max-w-7xl px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto sm:mt-4">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <i class="fa-solid fa-shop text-green-600"></i> Our Top Brands
+                <!-- Header updated with green indicator bar -->
+                <h2 class="text-base sm:text-lg font-bold text-gray-800 tracking-tight flex items-center gap-2">
+                    <span class="w-2 h-5 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                    <span>Our Top Brands</span>
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1 mb-2">Browse items from your favorite trustworthy
-                    labels</p>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1 mb-2">Browse items from your favorite trustworthy labels</p>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl px-3 sm:px-6 md:px-7 mx-auto  pt-0 mb-12 sm:mb-8 mb-6 lg:mb-12">
+    <div class="max-w-7xl px-3 sm:px-6 md:px-7 mx-auto pt-0  sm:mb-8 mb-3 lg:mb-12">
         @php $brandCount = count($brands ?? []); @endphp
         @if($brandCount > 6)
             <div class="brands-carousel relative">
-                @foreach($brands as $brand)
-                    {{-- pr-2 sm:pr-3 se carousel items ke darmiyan ki extra space kam kar di hai --}}
+            @foreach($brands as $brand)
+                <!-- pr-2 sm:pr-3 se carousel items ke darmiyan spacing maintain ki gayi hai -->
                     <div class="brand-cell w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 pr-2 sm:pr-3">
                         <a href="{{ route('categories', ['brand' => $brand->slug]) }}"
                            class="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition duration-300 group h-full">
@@ -418,8 +439,8 @@
                                      class="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition duration-300">
                             </div>
                             <span class="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-black">
-                    {{ $brand->name }}
-                </span>
+                            {{ $brand->name }}
+                        </span>
                         </a>
                     </div>
                 @endforeach
@@ -434,8 +455,8 @@
                                  class="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition duration-300">
                         </div>
                         <span class="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-black">
-                {{ $brand->name }}
-            </span>
+                        {{ $brand->name }}
+                    </span>
                     </a>
                 @empty
                     <div class="col-span-full text-center text-gray-500 py-4 text-sm">No Brands Found</div>
@@ -447,23 +468,23 @@
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
     <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
         <div
-            class=" max-w-7xl px-3 sm:px-6 md:px-7 py-4 sm:py-6 mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[420px] sm:min-h-[480px]">
+            class="max-w-7xl px-3 sm:px-6 md:px-7 py-3 sm:py-6 mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
             <div
-                class="flex flex-col justify-center  py-10 sm:py-12 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
-<span
-    class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full tracking-wider mb-4 sm:mb-6 w-max">
-    <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
-</span>
-                <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
+                class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
+            <span
+                class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
+                <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
+            </span>
+                <h2 class="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 sm:mb-6 leading-tight">
                     Shop Premium Brands You Trust
                 </h2>
-                <p class="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed mb-6 sm:mb-8">
+                <p class="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed mb-3 sm:mb-8 line-clamp-2 sm:line-clamp-none">
                     Explore products directly sourced from top-rated industry leaders. Guaranteed authenticity, premium
                     build, and exclusive collection updates waiting just for you.
                 </p>
                 <div>
                     <a href="{{ route('frontendProduct') }}"
-                       class="inline-flex items-center gap-2 sm:gap-3 bg-white text-gray-900 font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-xl group text-xs sm:text-base">
+                       class="inline-flex items-center gap-2 sm:gap-3 bg-white text-gray-900 font-bold px-5 sm:px-8 py-2 sm:py-4 rounded-xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-xl group text-xs sm:text-base">
                         <span>Explore All Brands</span>
                         <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
                     </a>
@@ -481,7 +502,6 @@
     </div>
 
     <!-- 6. "FOR YOU" PERSONALIZED PRODUCTS SECTION -->
-    <!-- 6. "FOR YOU" PERSONALIZED PRODUCTS SECTION -->
     @if(isset($products) && $products->isNotEmpty())
         <div
             class="px-3 max-w-7xl px-3 sm:px-6 md:px-7  mx-auto  sm:mt-2 last:mb-9 md:last:mb-4 flex justify-between items-center">
@@ -490,7 +510,7 @@
                     <!-- Icon Color Changed to Emerald Green -->
                     <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i> Handpicked For You
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1 mb-3">Personalized recommendations tailored specially to
+                <p class="text-xs sm:text-sm text-gray-500  mb-1">Personalized recommendations tailored specially to
                     your taste</p>
             </div>
         </div>
@@ -514,7 +534,8 @@
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
-                                        class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 p-1.5 sm:p-2" style="    padding: 4px 9px 4px 9px !important;">
+                                        class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 p-1.5 sm:p-2"
+                                        style="    padding: 4px 9px 4px 9px !important;">
                                     <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
@@ -658,6 +679,7 @@
             right: -20px;
         }
 
+
         @media (max-width: 640px) {
             .brands-carousel .flickity-prev-next-button.previous {
                 left: -8px;
@@ -669,31 +691,37 @@
         }
     </style>
 
-    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js습"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // 1. Hero Swiper Initialization
             new Swiper(".heroSwiper", {
                 loop: true,
                 effect: "fade",
                 speed: 1000,
-                autoplay: {delay: 3000, disableOnInteraction: false},
-                pagination: {el: ".swiper-pagination", clickable: true},
-                navigation: {nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev"},
+                autoplay: { delay: 3000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
             });
 
+            // 2. Brands Flickity Carousel Initialization
             var brandCarousel = document.querySelector('.brands-carousel');
             if (brandCarousel) {
+                // Check if screen is mobile (less than 768px)
+                var isMobile = window.innerWidth < 768;
+
                 new Flickity(brandCarousel, {
                     cellAlign: 'left',
                     contain: true,
-                    pageDots: true,
-                    prevNextButtons: true,
+                    // Mobile par dots/arrows off kar sakte hain agar clean look chahiye
+                    pageDots: !isMobile,
+                    prevNextButtons: !isMobile,
                     autoPlay: 2500,
                     wrapAround: true,
                     pauseAutoPlayOnHover: true
                 });
             }
         });
+
     </script>
 
 @endsection

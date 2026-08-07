@@ -54,7 +54,7 @@
                                 <div class="shrink-0 min-w-[20%]">
                                     <img onclick="changeSwiperSlide({{ $thumbIndex }}, this)"
                                          src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                         class="thumb cursor-pointer shadow-sm rounded-lg h-16 w-full object-cover border-2 {{ $v->variantImage->is_main ? 'border-gray-300' : 'border-transparent' }}"
+                                         class="thumb cursor-pointer shadow-sm rounded-lg h-18 w-full object-cover border-2 {{ $v->variantImage->is_main ? 'border-gray-300' : 'border-transparent' }}"
                                          data-index="{{ $thumbIndex }}">
                                 </div>
                                 @php $thumbIndex++; @endphp

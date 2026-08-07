@@ -3,16 +3,16 @@
 @section('content')
 
     <!-- MAIN CONTAINER (Header alignment ke sath aligned max-w-7xl) -->
-    <div class="md:max-w-7xl  lg:max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6 py-8 sm:py-10">
+    <div class="md:max-w-7xl  lg:max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 lg-pb-6 sm:pb-10 sm:pt-6 py-5 sm:py-6">
 
         <!-- TITLE -->
-        <div class="text-center mb-6 sm:mb-8">
+        <div class="text-center mb-2 sm:mb-4">
 
             <h2 class="text-2xl sm:text-4xl font-bold text-gray-900">
-                Shop Products
+                All Products
             </h2>
 
-            <p class="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3 max-w-2xl mx-auto">
+            <p class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 max-w-2xl mx-auto">
                 Choose your favorite products and add them to your cart.
             </p>
 

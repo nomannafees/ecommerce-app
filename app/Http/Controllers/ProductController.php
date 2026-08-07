@@ -36,7 +36,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $parent_data = Categorie::with('children')->whereNull('parent_id')->get();
+        $parent_data = Categorie::with('children')->where('parent_id',0)->get();
         $brands = Brand::all();
 
         return view('product.create-edit', compact('parent_data', 'brands'));
@@ -155,7 +155,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $parent_data = Categorie::with('children')->whereNull('parent_id')->get();
+        $parent_data = Categorie::with('children')->where('parent_id', 0)->get();
         $brands = Brand::all();
         $product->load('variants.variantImage');
 

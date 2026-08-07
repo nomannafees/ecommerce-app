@@ -3,15 +3,15 @@
 @section('content')
 
     <!-- MAIN CONTAINER WITH MAX-W-7XL -->
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-1 sm:py-3">
 
         <!-- HEADER -->
-        <div class="text-center mt-6 sm:mt-12 mb-6 sm:mb-10 px-4">
+        <div class="text-center mt-2 sm:mt-4 mb-2 sm:mb-5 px-4">
             <h2 class="text-2xl sm:text-4xl font-bold text-gray-900">
                 Contact Us
             </h2>
 
-            <p class="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3 max-w-xl mx-auto">
+            <p class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-1 max-w-xl mx-auto">
                 We'd love to hear from you. Send us a message.
             </p>
         </div>

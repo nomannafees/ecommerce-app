@@ -6,9 +6,9 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-2 sm:pt-4 sm:pb-2">
 
-        <div class="text-center mt-5 lg:mt-7 px-4 lg:px-10">
+        <div class="text-center mt-2 lg:mt-4 px-4 lg:px-10">
             <h1 class="text-2xl lg:text-4xl font-bold text-gray-900">
                 🛍️ Explore Our Products
             </h1>
@@ -22,97 +22,6 @@
 
             <!-- LEFT SIDEBAR (Desktop Only) -->
             <aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible">
-
-                {{--            <div class="flex justify-between items-center border-b border-gray-200 pb-3">--}}
-                {{--                <h2 class="font-bold text-lg text-gray-800">Categories</h2>--}}
-
-                {{--                @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort') || request()->has('category'))--}}
-                {{--                    <a href="{{ route('categories') }}"--}}
-                {{--                       class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">--}}
-                {{--                        Clear Filters--}}
-                {{--                    </a>--}}
-                {{--                @endif--}}
-                {{--            </div>--}}
-
-                {{--            <!-- Seamless Category Tree -->--}}
-                {{--            <div class="mb-2 mt-2 text-sm">--}}
-                {{--                <!-- All Products Option -->--}}
-                {{--                <div class="mb-2">--}}
-                {{--                    <a href="{{ route('categories', request()->except('category')) }}"--}}
-                {{--                       class="flex items-center justify-between py-2 px-3 rounded-lg transition {{ !request('category') ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-700 hover:bg-gray-100' }}">--}}
-                {{--                        <span>All Products</span>--}}
-                {{--                    </a>--}}
-                {{--                </div>--}}
-
-                {{--                <ul class="space-y-0.5">--}}
-                {{--                @foreach($categories as $mainCat)--}}
-                {{--                    @php--}}
-                {{--                        $isMainActive = request('category') == $mainCat->slug;--}}
-                {{--                    @endphp--}}
-
-                {{--                    <!-- LEVEL 1: MAIN CATEGORY -->--}}
-                {{--                        <li class="relative group">--}}
-                {{--                            <div class="flex items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition {{ $isMainActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-700 hover:bg-gray-100 hover:text-black' }}">--}}
-                {{--                                <a href="{{ route('categories', ['category' => $mainCat->slug] + request()->except('category')) }}" class="flex-1 text-sm font-medium">--}}
-                {{--                                    📁 {{ $mainCat->name }}--}}
-                {{--                                </a>--}}
-
-                {{--                                @if($mainCat->children && $mainCat->children->count() > 0)--}}
-                {{--                                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-400 group-hover:text-black mt-1"></i>--}}
-                {{--                                @endif--}}
-                {{--                            </div>--}}
-
-                {{--                            <!-- LEVEL 2: SUB-CATEGORIES -->--}}
-                {{--                            @if($mainCat->children && $mainCat->children->count() > 0)--}}
-                {{--                                <div class="hidden group-hover:block absolute left-full top-0 w-52 z-50">--}}
-                {{--                                    <ul class="relative bg-white border border-gray-200 shadow-xl rounded-none p-1 space-y-0.5">--}}
-                {{--                                    @foreach($mainCat->children as $subCat)--}}
-                {{--                                        @php--}}
-                {{--                                            $isSubActive = request('category') == $subCat->slug;--}}
-                {{--                                        @endphp--}}
-
-                {{--                                        <!-- LEVEL 2 ITEM -->--}}
-                {{--                                            <li class="group/sub">--}}
-                {{--                                                <div class="flex items-center justify-between py-1.5 px-2.5 rounded-none cursor-pointer transition {{ $isSubActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-600 hover:bg-gray-100 hover:text-black' }}">--}}
-                {{--                                                    <a href="{{ route('categories', ['category' => $subCat->slug] + request()->except('category')) }}" class="flex-1 text-xs">--}}
-                {{--                                                        {{ $subCat->name }}--}}
-                {{--                                                    </a>--}}
-
-                {{--                                                    @if($subCat->children && $subCat->children->count() > 0)--}}
-                {{--                                                        <i class="fa-solid fa-chevron-right text-[9px] text-gray-400 group-hover/sub:text-black"></i>--}}
-                {{--                                                    @endif--}}
-                {{--                                                </div>--}}
-
-                {{--                                                <!-- LEVEL 3: CHILD CATEGORIES (Slight Overlap & No Rounded Corners) -->--}}
-                {{--                                                @if($subCat->children && $subCat->children->count() > 0)--}}
-                {{--                                                    <div class="hidden group-hover/sub:block absolute left-[calc(100%-2px)] top-0 bottom-0 w-48 z-50">--}}
-                {{--                                                        <ul class="bg-white border border-gray-200 shadow-xl rounded-none p-1 space-y-0.5 h-full">--}}
-                {{--                                                            @foreach($subCat->children as $childCat)--}}
-                {{--                                                                @php--}}
-                {{--                                                                    $isChildCatActive = request('category') == $childCat->slug;--}}
-                {{--                                                                @endphp--}}
-                {{--                                                                <li>--}}
-                {{--                                                                    <a href="{{ route('categories', ['category' => $childCat->slug] + request()->except('category')) }}"--}}
-                {{--                                                                       class="block py-1.5 px-2.5 text-xs rounded-none transition {{ $isChildCatActive ? 'bg-emerald-50 text-emerald-600 font-bold' : 'text-gray-500 hover:bg-gray-100 hover:text-black' }}">--}}
-                {{--                                                                        {{ $childCat->name }}--}}
-                {{--                                                                    </a>--}}
-                {{--                                                                </li>--}}
-                {{--                                                            @endforeach--}}
-                {{--                                                        </ul>--}}
-                {{--                                                    </div>--}}
-                {{--                                                @endif--}}
-
-                {{--                                            </li>--}}
-                {{--                                        @endforeach--}}
-                {{--                                    </ul>--}}
-                {{--                                </div>--}}
-                {{--                            @endif--}}
-
-                {{--                        </li>--}}
-                {{--                    @endforeach--}}
-                {{--                </ul>--}}
-                {{--            </div>--}}
-
                 <form method="GET" action="{{ route('categories') }}" id="filterForm" class="space-y-4">
 
                     @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
@@ -123,9 +32,58 @@
                     <input type="hidden" name="size" id="selectedSizeInput" value="{{ request('size') }}">
                     <input type="hidden" name="brand" id="selectedBrandInput" value="{{ request('brand') }}">
 
+                    <!-- Categories Filter Section (With See More / See Less Toggle) -->
+                    <div x-data="{ showAllCategories: false, categoryLimit: 6 }">
+                        <h2 class="font-bold text-sm mb-2">Categories</h2>
+
+                        <div class="flex flex-col gap-1.5 pb-2">
+                        @php
+                            if ($currentCategory) {
+                                $displayCategories = $currentCategory->children->count() > 0
+                                    ? $currentCategory->children
+                                    : ($currentCategory->parent_id != 0 ? optional($currentCategory->parent)->children : $categories);
+                            } else {
+                                $displayCategories = $categories;
+                            }
+                        @endphp
+
+                        @if($currentCategory && $currentCategory->parent_id != 0)
+                            <!-- Back to parent category option -->
+                                <a href="{{ route('categories', ['category' => optional($currentCategory->parent)->slug]) }}"
+                                   class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
+                                    <i class="fa-solid fa-arrow-left"></i> Back to {{ optional($currentCategory->parent)->name }}
+                                </a>
+                            @endif
+
+                            @if($displayCategories)
+                                @foreach($displayCategories as $index => $cat)
+                                    @php
+                                        $isCategorySelected = request('category') == $cat->slug;
+                                    @endphp
+                                    <a href="{{ route('categories', array_merge(request()->all(), ['category' => $cat->slug])) }}"
+                                       x-show="showAllCategories || {{ $index }} < categoryLimit"
+                                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
+                                        {{ $cat->name }}
+                                    </a>
+                                @endforeach
+                            @endif
+                        </div>
+
+                        <!-- Categories See More / See Less Button -->
+                        @if(isset($displayCategories) && count($displayCategories) > 6)
+                            <button type="button"
+                                    @click="showAllCategories = !showAllCategories"
+                                    class="mt-1 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
+                                <span x-text="showAllCategories ? 'See Less' : 'See More ({{ count($displayCategories) - 6 }})'"></span>
+                                <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllCategories ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                            </button>
+                        @endif
+                    </div>
+                    <!-- End Categories Section -->
+
                     <!-- Price Range -->
-                    <h2 class="font-bold text-sm">Price</h2>
-                    <div class="space-y-2 my-2 pb-3">
+                    <h2 class="font-bold text-sm mt-4">Price</h2>
+                    <div class="space-y-2 my-2 pb-3 border-b border-gray-100">
                         <input type="range"
                                id="priceSlider"
                                name="max_price"
@@ -147,7 +105,7 @@
 
                     <!-- Color Filter -->
                     <h2 class="font-bold text-sm mt-4">Color</h2>
-                    <div class="flex flex-wrap gap-2.5 my-2 pb-3">
+                    <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
                         @foreach($availableColors as $colorName)
                             @php
                                 $cleanColor = strtolower(trim($colorName));
@@ -167,7 +125,7 @@
 
                     <!-- Size Filter -->
                     <h2 class="font-bold text-sm mt-4">Size</h2>
-                    <div class="flex flex-wrap gap-2 my-2 pb-3">
+                    <div class="flex flex-wrap gap-2 my-2 pb-3 border-b border-gray-100">
                         @foreach($availableSizes as $sizeName)
                             @php
                                 $cleanSize = trim($sizeName);
@@ -180,7 +138,7 @@
                         @endforeach
                     </div>
 
-                    <!-- Brands Filter (With Modern Styled Toggle Button) -->
+                    <!-- Brands Filter -->
                     <div x-data="{ showAllBrands: false, brandLimit: 6 }">
                         <h2 class="font-bold text-sm mt-4 mb-2">Brands</h2>
 
@@ -196,13 +154,12 @@
                                            {{ $isBrandSelected ? 'checked' : '' }}
                                            class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
                                     <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
-                        {{ ucfirst($brand->name) }}
-                    </span>
+                            {{ ucfirst($brand->name) }}
+                        </span>
                                 </label>
                             @endforeach
                         </div>
 
-                        <!-- Stylish Full-Width Button -->
                         @if(count($availableBrands) > 6)
                             <button type="button"
                                     @click="showAllBrands = !showAllBrands"
@@ -248,7 +205,7 @@
                 </form>
 
                 <!-- MOBILE HORIZONTAL SCROLLING FILTER BUTTONS -->
-                <div class="mb-6 block lg:hidden bg-gray-50 border border-gray-200 rounded-xl p-3 shadow-sm space-y-2 relative">
+                <div class="mb-3 block lg:hidden bg-gray-50 border border-gray-200 rounded-xl p-3 shadow-sm space-y-2 relative">
                     <div class="flex justify-between items-center px-1">
                         <h2 class="text-sm font-semibold text-gray-700">Filters & Sort</h2>
                         @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort') || request()->has('category'))
@@ -260,7 +217,7 @@
                         @endif
                     </div>
 
-                    <div class="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <div class="flex items-center gap-2 overflow-x-auto -mb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         <button type="button" onclick="toggleMobDropdown('mobSortDropdown')"
                                 class="flex-shrink-0 h-[30px] bg-white border border-gray-200 rounded-full px-3 text-xs font-medium text-gray-700 flex items-center gap-2">
                             <span>Sort</span>
@@ -515,7 +472,7 @@
                     @endforelse
                 </div>
 
-                <div class=" -mt-6 mb-5 lg:mt-8 lg:mb-2 sm:mb-10">{{ $records->links() }}</div>
+                <div class=" -mt-7 mb-5 lg:mt-8 lg:mb-2 mb-7 sm:mb-14">{{ $records->links() }}</div>
             </div>
         </div>
     </div>

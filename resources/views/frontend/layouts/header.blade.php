@@ -189,8 +189,8 @@
 
 <!-- ================= STICKY SUB-HEADER CATEGORIES & CENTER NAV BAR (In Max-W-7xl Container) ================= -->
 @if (!request()->is('login'))
-<div class="bg-white border-b border-gray-200 shadow-md sticky top-0 z-40 hidden lg:block">
-    <div class="max-w-7xl px-3 sm:px-6 md:px-7 py-4 sm:py-6 mx-auto  flex items-center justify-between h-12">
+<div class="bg-white shadow-md sticky top-0 z-40 hidden lg:block">
+    <div class="max-w-7xl px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto  flex items-center justify-between">
 
         <!-- Left Side: All Categories Dropdown Button -->
         <div class="relative w-64 shrink-0"
@@ -200,7 +200,7 @@
             <div class="relative group/dropdown inline-block w-full">
 
                 <!-- Toggle Button -->
-                <div class="flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition border border-gray-200 px-4 py-2 rounded-full shadow-sm cursor-pointer select-none">
+                <div class="flex items-center justify-between bg-gray-100  transition px-4 py-2  cursor-pointer select-none">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-bars text-gray-800"></i>
                         <span class="font-semibold text-sm text-gray-900">All Categories</span>
@@ -209,10 +209,10 @@
                 </div>
 
                 <!-- MAIN DROPDOWN WRAPPER -->
-                <div class="hidden group-hover/dropdown:flex absolute left-0 top-full mt-0 z-50 shadow-lg">
+                <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50" style="margin-top: 0px !important;">
 
                     <!-- LEVEL 1: Main Categories Box -->
-                    <div class="w-72 bg-white border border-gray-200 h-[440px] overflow-y-auto custom-scrollbar p-2">
+                    <div class="w-[16rem] bg-white h-[27.7rem] overflow-y-auto custom-scrollbar p-2">
 {{--                        <div class="mb-1">--}}
 {{--                            <a href="{{ route('categories', request()->except('category')) }}"--}}
 {{--                               class="flex items-center justify-between py-2 px-3 rounded-md text-sm font-semibold transition {{ !request('category') ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">--}}
@@ -233,7 +233,7 @@
                                          class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isMainActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
                                          :class="{ 'bg-emerald-50 text-emerald-600': activeMain === {{ $mainCat->id }} }">
 
-                                        <a href="{{ route('categories', ['category' => $mainCat->slug] + request()->except('category')) }}"
+                                        <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug] + request()->except('category')) }}"
                                            class="flex-1 text-sm font-semibold">
                                             {{ $mainCat->name }}
                                         </a>
@@ -260,7 +260,7 @@
                                 <div x-show="activeMain === {{ $mainCat->id }}"
                                      x-cloak
                                      @mouseenter="activeMain = {{ $mainCat->id }}"
-                                     class="absolute left-0 top-0 w-64 h-[440px] bg-white border-y border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar shadow-md">
+                                     class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] bg-white  border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
 
                                     <ul class="space-y-0.5">
                                         @foreach($subCategories as $subCat)
@@ -275,7 +275,7 @@
                                                      class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
                                                      :class="{ 'bg-emerald-50 text-emerald-600': activeSub === {{ $subCat->id }} }">
 
-                                                    <a href="{{ route('categories', ['category' => $subCat->slug] + request()->except('category')) }}"
+                                                    <a href="{{ route('categoriesProduct', ['category' => $subCat->slug] + request()->except('category')) }}"
                                                        class="flex-1 text-sm font-semibold">
                                                         {{ $subCat->name }}
                                                     </a>
@@ -300,7 +300,7 @@
                                         <div x-show="activeMain === {{ $mainCat->id }} && activeSub === {{ $subCat->id }}"
                                              x-cloak
                                              @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
-                                             class="absolute left-64 top-0 w-64 h-[440px] bg-white border-y border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar shadow-md">
+                                             class="absolute left-64  top-0 bg-white w-[16rem] h-[27.7rem] bg-white p-2 z-50 overflow-y-auto custom-scrollbar">
 
                                             <ul class="space-y-0.5">
                                                 @foreach($childCategories as $childCat)
@@ -330,8 +330,8 @@
         <!-- Center: Navigation Links -->
         <div class="flex items-center gap-8 text-sm font-semibold text-gray-800">
             <a href="{{ url('/') }}" class="hover:text-emerald-600 transition">Home</a>
-            <a href="{{ url('/product') }}" class="hover:text-emerald-600 transition">Products</a>
-            <a href="{{ url('/categories') }}" class="hover:text-emerald-600 transition">Categories</a>
+            <a href="{{ url('/all-product') }}" class="hover:text-emerald-600 transition">Products</a>
+            <a href="{{ url('/product') }}" class="hover:text-emerald-600 transition">Categories</a>
             <a href="{{ route('contact') }}" class="hover:text-emerald-600 transition">Contact Us</a>
         </div>
 
@@ -379,10 +379,10 @@
             <a href="{{ route('index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
                 <i class="fa-solid fa-house w-5 text-center text-gray-400"></i> Home
             </a>
-            <a href="{{ url('/product') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
+            <a href="{{ url('/all-product') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
                 <i class="fa-solid fa-bag-shopping w-5 text-center text-gray-400"></i> Products
             </a>
-            <a href="{{ url('/categories') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
+            <a href="{{ url('/product') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
                 <i class="fa-solid fa-list w-5 text-center text-gray-400"></i> Categories
             </a>
             <a href="{{ route('contact') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-900 transition text-gray-200">
