@@ -213,13 +213,6 @@
 
                     <!-- LEVEL 1: Main Categories Box -->
                     <div class="w-[16rem] bg-white h-[27.7rem] overflow-y-auto custom-scrollbar p-2">
-{{--                        <div class="mb-1">--}}
-{{--                            <a href="{{ route('categories', request()->except('category')) }}"--}}
-{{--                               class="flex items-center justify-between py-2 px-3 rounded-md text-sm font-semibold transition {{ !request('category') ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">--}}
-{{--                                <span>All Products</span>--}}
-{{--                            </a>--}}
-{{--                        </div>--}}
-
                         <ul class="space-y-0.5 relative">
                             @foreach($categories->where('parent_id',0) as $mainCat)
                                 @php
@@ -260,12 +253,13 @@
                                 <div x-show="activeMain === {{ $mainCat->id }}"
                                      x-cloak
                                      @mouseenter="activeMain = {{ $mainCat->id }}"
-                                     class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] bg-white  border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
+                                     class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
 
                                     <ul class="space-y-0.5">
                                         @foreach($subCategories as $subCat)
                                             @php
-                                                $isSubActive = request('category') == $subCat->slug;
+                                                $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
+                                                $isSubActive = request('category') == $subCat->slug || request('category') == $subSlugPath;
                                                 $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
                                             @endphp
 
@@ -275,7 +269,7 @@
                                                      class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
                                                      :class="{ 'bg-emerald-50 text-emerald-600': activeSub === {{ $subCat->id }} }">
 
-                                                    <a href="{{ route('categoriesProduct', ['category' => $subCat->slug] + request()->except('category')) }}"
+                                                    <a href="{{ route('categoriesProduct', ['category' => $subSlugPath] + request()->except('category')) }}"
                                                        class="flex-1 text-sm font-semibold">
                                                         {{ $subCat->name }}
                                                     </a>
@@ -294,22 +288,25 @@
                                 @foreach($subCategories as $subCat)
                                     @php
                                         $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
+                                        $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
                                     @endphp
 
                                     @if($childCategories->count() > 0)
                                         <div x-show="activeMain === {{ $mainCat->id }} && activeSub === {{ $subCat->id }}"
                                              x-cloak
                                              @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
-                                             class="absolute left-64  top-0 bg-white w-[16rem] h-[27.7rem] bg-white p-2 z-50 overflow-y-auto custom-scrollbar">
+                                             class="absolute left-64 top-0 bg-white w-[16rem] h-[27.7rem] p-2 z-50 overflow-y-auto custom-scrollbar">
 
                                             <ul class="space-y-0.5">
                                                 @foreach($childCategories as $childCat)
                                                     @php
-                                                        $isChildActive = request('category') == $childCat->slug;
+                                                        $childSlugPath = $subSlugPath . '/' . $childCat->slug;
+                                                        $isChildActive = request('category') == $childSlugPath;
                                                     @endphp
                                                     <li>
-                                                        <a href="{{ route('categories', ['category' => $childCat->slug] + request()->except('category')) }}"
-                                                           class="block py-2 px-3 text-sm font-semibold rounded-md transition {{ $isChildActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                                        <!-- Updated route to categoriesProduct with complete parent/sub/child slug path -->
+                                                        <a href="{{ route('categories', ['category' => $childSlugPath] + request()->except('category')) }}"
+                                                           class="block py-2 px-3 text-sm font-semibold transition {{ $isChildActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
                                                             {{ $childCat->name }}
                                                         </a>
                                                     </li>

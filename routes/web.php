@@ -19,9 +19,18 @@ use App\Http\Controllers\ContactUsController;
 Route::get('/', [FrontendController::class, 'index'])->name('index');
 Route::get('/product/{slug}', [FrontendController::class, 'productDetail'])->name('product.detail');
 Route::get('/all-product', [FrontendController::class, 'frontendProduct'])->name('frontendProduct');
-Route::get('/product', [FrontendController::class, 'allCategories'])->name('categories');
-Route::get('/categories', [FrontendController::class, 'categoriesProduct'])->name('categoriesProduct');
-Route::get('/category/{slug}', [FrontendController::class, 'allCategories'])->name('category.slug');
+Route::get('/product/{category?}', [FrontendController::class, 'allCategories'])
+    ->where('category', '.*')
+    ->name('categories');
+// Agar aap categoriesProduct ke liye alag route rakhna chahte hain:
+Route::get('/categories/{category?}', [FrontendController::class, 'categoriesProduct'])
+    ->where('category', '.*')
+    ->name('categoriesProduct');
+
+// Ya agar allCategories ke liye nested slug use karna hai:
+Route::get('/category/{category?}', [FrontendController::class, 'allCategories'])
+    ->where('category', '.*')
+    ->name('category.slug');
 Route::get('/contact', [FrontendController::class, 'contact'])->name('contact');
 Route::post('/wishlist', [FrontendController::class, 'storeWishlist'])->name('wishlists.store');
 Route::get('/wishlist', [FrontendController::class, 'wishlist'])->name('wishlist');

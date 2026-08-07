@@ -21,6 +21,7 @@
         <div class="flex flex-col lg:flex-row gap-6 py-6">
 
             <!-- LEFT SIDEBAR (Desktop Only) -->
+            <!-- LEFT SIDEBAR (Desktop Only) -->
             <aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible">
                 <form method="GET" action="{{ route('categories') }}" id="filterForm" class="space-y-4">
 
@@ -34,7 +35,11 @@
 
                     <!-- Categories Filter Section (With See More / See Less Toggle) -->
                     <div x-data="{ showAllCategories: false, categoryLimit: 6 }">
-                        <h2 class="font-bold text-sm mb-2">Categories</h2>
+                        <!-- Header updated with green indicator bar -->
+                        <h2 class="font-bold text-sm mb-2 tracking-tight flex items-center gap-2">
+                            <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                            <span>Categories</span>
+                        </h2>
 
                         <div class="flex flex-col gap-1.5 pb-2">
                         @php
@@ -58,9 +63,19 @@
                             @if($displayCategories)
                                 @foreach($displayCategories as $index => $cat)
                                     @php
-                                        $isCategorySelected = request('category') == $cat->slug;
+                                        // Agar current category ka parent hai, toh URL mein parent/child dono aane chahiye
+                                        if ($currentCategory && $currentCategory->parent_id == 0) {
+                                            $categorySlug = $currentCategory->slug . '/' . $cat->slug;
+                                        } elseif ($currentCategory && $currentCategory->parent_id != 0) {
+                                            $categorySlug = optional($currentCategory->parent)->slug . '/' . $cat->slug;
+                                        } else {
+                                            $categorySlug = $cat->slug;
+                                        }
+
+                                        $isCategorySelected = request('category') == $categorySlug || request('category') == $cat->slug;
                                     @endphp
-                                    <a href="{{ route('categories', array_merge(request()->all(), ['category' => $cat->slug])) }}"
+
+                                    <a href="{{ route('categories', array_merge(request()->all(), ['category' => $categorySlug])) }}"
                                        x-show="showAllCategories || {{ $index }} < categoryLimit"
                                        class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
                                         {{ $cat->name }}
@@ -82,7 +97,10 @@
                     <!-- End Categories Section -->
 
                     <!-- Price Range -->
-                    <h2 class="font-bold text-sm mt-4">Price</h2>
+                    <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+                        <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                        <span>Price</span>
+                    </h2>
                     <div class="space-y-2 my-2 pb-3 border-b border-gray-100">
                         <input type="range"
                                id="priceSlider"
@@ -104,7 +122,10 @@
                     </div>
 
                     <!-- Color Filter -->
-                    <h2 class="font-bold text-sm mt-4">Color</h2>
+                    <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+                        <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                        <span>Color</span>
+                    </h2>
                     <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
                         @foreach($availableColors as $colorName)
                             @php
@@ -124,7 +145,10 @@
                     </div>
 
                     <!-- Size Filter -->
-                    <h2 class="font-bold text-sm mt-4">Size</h2>
+                    <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+                        <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                        <span>Size</span>
+                    </h2>
                     <div class="flex flex-wrap gap-2 my-2 pb-3 border-b border-gray-100">
                         @foreach($availableSizes as $sizeName)
                             @php
@@ -140,7 +164,10 @@
 
                     <!-- Brands Filter -->
                     <div x-data="{ showAllBrands: false, brandLimit: 6 }">
-                        <h2 class="font-bold text-sm mt-4 mb-2">Brands</h2>
+                        <h2 class="font-bold text-sm mt-4 mb-2 tracking-tight flex items-center gap-2">
+                            <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                            <span>Brands</span>
+                        </h2>
 
                         <div class="flex flex-col gap-2 pb-1">
                             @foreach($availableBrands as $index => $brand)

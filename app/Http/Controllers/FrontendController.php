@@ -252,15 +252,19 @@ class FrontendController extends Controller
         ));
     }
 
-    public function categoriesProduct(Request $request)
+    public function categoriesProduct(Request $request, $category = null)
     {
         $categories = Categorie::where('parent_id', 0)->with('children')->get();
 
         $currentCategory = null;
         $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews'])->latest();
 
-        if ($request->filled('category')) {
-            $currentCategory = Categorie::where('slug', $request->category)->with('children.children')->first();
+        if (!empty($category)) {
+            // Slash wale nested slugs mein se aakhri slug nikalna
+            $slugs = explode('/', $category);
+            $targetSlug = end($slugs);
+
+            $currentCategory = Categorie::where('slug', $targetSlug)->with('children.children')->first();
 
             if ($currentCategory) {
                 $getAllIds = function ($cat) use (&$getAllIds) {
@@ -288,9 +292,9 @@ class FrontendController extends Controller
         ));
     }
 
-    public function allCategories(Request $request)
+    public function allCategories(Request $request, $category = null)
     {
-        // Default main categories
+        // 1. Default main categories
         $categories = Categorie::where('parent_id', 0)->with('allChildren')->get();
 
         $availableColors = ProductVariant::whereNotNull('color_name')
@@ -318,6 +322,7 @@ class FrontendController extends Controller
             'reviews'
         ]);
 
+        // 2. Search Filter
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -327,14 +332,18 @@ class FrontendController extends Controller
         }
 
         $currentCategory = null;
-        $category = null;
+        $activeCategory = null; // View ke liye variable
 
-        if ($request->filled('category')) {
-            // children ke sath children bhi load kar rahe hain deep nesting ke liye
-            $currentCategory = Categorie::where('slug', $request->category)->with('children.children')->first();
+        // 3. Category Filter (Clean Route Parameter Handling)
+        if (!empty($category)) {
+            // Slash wale nested slugs mein se aakhri slug nikalna
+            $slugs = explode('/', $category);
+            $targetSlug = end($slugs);
+
+            $currentCategory = Categorie::where('slug', $targetSlug)->with('children.children')->first();
 
             if ($currentCategory) {
-                $category = $currentCategory;
+                $activeCategory = $currentCategory;
 
                 $getSubIds = function ($cat) use (&$getSubIds) {
                     $ids = [];
@@ -352,7 +361,7 @@ class FrontendController extends Controller
             }
         }
 
-        // Filters (Price, Color, Size, Brand)
+        // 4. Filters (Price, Color, Size, Brand)
         if ($request->filled('min_price')) {
             $query->whereHas('variants', fn($q) => $q->where('price', '>=', $request->min_price));
         }
@@ -369,7 +378,7 @@ class FrontendController extends Controller
             $query->whereHas('prod_brand', fn($q) => $q->where('slug', $request->brand));
         }
 
-        // Sorting
+        // 5. Sorting Logic
         if ($request->filled('sort')) {
             if ($request->sort === 'price_low_high') {
                 $query->orderBy(\App\Models\ProductVariant::select('price')->whereColumn('product_id', 'products.id')->orderBy('price', 'asc')->limit(1), 'asc');
@@ -382,6 +391,7 @@ class FrontendController extends Controller
             $query->latest();
         }
 
+        // 6. Pagination & Data Transformation
         $records = $query->paginate(12);
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
@@ -407,14 +417,15 @@ class FrontendController extends Controller
             return $product;
         });
 
+        // 7. Wishlist Check
         $wishlistProductIds = Auth::check() ? Wishlist::where('user_id', Auth::id())->pluck('product_id')->toArray() : [];
 
         return view('frontend.categories', compact(
             'categories',
             'records',
             'wishlistProductIds',
-            'category',
-            'currentCategory', // Yeh variable view mein bhejna zaroori hai
+            'activeCategory',
+            'currentCategory',
             'availableColors',
             'availableSizes',
             'availableBrands'
