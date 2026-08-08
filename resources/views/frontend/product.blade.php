@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- MAIN CONTAINER (Header alignment ke sath aligned max-w-7xl) -->
-    <div class="md:max-w-7xl  lg:max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 lg-pb-6 sm:pb-10 sm:pt-6 py-5 sm:py-6">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-6 lg-pb-6 sm:pb-10 sm:pt-6 py-5 sm:py-6">
 
         <!-- TITLE -->
         <div class="text-center mb-2 sm:mb-4">
@@ -19,7 +19,7 @@
         </div>
 
         <!-- GRID (Screen Responsive: Mobile=2, Tablet=3, Laptop=4, Desktop=5) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mb-8 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6  mb-8 gap-3">
 
         @forelse($products as $product)
 
@@ -33,7 +33,7 @@
                     <div class="bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 flex flex-col h-full w-full">
 
                         <!-- IMAGE -->
-                        <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-60 2xl:h-50 md:h-60 lg:h-55">
+                        <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 ">
 
                             <!-- WISHLIST -->
                             <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">

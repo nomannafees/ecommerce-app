@@ -42,7 +42,7 @@
                                         $nestedSlug = $currentRequestCategory ? $currentRequestCategory . '/' . $subCat->slug : $subCat->slug;
                                     @endphp
                                     <a href="{{ route('categories', array_merge(request()->except('page'), ['category' => $nestedSlug])) }}"
-                                       class="group bg-white border border-gray-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md hover:border-emerald-500/40 transition-all duration-300 flex flex-col text-center relative">
+                                       class="group bg-white border border-gray-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md  transition-all duration-300 flex flex-col text-center relative">
 
                                         <div class="w-full h-24 sm:h-30 bg-gray-50 overflow-hidden relative">
                                             <img src="{{ $subCat->image ? asset('storage/cat_image/' . $subCat->image) : asset('images/no-image.png') }}"

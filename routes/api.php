@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CategoryController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -31,6 +32,6 @@ Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'o
 Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
 Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
 Route::get('/cities/{id}', [\App\Http\Controllers\Api\CheckoutController::class, 'getCitiesByState']);
-
+Route::get('/categories', [CategoryController::class, 'index']);
 
 

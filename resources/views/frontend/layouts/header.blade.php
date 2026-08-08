@@ -226,7 +226,8 @@
                                          class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isMainActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
                                          :class="{ 'bg-emerald-50 text-emerald-600': activeMain === {{ $mainCat->id }} }">
 
-                                        <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug] + request()->except('category')) }}"
+                                        <!-- Sirf category pass hogi, purane filters remove ho jayenge -->
+                                        <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug]) }}"
                                            class="flex-1 text-sm font-semibold">
                                             {{ $mainCat->name }}
                                         </a>
@@ -269,7 +270,7 @@
                                                      class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
                                                      :class="{ 'bg-emerald-50 text-emerald-600': activeSub === {{ $subCat->id }} }">
 
-                                                    <a href="{{ route('categoriesProduct', ['category' => $subSlugPath] + request()->except('category')) }}"
+                                                    <a href="{{ route('categoriesProduct', ['category' => $subSlugPath]) }}"
                                                        class="flex-1 text-sm font-semibold">
                                                         {{ $subCat->name }}
                                                     </a>
@@ -304,8 +305,7 @@
                                                         $isChildActive = request('category') == $childSlugPath;
                                                     @endphp
                                                     <li>
-                                                        <!-- Updated route to categoriesProduct with complete parent/sub/child slug path -->
-                                                        <a href="{{ route('categories', ['category' => $childSlugPath] + request()->except('category')) }}"
+                                                        <a href="{{ route('categories', ['category' => $childSlugPath]) }}"
                                                            class="block py-2 px-3 text-sm font-semibold transition {{ $isChildActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
                                                             {{ $childCat->name }}
                                                         </a>

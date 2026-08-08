@@ -21,11 +21,38 @@
         <div class="flex flex-col lg:flex-row gap-6 py-6">
 
             <!-- LEFT SIDEBAR (Desktop Only) -->
-            <!-- LEFT SIDEBAR (Desktop Only) -->
-            <aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible">
-                <form method="GET" action="{{ route('categories') }}" id="filterForm" class="space-y-4">
+            <aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible" x-data="{ showAllCategories: false, categoryLimit: 6 }">
+            @php
+                // 1. Helper function to build category path
+                $buildCategoryPath = function ($categoryItem) {
+                    $slugs = [];
+                    $item = $categoryItem;
+                    while ($item) {
+                        array_unshift($slugs, $item->slug);
+                        $item = $item->parent;
+                    }
+                    return implode('/', $slugs);
+                };
 
-                    @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+                // 2. Display categories logic
+                if (!isset($currentCategory) || !$currentCategory) {
+                    $displayCategories = $categories->where('parent_id', 0);
+                } elseif ($currentCategory->children && $currentCategory->children->count() > 0) {
+                    $displayCategories = $currentCategory->children;
+                } elseif ($currentCategory->parent) {
+                    $displayCategories = $currentCategory->parent->children ?? collect();
+                } else {
+                    $displayCategories = collect();
+                }
+            @endphp
+
+            <!-- Form action -->
+                <form method="GET" action="{{ request()->url() }}" id="filterForm" onsubmit="return cleanEmptyInputs(this);" class="space-y-4">
+
+                    @if(request()->route('category'))
+                        <input type="hidden" name="category" value="{{ request()->route('category') }}">
+                    @endif
+
                     @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
                     @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
 
@@ -33,72 +60,71 @@
                     <input type="hidden" name="size" id="selectedSizeInput" value="{{ request('size') }}">
                     <input type="hidden" name="brand" id="selectedBrandInput" value="{{ request('brand') }}">
 
-                    <!-- Categories Filter Section (With See More / See Less Toggle) -->
-                    <div x-data="{ showAllCategories: false, categoryLimit: 6 }">
-                        <!-- Header updated with green indicator bar -->
-                        <h2 class="font-bold text-sm mb-2 tracking-tight flex items-center gap-2">
-                            <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+                    {{-- ============================================================
+                         CATEGORIES HEADER WITH CLEAR FILTERS
+                    ============================================================= --}}
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="font-bold text-sm tracking-tight">
                             <span>Categories</span>
                         </h2>
 
-                        <div class="flex flex-col gap-1.5 pb-2">
-                        @php
-                            if ($currentCategory) {
-                                $displayCategories = $currentCategory->children->count() > 0
-                                    ? $currentCategory->children
-                                    : ($currentCategory->parent_id != 0 ? optional($currentCategory->parent)->children : $categories);
-                            } else {
-                                $displayCategories = $categories;
-                            }
-                        @endphp
-
-                        @if($currentCategory && $currentCategory->parent_id != 0)
-                            <!-- Back to parent category option -->
-                                <a href="{{ route('categories', ['category' => optional($currentCategory->parent)->slug]) }}"
-                                   class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
-                                    <i class="fa-solid fa-arrow-left"></i> Back to {{ optional($currentCategory->parent)->name }}
-                                </a>
-                            @endif
-
-                            @if($displayCategories)
-                                @foreach($displayCategories as $index => $cat)
-                                    @php
-                                        // Agar current category ka parent hai, toh URL mein parent/child dono aane chahiye
-                                        if ($currentCategory && $currentCategory->parent_id == 0) {
-                                            $categorySlug = $currentCategory->slug . '/' . $cat->slug;
-                                        } elseif ($currentCategory && $currentCategory->parent_id != 0) {
-                                            $categorySlug = optional($currentCategory->parent)->slug . '/' . $cat->slug;
-                                        } else {
-                                            $categorySlug = $cat->slug;
-                                        }
-
-                                        $isCategorySelected = request('category') == $categorySlug || request('category') == $cat->slug;
-                                    @endphp
-
-                                    <a href="{{ route('categories', array_merge(request()->all(), ['category' => $categorySlug])) }}"
-                                       x-show="showAllCategories || {{ $index }} < categoryLimit"
-                                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
-                                        {{ $cat->name }}
-                                    </a>
-                                @endforeach
-                            @endif
-                        </div>
-
-                        <!-- Categories See More / See Less Button -->
-                        @if(isset($displayCategories) && count($displayCategories) > 6)
-                            <button type="button"
-                                    @click="showAllCategories = !showAllCategories"
-                                    class="mt-1 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
-                                <span x-text="showAllCategories ? 'See Less' : 'See More ({{ count($displayCategories) - 6 }})'"></span>
-                                <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllCategories ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                            </button>
+                        {{-- Jab koi filter active ho ga tabhi yeh Clear link samne show ho ga --}}
+                        @if(request()->hasAny(['color', 'size', 'brand', 'max_price', 'min_price']))
+                            <a href="{{ request()->url() }}"
+                               class="text-[11px] font-semibold text-red-600 hover:text-red-800 transition underline cursor-pointer">
+                                Clear Filters
+                            </a>
                         @endif
                     </div>
-                    <!-- End Categories Section -->
 
-                    <!-- Price Range -->
+                    <div class="flex flex-col gap-1.5 pb-2">
+                        {{-- BACK TO PARENT --}}
+                        @if(isset($currentCategory) && $currentCategory && $currentCategory->parent)
+                            @php
+                                $parentCategory = $currentCategory->parent;
+                                $backSlug = $buildCategoryPath($parentCategory);
+                            @endphp
+
+                            <a href="{{ url('/collection/' . $backSlug) }}"
+                               class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                Back to {{ $parentCategory->name }}
+                            </a>
+                        @endif
+
+                        {{-- CATEGORY LIST --}}
+                        @if(isset($displayCategories) && $displayCategories->count() > 0)
+                            @foreach($displayCategories as $index => $cat)
+                                @php
+                                    $categoryPath = $buildCategoryPath($cat);
+                                    $currentUrlCategory = trim(request()->route('category') ?? '', '/');
+                                    $isCategorySelected = $currentUrlCategory === trim($categoryPath, '/');
+
+                                    $activeQueryParams = array_filter(request()->except('category'));
+                                    $queryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
+                                @endphp
+
+                                <a href="{{ url('/collection/' . $categoryPath) }}{{ $queryString }}"
+                                   x-show="showAllCategories || {{ $index }} < categoryLimit"
+                                   class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
+                                    {{ $cat->name }}
+                                </a>
+                            @endforeach
+                        @endif
+                    </div>
+
+                    {{-- SEE MORE / SEE LESS BUTTON (Categories ke liye) --}}
+                    @if(isset($displayCategories) && $displayCategories->count() > 6)
+                        <button type="button"
+                                @click="showAllCategories = !showAllCategories"
+                                class="mt-1 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
+                            <span x-text="showAllCategories ? 'See Less' : 'See More ({{ $displayCategories->count() - 6 }})'"></span>
+                            <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllCategories ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                        </button>
+                    @endif
+
+                <!-- Price Range -->
                     <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                        <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
                         <span>Price</span>
                     </h2>
                     <div class="space-y-2 my-2 pb-3 border-b border-gray-100">
@@ -122,96 +148,162 @@
                     </div>
 
                     <!-- Color Filter -->
-                    <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                        <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
-                        <span>Color</span>
-                    </h2>
-                    <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
-                        @foreach($availableColors as $colorName)
-                            @php
-                                $cleanColor = strtolower(trim($colorName));
-                                $isSelected = request('color') == $cleanColor;
-                                $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
-                            @endphp
-                            <button type="button" onclick="selectColorSwatch('{{ $cleanColor }}')"
-                                    title="{{ ucfirst($colorName) }}"
-                                    class="w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 relative flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-2 ring-black scale-110' : 'opacity-80 hover:opacity-100' }}"
-                                    style="{{ $inlineBg }}">
-                                @if($isSelected)
-                                    <i class="fa-solid fa-check text-[10px] sm:text-xs {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
-                                @endif
-                            </button>
-                        @endforeach
-                    </div>
-
-                    <!-- Size Filter -->
-                    <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                        <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
-                        <span>Size</span>
-                    </h2>
-                    <div class="flex flex-wrap gap-2 my-2 pb-3 border-b border-gray-100">
-                        @foreach($availableSizes as $sizeName)
-                            @php
-                                $cleanSize = trim($sizeName);
-                                $isSizeSelected = request('size') == $cleanSize;
-                            @endphp
-                            <button type="button" onclick="selectSizeBox('{{ $cleanSize }}')"
-                                    class="px-2.5 py-1 cursor-pointer text-xs sm:text-sm rounded border transition-all duration-200 font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-black' }}">
-                                {{ strtoupper($cleanSize) }}
-                            </button>
-                        @endforeach
-                    </div>
-
-                    <!-- Brands Filter -->
-                    <div x-data="{ showAllBrands: false, brandLimit: 6 }">
-                        <h2 class="font-bold text-sm mt-4 mb-2 tracking-tight flex items-center gap-2">
-                            <span class="w-2 h-4 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
-                            <span>Brands</span>
+                    @if(isset($availableColors) && count($availableColors) > 0)
+                        <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+                            <span>Color</span>
                         </h2>
-
-                        <div class="flex flex-col gap-2 pb-1">
-                            @foreach($availableBrands as $index => $brand)
+                        <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
+                            @foreach($availableColors as $colorName)
                                 @php
-                                    $isBrandSelected = request('brand') == $brand->slug;
+                                    $cleanColor = strtolower(trim($colorName));
+                                    $isSelected = request('color') == $cleanColor;
+                                    $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
                                 @endphp
-                                <label x-show="showAllBrands || {{ $index }} < brandLimit"
-                                       class="flex items-center gap-2.5 cursor-pointer group text-xs sm:text-sm text-gray-700 hover:text-black">
-                                    <input type="checkbox"
-                                           onchange="selectBrand('{{ $brand->slug }}')"
-                                           {{ $isBrandSelected ? 'checked' : '' }}
-                                           class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
-                                    <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
-                            {{ ucfirst($brand->name) }}
-                        </span>
-                                </label>
+                                <button type="button" onclick="selectColorSwatch('{{ $cleanColor }}')"
+                                        title="{{ ucfirst($colorName) }}"
+                                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 relative flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-2 ring-black scale-110' : 'opacity-80 hover:opacity-100' }}"
+                                        style="{{ $inlineBg }}">
+                                    @if($isSelected)
+                                        <i class="fa-solid fa-check text-[10px] sm:text-xs {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
+                                    @endif
+                                </button>
                             @endforeach
                         </div>
+                    @endif
 
-                        @if(count($availableBrands) > 6)
-                            <button type="button"
-                                    @click="showAllBrands = !showAllBrands"
-                                    class="mt-2 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
-                                <span x-text="showAllBrands ? 'See Less' : 'See More ({{ count($availableBrands) - 6 }})'"></span>
-                                <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllBrands ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                            </button>
-                        @endif
-                    </div>
+                <!-- Size Filter -->
+                    @if(isset($availableSizes) && count($availableSizes) > 0)
+                        <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+                            <span>Size</span>
+                        </h2>
+                        <div class="flex flex-wrap gap-2 my-2 pb-3 border-b border-gray-100">
+                            @foreach($availableSizes as $sizeName)
+                                @php
+                                    $cleanSize = trim($sizeName);
+                                    $isSizeSelected = request('size') == $cleanSize;
+                                @endphp
+                                <button type="button" onclick="selectSizeBox('{{ $cleanSize }}')"
+                                        class="px-2.5 py-1 cursor-pointer text-xs sm:text-sm rounded border transition-all duration-200 font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-black' }}">
+                                    {{ strtoupper($cleanSize) }}
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
+
+                <!-- Brands Filter -->
+                    @if(isset($availableBrands) && count($availableBrands) > 0)
+                        <div x-data="{ showAllBrands: false, brandLimit: 6 }">
+                            <h2 class="font-bold text-sm mt-4 mb-2 tracking-tight flex items-center gap-2">
+                                <span>Brands</span>
+                            </h2>
+
+                            <div class="flex flex-col gap-2 pb-1">
+                                @foreach($availableBrands as $index =>$brand)
+                                    @php
+                                        $isBrandSelected = request('brand') == $brand->slug;
+                                    @endphp
+                                    <label x-show="showAllBrands || {{ $index }} < brandLimit"
+                                           class="flex items-center gap-2.5 cursor-pointer group text-xs sm:text-sm text-gray-700 hover:text-black">
+                                        <input type="checkbox"
+                                               onchange="selectBrand('{{ $brand->slug }}')"
+                                               {{ $isBrandSelected ? 'checked' : '' }}
+                                               class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
+                                        <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
+                                {{ ucfirst($brand->name) }}
+                            </span>
+                                    </label>
+                                @endforeach
+                            </div>
+
+                            @if(count($availableBrands) > 6)
+                                <button type="button"
+                                        @click="showAllBrands = !showAllBrands"
+                                        class="mt-2 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
+                                    <span x-text="showAllBrands ? 'See Less' : 'See More'"></span>
+                                    <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllBrands ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                </button>
+                            @endif
+                        </div>
+                    @endif
 
                 </form>
             </aside>
+
+            <script>
+                function updatePriceLabel(val) {
+                    document.getElementById('priceLabel').innerText = Number(val).toLocaleString();
+                }
+
+                function selectColorSwatch(color) {
+                    let input = document.getElementById('selectedColorInput');
+                    input.value = (input.value === color) ? '' : color;
+                    document.getElementById('filterForm').submit();
+                }
+
+                function selectSizeBox(size) {
+                    let input = document.getElementById('selectedSizeInput');
+                    input.value = (input.value === size) ? '' : size;
+                    document.getElementById('filterForm').submit();
+                }
+
+                function selectBrand(brandSlug) {
+                    let input = document.getElementById('selectedBrandInput');
+                    input.value = (input.value === brandSlug) ? '' : brandSlug;
+                    document.getElementById('filterForm').submit();
+                }
+
+                // Yeh function empty inputs ko disable kar dega taake URL mein ?color=&size= jaisi fazool cheezein na jayein
+                function cleanEmptyInputs(form) {
+                    let inputs = form.elements;
+                    for (let i = 0; i < inputs.length; i++) {
+                        if (inputs[i].value === "" || inputs[i].value === null) {
+                            inputs[i].disabled = true;
+                        }
+                    }
+                    return true;
+                }
+            </script>
+
+            <!-- JavaScript Helper Functions (Agar pehle se defined nahi hain to inhein add kar dein) -->
+            <script>
+                function updatePriceLabel(val) {
+                    document.getElementById('priceLabel').innerText = Number(val).toLocaleString();
+                }
+
+                function selectColorSwatch(color) {
+                    let input = document.getElementById('selectedColorInput');
+                    // Agar same color dobara click ho to toggle off kar dein
+                    input.value = (input.value === color) ? '' : color;
+                    document.getElementById('filterForm').submit();
+                }
+
+                function selectSizeBox(size) {
+                    let input = document.getElementById('selectedSizeInput');
+                    input.value = (input.value === size) ? '' : size;
+                    document.getElementById('filterForm').submit();
+                }
+
+                function selectBrand(brandSlug) {
+                    let input = document.getElementById('selectedBrandInput');
+                    input.value = (input.value === brandSlug) ? '' : brandSlug;
+                    document.getElementById('filterForm').submit();
+                }
+            </script>
 
             <!-- RIGHT SIDE (Products Grid - 4 columns) -->
             <div class="w-full lg:w-4/5">
 
                 <!-- DESKTOP SORT BAR -->
-                <form method="GET" action="{{ route('categories') }}" id="searchSortForm"
+                <form method="GET" action="{{ request()->url() }}" id="searchSortForm"
                       class="mb-6 hidden lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
-                    @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+
+                    @if(request()->route('category')) <input type="hidden" name="category" value="{{ request()->route('category') }}"> @endif
                     @if(request('min_price')) <input type="hidden" name="min_price" value="{{ request('min_price') }}"> @endif
                     @if(request('max_price')) <input type="hidden" name="max_price" value="{{ request('max_price') }}"> @endif
                     @if(request('color')) <input type="hidden" name="color" value="{{ request('color') }}"> @endif
                     @if(request('size')) <input type="hidden" name="size" value="{{ request('size') }}"> @endif
                     @if(request('brand')) <input type="hidden" name="brand" value="{{ request('brand') }}"> @endif
+                    @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
 
                     <h2 class="text-base sm:text-lg font-semibold text-gray-700">Products</h2>
 
@@ -236,7 +328,7 @@
                     <div class="flex justify-between items-center px-1">
                         <h2 class="text-sm font-semibold text-gray-700">Filters & Sort</h2>
                         @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort') || request()->has('category'))
-                            <a href="{{ route('categories') }}" class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">
+                            <a href="{{ request()->url() }}" class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">
                                 Clear Filter
                             </a>
                         @else
@@ -278,8 +370,8 @@
                             <h3 class="font-bold text-gray-800 text-xs">Sort Products</h3>
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <form method="GET" action="{{ route('categories') }}" class="space-y-1">
-                            @if(request('category')) <input type="hidden" name="category" value="{{ request('category') }}"> @endif
+                        <form method="GET" action="{{ request()->url() }}" class="space-y-1">
+                            @if(request()->route('category')) <input type="hidden" name="category" value="{{ request()->route('category') }}"> @endif
                             @if(request('min_price')) <input type="hidden" name="min_price" value="{{ request('min_price') }}"> @endif
                             @if(request('max_price')) <input type="hidden" name="max_price" value="{{ request('max_price') }}"> @endif
                             @if(request('color')) <input type="hidden" name="color" value="{{ request('color') }}"> @endif
@@ -305,9 +397,13 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1">
-                            <a href="{{ route('categories', request()->except('category')) }}" class="block px-2.5 py-1.5 rounded border {{ !request('category') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Categories</a>
+                            <a href="{{ request()->url() }}?{{ http_build_query(request()->except('category')) }}" class="block px-2.5 py-1.5 rounded border {{ !request()->route('category') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Categories</a>
                             @foreach($categories as $cat)
-                                <a href="{{ route('categories', ['category' => $cat->slug] + request()->except('category')) }}" class="block px-2.5 py-1.5 rounded border {{ request('category') == $cat->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                @php
+                                    $activeQueryParams = array_filter(request()->except('category'));
+                                    $catQueryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
+                                @endphp
+                                <a href="{{ url('/product/' . $cat->slug) }}{{ $catQueryString }}" class="block px-2.5 py-1.5 rounded border {{ request()->route('category') == $cat->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
                                     {{ $cat->name }}
                                 </a>
                             @endforeach
@@ -320,9 +416,18 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1">
-                            <a href="{{ route('categories', request()->except('brand')) }}" class="block px-2.5 py-1.5 rounded border {{ !request('brand') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Brands</a>
+                            @php
+                                $brandParams = request()->except('brand');
+                                if(request()->route('category')) { $brandParams['category'] = request()->route('category'); }
+                                $brandQueryString = !empty(array_filter($brandParams)) ? '?' . http_build_query(array_filter($brandParams)) : '';
+                            @endphp
+                            <a href="{{ request()->url() }}{{ $brandQueryString }}" class="block px-2.5 py-1.5 rounded border {{ !request('brand') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Brands</a>
                             @foreach($availableBrands as $brand)
-                                <a href="{{ route('categories', ['brand' => $brand->slug] + request()->except('brand')) }}" class="block px-2.5 py-1.5 rounded border {{ request('brand') == $brand->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                @php
+                                    $currentParams = array_merge(request()->query(), ['brand' => $brand->slug]);
+                                    if(request()->route('category')) { $currentParams['category'] = request()->route('category'); }
+                                @endphp
+                                <a href="{{ request()->url() }}?{{ http_build_query(array_filter($currentParams)) }}" class="block px-2.5 py-1.5 rounded border {{ request('brand') == $brand->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
                                     {{ ucfirst($brand->name) }}
                                 </a>
                             @endforeach
@@ -335,15 +440,23 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1.5">
-                            <a href="{{ route('categories', request()->except('color')) }}" class="block px-2.5 py-1.5 rounded border {{ !request('color') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Colors</a>
+                            @php
+                                $colorParams = request()->except('color');
+                                if(request()->route('category')) { $colorParams['category'] = request()->route('category'); }
+                                $colorQueryString = !empty(array_filter($colorParams)) ? '?' . http_build_query(array_filter($colorParams)) : '';
+                            @endphp
+                            <a href="{{ request()->url() }}{{ $colorQueryString }}" class="block px-2.5 py-1.5 rounded border {{ !request('color') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Colors</a>
                             <div class="flex flex-wrap gap-2 py-1">
                                 @foreach($availableColors as $colorName)
                                     @php
                                         $cleanColor = strtolower(trim($colorName));
                                         $isSelected = request('color') == $cleanColor;
                                         $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
+
+                                        $currentColorParams = array_merge(request()->query(), ['color' => $cleanColor]);
+                                        if(request()->route('category')) { $currentColorParams['category'] = request()->route('category'); }
                                     @endphp
-                                    <a href="{{ route('categories', ['color' => $cleanColor] + request()->except('color')) }}"
+                                    <a href="{{ request()->url() }}?{{ http_build_query(array_filter($currentColorParams)) }}"
                                        title="{{ ucfirst($colorName) }}"
                                        class="w-7 h-7 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-1 ring-offset-1 ring-gray-600 scale-110' : 'opacity-90 hover:opacity-100' }}"
                                        style="{{ $inlineBg }}">
@@ -360,14 +473,22 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1.5">
-                            <a href="{{ route('categories', request()->except('size')) }}" class="block px-2.5 py-1.5 rounded border {{ !request('size') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Sizes</a>
+                            @php
+                                $sizeParams = request()->except('size');
+                                if(request()->route('category')) { $sizeParams['category'] = request()->route('category'); }
+                                $sizeQueryString = !empty(array_filter($sizeParams)) ? '?' . http_build_query(array_filter($sizeParams)) : '';
+                            @endphp
+                            <a href="{{ request()->url() }}{{ $sizeQueryString }}" class="block px-2.5 py-1.5 rounded border {{ !request('size') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Sizes</a>
                             <div class="flex flex-wrap gap-1.5 py-1">
                                 @foreach($availableSizes as $sizeName)
                                     @php
                                         $cleanSize = trim($sizeName);
                                         $isSizeSelected = request('size') == $cleanSize;
+
+                                        $currentSizeParams = array_merge(request()->query(), ['size' => $cleanSize]);
+                                        if(request()->route('category')) { $currentSizeParams['category'] = request()->route('category'); }
                                     @endphp
-                                    <a href="{{ route('categories', ['size' => $cleanSize] + request()->except('size')) }}"
+                                    <a href="{{ request()->url() }}?{{ http_build_query(array_filter($currentSizeParams)) }}"
                                        class="px-2.5 py-1 text-xs rounded border transition font-medium {{ $isSizeSelected ? 'bg-gray-100 text-black border-gray-400 shadow-sm' : 'bg-gray-50 text-gray-700 border-gray-200' }}">
                                         {{ strtoupper($cleanSize) }}
                                     </a>

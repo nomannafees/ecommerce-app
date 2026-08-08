@@ -332,11 +332,10 @@ class FrontendController extends Controller
         }
 
         $currentCategory = null;
-        $activeCategory = null; // View ke liye variable
+        $activeCategory = null;
 
         // 3. Category Filter (Clean Route Parameter Handling)
         if (!empty($category)) {
-            // Slash wale nested slugs mein se aakhri slug nikalna
             $slugs = explode('/', $category);
             $targetSlug = end($slugs);
 
@@ -392,7 +391,7 @@ class FrontendController extends Controller
         }
 
         // 6. Pagination & Data Transformation
-        $records = $query->paginate(12);
+        $records = $query->paginate(12)->appends($request->query()); // Pagination ke sath query parameters zaroori hain
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
         $records->getCollection()->transform(function ($product) use ($selectedColor) {
@@ -418,13 +417,14 @@ class FrontendController extends Controller
         });
 
         // 7. Wishlist Check
+        // 7. Wishlist Check
         $wishlistProductIds = Auth::check() ? Wishlist::where('user_id', Auth::id())->pluck('product_id')->toArray() : [];
 
         return view('frontend.categories', compact(
             'categories',
             'records',
             'wishlistProductIds',
-            'activeCategory',
+            'activeCategory',      // <--- Yahan se backticks (` `) hata diye gaye hain
             'currentCategory',
             'availableColors',
             'availableSizes',

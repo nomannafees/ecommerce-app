@@ -2,6 +2,55 @@
 
 @section('content')
 
+    {{-- Select2 Base Styling --}}
+    <style>
+        /* Select2 Wrapper Width Fix */
+        .select2-container {
+            width: 100% !important;
+            display: block !important;
+        }
+
+        /* Select2 Container Base Styling */
+        .select2-container--default .select2-selection--single {
+            height: 48px !important;
+            border-radius: 0.75rem !important; /* rounded-xl */
+            border: 1px solid #e5e7eb !important; /* border-gray-200 */
+            padding-left: 2.5rem !important; /* Icon spacing */
+            padding-right: 2.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            background-color: #ffffff !important;
+            transition: all 0.2s ease-in-out !important;
+            width: 100% !important;
+        }
+
+        /* Green Focus & Open State */
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: #10b981 !important; /* Emerald 500 */
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+            outline: none !important;
+        }
+
+        /* Hide Default Arrow & Clear Icon */
+        .select2-container--default .select2-selection--single .select2-selection__arrow,
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            display: none !important;
+        }
+
+        /* Text & Placeholder Styling */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #1f2937 !important;
+            font-size: 0.875rem !important;
+            padding-left: 0 !important;
+            line-height: normal !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #9ca3af !important;
+        }
+    </style>
+
     <div class="mx-auto p-y p-6">
 
         <!-- Card -->
@@ -63,17 +112,16 @@
                         @enderror
                     </div>
 
-                    <!-- Parent Category Select -->
+                    <!-- Parent Category Select2 -->
                     <div>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-500 transition-colors duration-200 z-10 pointer-events-none">
-                                <i class="fa-solid fa-sitemap"></i>
+                        <div class="relative w-full">
+                            <!-- Left Icon -->
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
+                                <i class="fa-solid fa-sitemap text-sm"></i>
                             </span>
 
-                            <select name="parent_id"
-                                    id="parent_id"
-                                    class="peer w-full pl-11 pr-10 pt-5 pb-2 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm appearance-none cursor-pointer focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
-
+                            <!-- Select Dropdown -->
+                            <select name="parent_id" id="parent_id" class="w-full">
                                 <option value="">None (Main / Root Category)</option>
 
                                 @php
@@ -85,8 +133,8 @@
                                 @foreach($categoriesList as $mainCat)
                                     {{-- Level 1: Main Category --}}
                                     @if($mainCat->id != $currentCategoryId)
-                                        <option value="{{ $mainCat->id }}" {{ $selectedParentId == $mainCat->id ? 'selected' : '' }} class="font-bold text-gray-900 bg-gray-100/50">
-                                             {{ ucfirst($mainCat->name) }} (Main)
+                                        <option value="{{ $mainCat->id }}" {{ $selectedParentId == $mainCat->id ? 'selected' : '' }} class="font-bold text-gray-900 bg-gray-100">
+                                            {{ ucfirst($mainCat->name) }} (Main)
                                         </option>
 
                                         {{-- Level 2: Sub-Category --}}
@@ -94,15 +142,15 @@
                                             @foreach($mainCat->children as $subCat)
                                                 @if($subCat->id != $currentCategoryId)
                                                     <option value="{{ $subCat->id }}" {{ $selectedParentId == $subCat->id ? 'selected' : '' }} class="text-gray-900">
-                                                        &nbsp;&nbsp;&nbsp;&nbsp;↳ {{ ucfirst($subCat->name) }} (Sub)
+                                                        &nbsp;&nbsp;├─ {{ ucfirst($subCat->name) }} (Sub)
                                                     </option>
 
                                                     {{-- Level 3: Child Category --}}
                                                     @if($subCat->children && count($subCat->children) > 0)
                                                         @foreach($subCat->children as $childCat)
                                                             @if($childCat->id != $currentCategoryId)
-                                                                <option value="{{ $childCat->id }}"  class="text-gray-700 bg-gray-50 italic">
-                                                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ {{ ucfirst($childCat->name) }} (Child)
+                                                                <option value="{{ $childCat->id }}" {{ $selectedParentId == $childCat->id ? 'selected' : '' }} class="text-gray-700 italic">
+                                                                    &nbsp;&nbsp;&nbsp;&nbsp;└─ {{ ucfirst($childCat->name) }} (Child)
                                                                 </option>
                                                             @endif
                                                         @endforeach
@@ -113,19 +161,12 @@
                                         @endif
                                     @endif
                                 @endforeach
-
                             </select>
 
-                            <!-- Custom Dropdown Chevron Icon -->
-                            <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
+                            <!-- Custom Dropdown Arrow Icon -->
+                            <div class="absolute inset-y-0 right-3.5 flex items-center pointer-events-none text-gray-400 z-10">
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </div>
-
-                            <!-- Label -->
-                            <label for="parent_id"
-                                   class="absolute left-11 top-1.5 text-[11px] font-medium text-emerald-600 pointer-events-none transition-all duration-200">
-                                Parent Category
-                            </label>
                         </div>
 
                         @error('parent_id')
@@ -161,5 +202,6 @@
         </div>
 
     </div>
+
 
 @endsection

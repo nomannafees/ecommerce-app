@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="container  mx-auto p-6">
+    <div class=" p-6">
 
         <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
 
@@ -19,9 +19,11 @@
 
             <div class="p-6">
 
-                <div class="grid md:grid-cols-2 gap-8">
+                <!-- 12 Column Grid System -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
 
-                    <div>
+                    <!-- Image Section (5 Columns) -->
+                    <div class="md:col-span-5">
                         @php
                             // Direct VariantImage table se is product ki saari images nikal rahe hain
                             $variantImages = \App\Models\VariantImage::where('product_id', $product->id)->get();
@@ -52,7 +54,8 @@
                         @endif
                     </div>
 
-                    <div class="space-y-4">
+                    <!-- Details Section (7 Columns) -->
+                    <div class="md:col-span-7 space-y-4">
 
                         <h1 class="text-4xl font-bold text-gray-900">
                             {{ $product->name }}
