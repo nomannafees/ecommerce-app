@@ -23,7 +23,7 @@
 
         @else
 
-            <div class="space-y-4 max-w-7xl sm:px-6 md:px-7 mx-auto">
+            <div class="space-y-4 container mx-auto">
 
             @foreach($wishlists as $item)
 

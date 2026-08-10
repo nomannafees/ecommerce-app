@@ -1,7 +1,7 @@
 <footer class="bg-black text-white hidden md:block">
 
     <!-- Top Footer -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
 
@@ -104,7 +104,7 @@
     <!-- Bottom Footer -->
     <div class="border-t border-gray-800">
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3 text-center sm:text-left">
 

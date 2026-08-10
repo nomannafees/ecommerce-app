@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-8">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-8">
 
         <!-- HEADER -->
         <div class="text-center mb-6">

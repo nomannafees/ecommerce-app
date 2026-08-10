@@ -63,14 +63,14 @@
         }
     </style>
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
 
-        <div class="text-center mb-10 max-w-2xl mx-auto">
+        <div class="text-center mb-5 max-w-2xl mx-auto">
             <h1 class="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight">
                 Checkout
             </h1>
-            <div class="w-12 h-0.5 bg-emerald-600 mx-auto mt-3 rounded-full opacity-80"></div>
-            <p class="text-gray-500 text-sm md:text-base mt-4 leading-relaxed font-normal">
+            <div class="w-12 h-0.5 bg-emerald-600 mx-auto mt-1 rounded-full opacity-80"></div>
+            <p class="text-gray-500 text-sm md:text-base mt-1 leading-relaxed font-normal">
                 Please provide your details, choose shipping & payment options to complete your order.
             </p>
         </div>

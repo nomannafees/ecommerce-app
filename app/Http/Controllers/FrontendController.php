@@ -391,7 +391,7 @@ class FrontendController extends Controller
         }
 
         // 6. Pagination & Data Transformation
-        $records = $query->paginate(12)->appends($request->query()); // Pagination ke sath query parameters zaroori hain
+        $records = $query->paginate(15)->appends($request->query()); // Pagination ke sath query parameters zaroori hain
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
         $records->getCollection()->transform(function ($product) use ($selectedColor) {

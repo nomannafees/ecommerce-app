@@ -3,7 +3,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
 
         <div class="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500 truncate">
             Home / Products / <span class="text-black font-medium">{{ $product->name }}</span>
@@ -22,7 +22,7 @@
                                 <div class="swiper-slide" data-color="{{ $v->color_name }}"
                                      data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}">
                                     <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                         class="w-full h-[350px] sm:h-[420px] lg:h-[480px] object-cover"
+                                         class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover"
                                          alt="{{ $product->name }}">
                                 </div>
                             @endif
@@ -74,7 +74,7 @@
             </div>
 
             <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
-            <div class="lg:col-span-7 lg:sticky lg:top-24 h-fit">
+            <div class="lg:col-span-7">
 
                 <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 capitalize">
                     {{ $product->name }}

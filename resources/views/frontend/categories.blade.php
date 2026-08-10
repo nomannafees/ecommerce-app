@@ -6,7 +6,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-2 sm:pt-4 sm:pb-2">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:pt-4 sm:pb-2">
 
         <div class="text-center mt-2 lg:mt-4 px-4 lg:px-10">
             <h1 class="text-2xl lg:text-4xl font-bold text-gray-900">
@@ -290,12 +290,12 @@
                 }
             </script>
 
-            <!-- RIGHT SIDE (Products Grid - 4 columns) -->
-            <div class="w-full lg:w-4/5">
+            <!-- RIGHT SIDE (Products Grid - 5 columns) -->
+            <div class="w-full lg:w-4/5 container mx-auto ">
 
                 <!-- DESKTOP SORT BAR -->
                 <form method="GET" action="{{ request()->url() }}" id="searchSortForm"
-                      class="mb-6 hidden lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
+                      class="mb-4 hidden lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 shadow-sm">
 
                     @if(request()->route('category')) <input type="hidden" name="category" value="{{ request()->route('category') }}"> @endif
                     @if(request('min_price')) <input type="hidden" name="min_price" value="{{ request('min_price') }}"> @endif
@@ -308,7 +308,7 @@
                     <h2 class="text-base sm:text-lg font-semibold text-gray-700">Products</h2>
 
                     <div class="flex items-center gap-3">
-                        <div class="w-48 relative h-[42px]">
+                        <div class="w-48 relative h-[40px]">
                             <select name="sort"
                                     onchange="document.getElementById('searchSortForm').submit();"
                                     class="w-full h-full bg-white border border-gray-300 rounded-full pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-black text-sm cursor-pointer font-medium text-gray-700 appearance-none block leading-none">
@@ -498,8 +498,8 @@
                     </div>
                 </div>
 
-                <!-- PRODUCTS GRID (4 columns on lg) -->
-                <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-10 md:mb-5 sm:gap-3">
+                <!-- PRODUCTS GRID (5 columns on lg/xl) -->
+                <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-10 md:mb-5 sm:gap-3">
                     @forelse($records as $product)
                         @php
                             $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -509,25 +509,25 @@
                             $imagePath = $product->custom_image_path;
                         @endphp
 
-                        <div class="relative bg-white rounded-xl sm:rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300 group flex flex-col h-full w-full">
+                        <div class="relative bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300 group flex flex-col h-full w-full">
 
                             <form action="{{ route('wishlists.store') }}" method="POST"
-                                  class="wishlistForm absolute top-2 right-2 sm:top-3 sm:right-3 z-30">
+                                  class="wishlistForm absolute top-2 right-2 sm:top-2 sm:right-2 z-30">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
-                                        class="wishlistBtn bg-white rounded-full shadow hover:scale-110 transition flex items-center justify-center"
+                                        class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition flex items-center justify-center"
                                         style="padding: 4px 9px 4px 9px !important;">
-                                    <i style="margin: 6px -1px 3px 0px !important;" class="wishlistIcon fa-heart text-xs sm:text-lg transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
+                                    <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
 
                             <a href="{{ route('product.detail', $product->slug) }}{{ request('color') ? '?color='.request('color') : '' }}"
                                class="block z-10 flex flex-col h-full">
-                                <div class="bg-gray-100 overflow-hidden relative h-42 xs:h-44 sm:h-55 md:h-50 lg:h-50">
+                                <div class="bg-gray-100 overflow-hidden relative h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55">
                                     @if(!empty($imagePath))
                                         <img src="{{ asset('storage/'.$imagePath) }}"
-                                             class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                             class="w-full h-full object-cover group-hover:scale-104 transition duration-300"
                                              alt="{{ $product->name }}">
                                     @else
                                         <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs sm:text-base">
@@ -535,24 +535,24 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="p-2.5 sm:p-2 flex-grow flex flex-col justify-between gap-2">
+                                <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
                                     <div>
                                         <!-- NAME -->
-                                        <h4 class="font-medium xs:text[14px] md:text[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                                        <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
                                             {{ $product->name }}
                                         </h4>
 
                                         <!-- DESCRIPTION -->
-                                        <p class="text-[11px] sm:text-xs text-gray-500 mt-0.5 mb-0 line-clamp-1 sm:line-clamp-1 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden leading-relaxed">
+                                        <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
                                             {!! Str::limit(strip_tags($product->description), 150) !!}
-                                        </p>
+                                        </div>
                                     </div>
                                     @php
                                         $avgRating = $product->avgRating ?? 0;
                                     @endphp
 
                                     {{-- Rating Section Blade Code --}}
-                                    <div class="flex items-center gap-1">
+                                    <div class="flex items-center gap-1 sm:mt-1.5">
                                         <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
                                             @for($i = 1; $i <= 5; $i++)
                                                 @if($i <= floor($avgRating))
@@ -567,33 +567,33 @@
                                         <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
                                     </div>
 
-                                    <div class="flex items-center justify-between mt-auto gap-2">
+                                    <div class="flex items-center justify-between gap-2 mt-auto">
                                         <div class="flex flex-col">
                                             @if($variant)
                                                 <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
-                                                Rs {{ number_format($variant->price) }}
-                                            </span>
+                    Rs {{ number_format($variant->price) }}
+                </span>
                                                 @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
                                                     <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                                    Rs {{ number_format($variant->cut_price) }}
-                                                </span>
+                        Rs {{ number_format($variant->cut_price) }}
+                    </span>
                                                 @endif
                                             @else
                                                 <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
-                                                Rs {{ number_format($product->base_price ?? 0) }}
-                                            </span>
+                    Rs {{ number_format($product->base_price ?? 0) }}
+                </span>
                                             @endif
                                         </div>
 
                                         <div class="flex-shrink-0">
                                             @if($totalStock <= 0)
                                                 <span class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                Out of Stock
-                                            </span>
+                    Out of Stock
+                </span>
                                             @else
                                                 <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                <span class="text-emerald-800 font-bold text-[10px] sm:text-xs">{{ $totalStock }}</span> In Stock
-                                            </span>
+                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
+                </span>
                                             @endif
                                         </div>
                                     </div>
@@ -620,7 +620,7 @@
                     @endforelse
                 </div>
 
-                <div class=" -mt-7 mb-5 lg:mt-8 lg:mb-2 mb-7 sm:mb-14">{{ $records->links() }}</div>
+                <div class="-mt-7 mb-5 lg:mt-8 lg:mb-2 mb-7 sm:mb-14">{{ $records->links() }}</div>
             </div>
         </div>
     </div>
