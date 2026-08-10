@@ -27,7 +27,7 @@ use App\Models\City;
 class FrontendController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         // 1. TOP 12 MOST ORDERED PRODUCTS (Bestsellers)
         $topOrderedProducts = Product::with(['variants', 'mainVariantImage', 'reviews'])
@@ -49,10 +49,7 @@ class FrontendController extends Controller
         // 4. BRANDS
         $brands = Brand::latest()->get();
 
-        // --- SIDEBAR VARIABLES (Aapke allCategories method ke mutabik set kiye gaye hain) ---
-
-
-
+        // --- SIDEBAR VARIABLES ---
         $availableColors = ProductVariant::whereNotNull('color_name')
             ->where('color_name', '!=', '')
             ->distinct()
@@ -68,7 +65,7 @@ class FrontendController extends Controller
         $availableBrands = Brand::whereNotNull('name')
             ->where('name', '!=', '')
             ->get();
-        // -----------------------------------------------------------------------------------
+        // -------------------------
 
         // 5. WISHLIST IDS
         $wishlistProductIds = [];
@@ -79,7 +76,7 @@ class FrontendController extends Controller
         }
 
         // 5.1. GUEST UNIQUE COOKIE HANDLING (30 Days persistent token)
-        $guestToken = request()->cookie('guest_unique_token');
+        $guestToken = $request->cookie('guest_unique_token');
         if (!$guestToken && !auth()->check()) {
             $guestToken = (string)\Str::uuid();
             cookie()->queue('guest_unique_token', $guestToken, 60 * 24 * 30);
@@ -138,6 +135,27 @@ class FrontendController extends Controller
             $products = Product::with(['variants', 'mainVariantImage', 'reviews'])
                 ->latest()
                 ->get();
+        }
+
+        // --- COLLECTION TO PAGINATOR CONVERSION FOR AJAX SCROLLING ---
+        $page = $request->get('page', 1);
+        $perPage = 12;
+        $offset = ($page * $perPage) - $perPage;
+
+        $paginatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $products->slice($offset, $perPage)->values(),
+            $products->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Variable ko $products mein assign kar diya hai taake partial view mein error na aaye
+        $products = $paginatedProducts;
+
+        // Agar AJAX request ho toh partial view return karein
+        if ($request->ajax()) {
+            return view('frontend.partials.for-you-cards', compact('products', 'wishlistProductIds'))->render();
         }
 
         return view('frontend.index', compact(
@@ -202,18 +220,22 @@ class FrontendController extends Controller
         return view('frontend.product-detail', compact('product', 'avgRating', 'totalReviews'));
     }
 
-    public function frontendProduct()
+    public function frontendProduct(Request $request)
     {
         // 1. Products with variants, images, and reviews
-        $products = Product::with(['variants', 'mainVariantImage', 'reviews'])->latest()->get();
+        $products = Product::with(['variants', 'mainVariantImage', 'reviews'])->latest()->paginate(12);
 
-        // --- YEAH WALA CODE MISSING THA (Rating calculate karne ke liye) ---
-        $products->each(function ($product) {
-            $product->avgRating = $product->reviews->isNotEmpty() ? $product->reviews->avg('rating') : 0;
-        });
-        // -----------------------------------------------------------------
+        // Agar requested page par products hi nahi hain (misal ke taur par page 3 khali hai)
+        if ($request->ajax()) {
+            if ($products->isEmpty()) {
+                return response()->json(''); // Bilkul khali response bhejein taake AJAX mein append na ho
+            }
 
-        // 2. Wishlist IDs logic
+            $wishlistProductIds = Auth::check() ? Wishlist::where('user_id', Auth::id())->pluck('product_id')->toArray() : [];
+            return view('frontend.partials.product-cards', compact('products', 'wishlistProductIds'))->render();
+        }
+
+        // --- Baaki ka purana code wese hi rahega ---
         $wishlistProductIds = [];
         if (Auth::check()) {
             $wishlistProductIds = Wishlist::where('user_id', Auth::id())
@@ -221,7 +243,6 @@ class FrontendController extends Controller
                 ->toArray();
         }
 
-        // 3. Sidebar Filter Variables (Jo index() mein use ho rahe hain)
         $availableColors = ProductVariant::whereNotNull('color_name')
             ->where('color_name', '!=', '')
             ->distinct()
@@ -240,10 +261,8 @@ class FrontendController extends Controller
 
         $brands = Brand::latest()->get();
 
-        // Return view with all required variables
         return view('frontend.product', compact(
             'products',
-            $wishlistProductIds ? 'wishlistProductIds' : [], // safe check
             'wishlistProductIds',
             'availableColors',
             'availableSizes',
@@ -391,7 +410,7 @@ class FrontendController extends Controller
         }
 
         // 6. Pagination & Data Transformation
-        $records = $query->paginate(15)->appends($request->query()); // Pagination ke sath query parameters zaroori hain
+        $records = $query->paginate(15  )->appends($request->query()); // Pagination ke sath query parameters zaroori hain
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
         $records->getCollection()->transform(function ($product) use ($selectedColor) {

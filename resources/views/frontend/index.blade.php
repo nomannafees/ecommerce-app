@@ -444,25 +444,30 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 mx-auto pt-0  sm:mb-8 mb-3 lg:mb-12">
-        @php $brandCount = count($brands ?? []); @endphp
-        @if($brandCount > 6)
-            <div class="brands-carousel relative">
-            @foreach($brands as $brand)
-                <!-- pr-2 sm:pr-3 se carousel items ke darmiyan spacing maintain ki gayi hai -->
-                    <div class="brand-cell w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/6 pr-2 sm:pr-3">
-                        <a href="{{ route('categories', ['brand' => $brand->slug]) }}"
-                           class="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition duration-300 group h-full">
-                            <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-2 sm:mb-3">
-                                <img src="{{ asset('storage/' . $brand->image) }}" alt="{{ $brand->name }}"
-                                     class="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition duration-300">
-                            </div>
-                            <span class="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-black">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 pt-0 sm:mb-8 mb-3 lg:mb-12">
+    @php $brandCount = count($brands ?? []); @endphp
+    @if($brandCount > 6)
+        <!-- Swiper Container with pb-12 for padding bottom -->
+            <div class="swiper brandsSwiper relative overflow-hidden" style="margin-bottom: -22px">
+                <div class="swiper-wrapper">
+                    @foreach($brands as $brand)
+                        <div class="swiper-slide h-auto pr-2 sm:pr-3">
+                            <a href="{{ route('categories', ['brand' => $brand->slug]) }}"
+                               class="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition duration-300 group h-full">
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-2 sm:mb-3">
+                                    <img src="{{ asset('storage/' . $brand->image) }}" alt="{{ $brand->name }}"
+                                         class="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition duration-300">
+                                </div>
+                                <span class="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-black">
                             {{ $brand->name }}
                         </span>
-                        </a>
-                    </div>
-                @endforeach
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Pagination Dots Container -->
+                <div class="swiper-pagination brands-swiper-pagination"></div>
             </div>
         @else
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6">
@@ -474,8 +479,8 @@
                                  class="max-w-full max-h-full object-contain filter grayscale group-hover:grayscale-0 transition duration-300">
                         </div>
                         <span class="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-black">
-                        {{ $brand->name }}
-                    </span>
+                    {{ $brand->name }}
+                </span>
                     </a>
                 @empty
                     <div class="col-span-full text-center text-gray-500 py-4 text-sm">No Brands Found</div>
@@ -484,8 +489,18 @@
         @endif
     </div>
 
+    <!-- Custom CSS to push pagination below cards -->
+    <style>
+        .brandsSwiper {
+            padding-bottom: 40px !important; /* Space for dots at the bottom */
+        }
+        .brands-swiper-pagination {
+            bottom: 0px !important; /* Position dots at the very bottom edge */
+        }
+    </style>
+
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
-    <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
+    <div class="relative w-full     mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
         <div
             class="container mx-auto px-3 sm:px-6 md:px-7 py-3 sm:py-6 mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
             <div
@@ -522,224 +537,123 @@
 
     <!-- 6. "FOR YOU" PERSONALIZED PRODUCTS SECTION -->
     @if(isset($products) && $products->isNotEmpty())
-        <div
-            class="container mx-auto px-3 sm:px-6 md:px-7  mx-auto  sm:mt-2 last:mb-9 md:last:mb-4 flex justify-between items-center">
+        <div class="container mx-auto px-3 sm:px-6 md:px-7 mx-auto sm:mt-2 last:mb-9 md:last:mb-4 flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <!-- Icon Color Changed to Emerald Green -->
                     <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i> Handpicked For You
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500  mb-1">Personalized recommendations tailored specially to
-                    your taste</p>
+                <p class="text-xs sm:text-sm text-gray-500 mb-1">Personalized recommendations tailored specially to your taste</p>
             </div>
         </div>
 
-        <!-- Mobile par mb-20 spacing hogi aur desktop (md) par mb-0 ho jayegi -->
-        <div
-            class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-15 md:mb-10">
-            @foreach($products as $product)
-                @php
-                    $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
-                    $avgRating = $product->reviews->avg('rating') ?? 0;
-                @endphp
+        <!-- GRID CONTAINER WITH ID -->
+        <div id="for-you-grid" class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-4">
+            @include('frontend.partials.for-you-cards', ['products' => $products])
+        </div>
 
-                <a href="{{ route('product.detail', $product->slug) }}" class="group flex">
-                    <div
-                        class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
+        <!-- LOADING SPINNER -->
+        <div id="loading-spinner" class="text-center mb-16 hidden">
+            <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
+            <p class="text-xs text-gray-500 mt-1">Loading more products...</p>
+        </div>
 
-                        {{-- IMAGE CONTAINER --}}
-                        <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-50 2xl:h-50 md:h-47 lg:h-50">
-                            <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <button type="submit"
-                                        class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
-                                        style="padding: 4px 9px 4px 9px !important;">
-                                    <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
-                                </button>
-                            </form>
-                            @if($product->mainVariantImage)
-                                <img
-                                    class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
-                                    src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
-                                    alt="{{ $product->name }}">
-                            @else
-                                <img class="w-full h-full object-cover" src="{{ asset('upload/no-image.jpg') }}"
-                                     alt="No Image Available">
-                            @endif
-                        </div>
-
-                        {{-- CARD CONTENT --}}
-                        <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
-                            <div>
-                                {{-- Product Name --}}
-                                <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
-                                    {{ $product->name }}
-                                </h4>
-
-                                {{-- Description --}}
-                                <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
-                                    {!! $product->description !!}
-                                </div>
-
-                                {{-- Rating Section --}}
-                                <div class="flex items-center gap-1 sm:mt-1.5">
-                                    <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= floor($avgRating))
-                                                <i class="fa-solid fa-star"></i>
-                                            @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                                <i class="fa-solid fa-star-half-stroke"></i>
-                                            @else
-                                                <i class="fa-regular fa-star text-gray-300"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                    <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
-                                </div>
-                            </div>
-
-                            {{-- Price & Stock Section --}}
-                            <div class="flex items-center justify-between gap-2 mt-auto">
-                                @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
-                                <div class="flex flex-col">
-                        <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
-                            Rs {{ number_format($variant->price ?? 0) }}
-                        </span>
-                                    @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                        <span
-                                            class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                Rs {{ number_format($variant->cut_price) }}
-                            </span>
-                                    @endif
-                                </div>
-                                <div class="flex-shrink-0">
-                                    @php $totalStock = $product->variants->sum('stock'); @endphp
-                                    @if($totalStock <= 0)
-                                        <span
-                                            class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                Out of Stock
-                            </span>
-                                    @else
-                                        <span
-                                            class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                            </span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            @endforeach
+        <!-- NO MORE PRODUCTS BUTTON -->
+        <div id="no-more-products" class="text-center -mt-3  mb-16 sm:mb-5 lg:mb-6 md:mt-3 hidden">
+        <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
+        </span>
         </div>
     @endif
 
-    <!-- STYLES & SCRIPTS -->
-    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
-    <style>
-        :root {
-            --swiper-theme-color: white;
-        }
-
-        .brands-carousel .flickity-page-dots {
-            bottom: -30px;
-        }
-
-        .brands-carousel .flickity-page-dots .dot {
-            width: 8px;
-            height: 8px;
-            opacity: 0.4;
-            background: #4B5563;
-            transition: all 0.3s ease;
-        }
-
-        .brands-carousel .flickity-page-dots .dot.is-selected {
-            width: 24px;
-            border-radius: 6px;
-            opacity: 1;
-            background: #000000;
-        }
-
-        .brands-carousel .flickity-prev-next-button {
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #E5E7EB;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border-radius: 50%;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .brands-carousel .flickity-prev-next-button:hover {
-            background: #000000;
-            border-color: #000000;
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        .brands-carousel .flickity-prev-next-button .flickity-button-icon {
-            fill: #374151;
-            width: 38%;
-            height: 38%;
-            left: 31%;
-            top: 31%;
-        }
-
-        .brands-carousel .flickity-prev-next-button:hover .flickity-button-icon {
-            fill: #FFFFFF;
-        }
-
-        .brands-carousel .flickity-prev-next-button.previous {
-            left: -20px;
-        }
-
-        .brands-carousel .flickity-prev-next-button.next {
-            right: -20px;
-        }
 
 
-        @media (max-width: 640px) {
-            .brands-carousel .flickity-prev-next-button.previous {
-                left: -8px;
+
+
+@endsection
+
+
+@push('scripts')
+    <script>
+        let page = 1;
+        let hasMorePages = {{ $products->hasMorePages() ? 'true' : 'false' }};
+        let isLoading = false;
+
+        $('main').scroll(function() {
+            let $main = $(this);
+
+            if (!hasMorePages) return;
+
+            if($main.scrollTop() + $main.innerHeight() >= $main[0].scrollHeight - 300) {
+                if(isLoading) return;
+
+                isLoading = true;
+                page++;
+                $('#loading-spinner').removeClass('hidden');
+
+                $.ajax({
+                    url: "{{ route('index') }}?page=" + page,
+                    type: "GET",
+                    success: function(response) {
+                        $('#loading-spinner').addClass('hidden');
+
+                        if($.trim(response) === "") {
+                            hasMorePages = false;
+                            $('#no-more-products').removeClass('hidden');
+                        } else {
+                            $('#for-you-grid').append(response);
+                            isLoading = false;
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        $('#loading-spinner').addClass('hidden');
+                        isLoading = false;
+                    }
+                });
             }
-
-            .brands-carousel .flickized-prev-next-button.next {
-                right: -8px;
-            }
-        }
-    </style>
+        });
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Hero Swiper Initialization
+            // Hero Swiper Initialization
             new Swiper(".heroSwiper", {
                 loop: true,
                 effect: "fade",
                 speed: 1000,
-                autoplay: {delay: 3000, disableOnInteraction: false},
-                pagination: {el: ".swiper-pagination", clickable: true},
-                navigation: {nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev"},
+                autoplay: { delay: 3000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
             });
 
-            // 2. Brands Flickity Carousel Initialization
-            var brandCarousel = document.querySelector('.brands-carousel');
-            if (brandCarousel) {
-                // Check if screen is mobile (less than 768px)
-                var isMobile = window.innerWidth < 768;
-
-                new Flickity(brandCarousel, {
-                    cellAlign: 'left',
-                    contain: true,
-                    // Mobile par dots/arrows off kar sakte hain agar clean look chahiye
-                    pageDots: !isMobile,
-                    prevNextButtons: !isMobile,
-                    autoPlay: 2500,
-                    wrapAround: true,
-                    pauseAutoPlayOnHover: true
-                });
-            }
+            // Brands Swiper Initialization with Pagination
+            new Swiper(".brandsSwiper", {
+                loop: true,
+                speed: 800,
+                autoplay: {
+                    delay: 2500,
+                    disableOnInteraction: false,
+                    pauseOnMouseEnter: true
+                },
+                // Pagination settings add ki hain
+                pagination: {
+                    el: ".brands-swiper-pagination",
+                    clickable: true,
+                },
+                slidesPerView: 2, // Mobile default
+                spaceBetween: 12,
+                breakpoints: {
+                    640: {
+                        slidesPerView: 3,
+                    },
+                    768: {
+                        slidesPerView: 4,
+                    },
+                    1024: {
+                        slidesPerView: 6,
+                    }
+                }
+            });
         });
-
     </script>
-
-@endsection
+@endpush

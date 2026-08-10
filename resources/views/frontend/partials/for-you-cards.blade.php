@@ -1,0 +1,83 @@
+@foreach($products as $product)
+    @php
+        $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
+        $avgRating = $product->reviews->avg('rating') ?? 0;
+    @endphp
+
+    <a href="{{ route('product.detail', $product->slug) }}" class="group flex">
+        <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
+
+            {{-- IMAGE CONTAINER --}}
+            <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-50 2xl:h-50 md:h-47 lg:h-50">
+                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <button type="submit"
+                            class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
+                            style="padding: 4px 9px 4px 9px !important;">
+                        <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
+                    </button>
+                </form>
+                @if($product->mainVariantImage)
+                    <img class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
+                         src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
+                         alt="{{ $product->name }}">
+                @else
+                    <img class="w-full h-full object-cover" src="{{ asset('upload/no-image.jpg') }}" alt="No Image Available">
+                @endif
+            </div>
+
+            {{-- CARD CONTENT --}}
+            <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
+                <div>
+                    <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                        {{ $product->name }}
+                    </h4>
+                    <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 mt-0.5">
+                        {!! $product->description !!}
+                    </div>
+                    <div class="flex items-center gap-1 sm:mt-1.5">
+                        <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= floor($avgRating))
+                                    <i class="fa-solid fa-star"></i>
+                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                @else
+                                    <i class="fa-regular fa-star text-gray-300"></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-2 mt-auto">
+                    @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
+                    <div class="flex flex-col">
+                        <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
+                            Rs {{ number_format($variant->price ?? 0) }}
+                        </span>
+                        @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
+                            <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                Rs {{ number_format($variant->cut_price) }}
+                            </span>
+                        @endif
+                    </div>
+                    <div class="flex-shrink-0">
+                        @php $totalStock = $product->variants->sum('stock'); @endphp
+                        @if($totalStock <= 0)
+                            <span class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                Out of Stock
+                            </span>
+                        @else
+                            <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
+                            </span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+@endforeach
