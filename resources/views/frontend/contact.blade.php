@@ -2,16 +2,16 @@
 
 @section('content')
 
-    <!-- MAIN CONTAINER -->
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-6">
+    <!-- MAIN CONTAINER WITH MAX-W-7XL -->
+    <div class="container mx-auto px-3 sm:px-6 md:px-7  sm:py-3">
 
         <!-- HEADER -->
-        <div class="text-center mt-2 sm:mt-4 mb-6 sm:mb-8 px-4">
+        <div class="text-center mt-2 sm:mt-4 mb-2 sm:mb-5 px-4">
             <h2 class="text-2xl sm:text-4xl font-bold text-gray-900">
                 Contact Us
             </h2>
 
-            <p class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 max-w-xl mx-auto">
+            <p class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-1 max-w-xl mx-auto">
                 We'd love to hear from you. Send us a message.
             </p>
         </div>
@@ -29,7 +29,7 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 lg:mb-0">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-15 md:mb-5">
 
                 <!-- LEFT CARD (Contact Info & Map) -->
                 <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm sm:shadow p-5 sm:p-8 border border-gray-100 sm:border-none">

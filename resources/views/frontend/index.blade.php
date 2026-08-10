@@ -37,6 +37,7 @@
             bottom: -25px; /* Isay -30px se -25px ya -20px kar dein */
             position: relative; /* Absolute ki jagah relative ya absolute with proper spacing */
         }
+
         .brands-carousel .flickity-page-dots {
             bottom: -14px !important;
             margin-bottom: -16px !important;
@@ -368,7 +369,8 @@
                     Rs {{ number_format($variant->price ?? 0) }}
                 </span>
                                     @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                        <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                        <span
+                                            class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
                         Rs {{ number_format($variant->cut_price) }}
                     </span>
                                     @endif
@@ -429,12 +431,15 @@
     <div class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto sm:mt-4">
         <div class="flex justify-between items-center">
             <div>
-                <!-- Header updated with green indicator bar -->
+                <!-- Header updated with icon -->
                 <h2 class="text-base sm:text-lg font-bold text-gray-800 tracking-tight flex items-center gap-2">
-                    <span class="w-2 h-5 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
+        <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-award text-xs sm:text-sm"></i>
+        </span>
                     <span>Our Top Brands</span>
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1 mb-2">Browse items from your favorite trustworthy labels</p>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1 mb-2">Browse items from your favorite trustworthy
+                    labels</p>
             </div>
         </div>
     </div>
@@ -602,7 +607,8 @@
                             Rs {{ number_format($variant->price ?? 0) }}
                         </span>
                                     @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                        <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                        <span
+                                            class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
                                 Rs {{ number_format($variant->cut_price) }}
                             </span>
                                     @endif
@@ -710,9 +716,9 @@
                 loop: true,
                 effect: "fade",
                 speed: 1000,
-                autoplay: { delay: 3000, disableOnInteraction: false },
-                pagination: { el: ".swiper-pagination", clickable: true },
-                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                autoplay: {delay: 3000, disableOnInteraction: false},
+                pagination: {el: ".swiper-pagination", clickable: true},
+                navigation: {nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev"},
             });
 
             // 2. Brands Flickity Carousel Initialization

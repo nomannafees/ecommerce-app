@@ -77,41 +77,49 @@
                         @endif
                     </div>
 
-                    <div class="flex flex-col gap-1.5 pb-2">
-                        {{-- BACK TO PARENT --}}
-                        @if(isset($currentCategory) && $currentCategory && $currentCategory->parent)
-                            @php
-                                $parentCategory = $currentCategory->parent;
-                                $backSlug = $buildCategoryPath($parentCategory);
-                            @endphp
+                        <div class="flex flex-col gap-1.5 pb-2">
+                            {{-- BACK TO PARENT OR PREVIOUS CATEGORY --}}
+                            @if(isset($currentCategory) && $currentCategory)
+                                @if($currentCategory->parent)
+                                    @php
+                                        $parentCategory = $currentCategory->parent;
+                                        $backSlug = $buildCategoryPath($parentCategory);
+                                    @endphp
+                                    <a href="{{ url('/collection/' . $backSlug) }}"
+                                       class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                        Back to {{ $parentCategory->name }}
+                                    </a>
+                                @else
+                                    {{-- Jab user kisi Main Category (jaise Men's Fashion) par ho, toh root categories par wapas jaane ke liye --}}
+                                    <a href="{{ url('/collection') }}"
+                                       class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                        All Categories
+                                    </a>
+                                @endif
+                            @endif
 
-                            <a href="{{ url('/collection/' . $backSlug) }}"
-                               class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
-                                <i class="fa-solid fa-arrow-left"></i>
-                                Back to {{ $parentCategory->name }}
-                            </a>
-                        @endif
+                            {{-- CATEGORY LIST --}}
+                            @if(isset($displayCategories) && $displayCategories->count() > 0)
+                                @foreach($displayCategories as $index => $cat)
+                                    @php
+                                        $categoryPath = $buildCategoryPath($cat);
+                                        $currentUrlCategory = trim(request()->route('category') ?? '', '/');
+                                        $isCategorySelected = $currentUrlCategory === trim($categoryPath, '/');
 
-                        {{-- CATEGORY LIST --}}
-                        @if(isset($displayCategories) && $displayCategories->count() > 0)
-                            @foreach($displayCategories as $index => $cat)
-                                @php
-                                    $categoryPath = $buildCategoryPath($cat);
-                                    $currentUrlCategory = trim(request()->route('category') ?? '', '/');
-                                    $isCategorySelected = $currentUrlCategory === trim($categoryPath, '/');
+                                        $activeQueryParams = array_filter(request()->except('category'));
+                                        $queryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
+                                    @endphp
 
-                                    $activeQueryParams = array_filter(request()->except('category'));
-                                    $queryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
-                                @endphp
-
-                                <a href="{{ url('/collection/' . $categoryPath) }}{{ $queryString }}"
-                                   x-show="showAllCategories || {{ $index }} < categoryLimit"
-                                   class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
-                                    {{ $cat->name }}
-                                </a>
-                            @endforeach
-                        @endif
-                    </div>
+                                    <a href="{{ url('/collection/' . $categoryPath) }}{{ $queryString }}"
+                                       x-show="showAllCategories || {{ $index }} < categoryLimit"
+                                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
+                                        {{ $cat->name }}
+                                    </a>
+                                @endforeach
+                            @endif
+                        </div>
 
                     {{-- SEE MORE / SEE LESS BUTTON (Categories ke liye) --}}
                     @if(isset($displayCategories) && $displayCategories->count() > 6)
@@ -517,7 +525,7 @@
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
                                         class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition flex items-center justify-center"
-                                        style="padding: 4px 9px 4px 9px !important;">
+                                        style="    padding: 7px 7px 6px 7px !important;">
                                     <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
