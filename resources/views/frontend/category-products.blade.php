@@ -30,26 +30,23 @@
                                     Explore Sub-Categories
                                 </h3>
                                 <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                {{ $currentCategory->children->count() }} Items
-            </span>
+                                    {{ $currentCategory->children->count() }} Items
+                                </span>
                             </div>
 
                             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3 sm:gap-4">
                                 @foreach($currentCategory->children as $subCat)
                                     @php
-                                        // CHANGE: Agar pehle se request mein category mojood hai, toh uske sath naya sub-cat slug append karein
                                         $currentRequestCategory = request('category');
                                         $nestedSlug = $currentRequestCategory ? $currentRequestCategory . '/' . $subCat->slug : $subCat->slug;
                                     @endphp
                                     <a href="{{ route('categories', array_merge(request()->except('page'), ['category' => $nestedSlug])) }}"
-                                       class="group bg-white border border-gray-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md  transition-all duration-300 flex flex-col text-center relative">
-
+                                       class="group bg-white border border-gray-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col text-center relative">
                                         <div class="w-full h-24 sm:h-30 bg-gray-50 overflow-hidden relative">
                                             <img src="{{ $subCat->image ? asset('storage/cat_image/' . $subCat->image) : asset('images/no-image.png') }}"
                                                  alt="{{ $subCat->name }}"
                                                  class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out">
                                         </div>
-
                                         <div class="p-2.5 flex items-center justify-center bg-white border-t border-gray-100/60">
                                             <h4 class="font-medium text-xs sm:text-sm text-gray-800 group-hover:text-emerald-600 transition-colors duration-200 line-clamp-1">
                                                 {{ $subCat->name }}
@@ -59,10 +56,8 @@
                                 @endforeach
                             </div>
                         </div>
-                @endif
-
-            @else
-                <!-- Fixed missing quote issue here -->
+                    @endif
+                @else
                     <div class="text-center mb-6 lg:mb-0">
                         <h2 class="text-2xl sm:text-4xl font-bold text-gray-900">
                             All Products
@@ -73,120 +68,24 @@
                     </div>
             @endif
 
-
             <!-- PRODUCTS GRID SECTION -->
                 <div class="mb-6">
-                    <!-- Header with proper flex alignment and green bar indicator -->
                     <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 tracking-tight flex items-center gap-2">
                         <span class="w-2 h-5 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
                         <span>{{ isset($currentCategory) ? 'Products in ' . $currentCategory->name : 'All Products' }}</span>
                     </h3>
 
-                    <!-- Grid configured for 5 columns on lg/xl screens -->
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-                        @forelse($products as $product)
-                            @php
-                                $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
-                                $avgRating = $product->avgRating ?? 0;
-                            @endphp
-
-                            <div class="group relative bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition duration-300 flex flex-col h-full w-full">
-
-                                <!-- WISHLIST BUTTON -->
-                                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm absolute top-2 right-2 z-20">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <button type="submit"
-                                            class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition" style="padding: 4px 9px 4px 9px !important;">
-                                        <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
-                                    </button>
-                                </form>
-
-                                <!-- PRODUCT LINK WRAPPER -->
-                                <a href="{{ route('product.detail', $product->slug) }}" class="flex flex-col h-full w-full">
-
-                                    <!-- IMAGE CONTAINER -->
-                                    <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-60 2xl:h-50 md:h-60 lg:h-55">
-                                        <img src="{{ $product->mainVariantImage && $product->mainVariantImage->image_path ? asset('storage/'. $product->mainVariantImage->image_path) : asset('images/no-image.png') }}"
-                                             class="w-full h-full object-cover group-hover:scale-104 transition duration-300"
-                                             alt="{{ $product->name }}">
-                                    </div>
-
-                                    <!-- CONTENT -->
-                                    <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
-                                        <div>
-                                            <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
-                                                {{ $product->name }}
-                                            </h4>
-                                            <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
-                                                {!! $product->description !!}
-                                            </div>
-                                        </div>
-
-                                        <!-- RATING SECTION -->
-                                        <div class="flex items-center gap-1 sm:mt-1.5">
-                                            <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                                                @for($i = 1; $i <= 5; $i++)
-                                                    @if($i <= floor($avgRating))
-                                                        <i class="fa-solid fa-star"></i>
-                                                    @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                                        <i class="fa-solid fa-star-half-stroke"></i>
-                                                    @else
-                                                        <i class="fa-regular fa-star text-gray-300"></i>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
-                                        </div>
-
-                                        <!-- PRICE + STOCK -->
-                                        <div class="flex items-center justify-between gap-2 mt-auto">
-                                            @php
-                                                $variant = $product->mainVariant ?? $product->variants->first();
-                                            @endphp
-
-                                            <div class="flex flex-col">
-                                                @if($variant)
-                                                    <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
-                                    Rs {{ number_format($variant->price) }}
-                                </span>
-                                                    @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                                        <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                        Rs {{ number_format($variant->cut_price) }}
-                                    </span>
-                                                    @endif
-                                                @else
-                                                    <span class="text-xs sm:text-base font-bold text-gray-500 whitespace-nowrap">
-                                    Rs {{ number_format($product->base_price ?? 0) }}
-                                </span>
-                                                @endif
-                                            </div>
-
-                                            <div class="flex-shrink-0">
-                                                @php $totalStock = $product->variants->sum('stock'); @endphp
-                                                @if($totalStock <= 0)
-                                                    <span class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    Out of Stock
-                                </span>
-                                                @else
-                                                    <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </a>
-                            </div>
-                        @empty
-                            <div class="col-span-full text-center py-16 bg-white rounded-lg border border-gray-100">
-                                <i class="fa-solid fa-box-open text-5xl text-gray-300 mb-3"></i>
-                                <h4 class="text-lg font-semibold text-gray-600">No Products Found</h4>
-                                <p class="text-xs text-gray-500 mt-1">There are no products available under this category.</p>
-                            </div>
-                        @endforelse
+                    <!-- GRID WITH ID FOR INFINITE SCROLL -->
+                    <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                        @include('frontend.partials.category-products-loop', ['products' => $products, 'wishlistProductIds' => $wishlistProductIds])
                     </div>
+                </div>
+
+                <!-- NO MORE PRODUCTS BUTTON -->
+                <div id="no-more-products" class="text-center my-6 hidden">
+                    <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
+                    </span>
                 </div>
 
             </div>
@@ -196,3 +95,87 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        let page = 1;
+        let hasMorePages = {{ $products->hasMorePages() ? 'true' : 'false' }};
+        let isLoading = false;
+
+        function checkScrollAndLoad($scrollContainer, isWindow) {
+            let scrollTop = isWindow ? $(window).scrollTop() : $scrollContainer.scrollTop();
+            let innerHeight = isWindow ? $(window).height() : $scrollContainer.innerHeight();
+            let scrollHeight = isWindow ? $(document).height() : $scrollContainer[0].scrollHeight;
+
+            if (scrollTop + innerHeight >= scrollHeight - 300) {
+
+                if (!hasMorePages) {
+                    $('#no-more-products').removeClass('hidden');
+                    return;
+                }
+
+                if (isLoading) return;
+
+                isLoading = true;
+                page++;
+
+                // Shimmer Effect HTML
+                let shimmerHtml = `
+                    @for($i = 0; $i < 6; $i++)
+                <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
+                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
+                    <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
+                        <div>
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-full"></div>
+                        </div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="h-5 bg-gray-200 rounded w-1/3"></div>
+                            <div class="h-5 bg-gray-200 rounded w-1/4"></div>
+                        </div>
+                    </div>
+                </div>
+@endfor
+                `;
+                $('#product-grid').append(shimmerHtml);
+
+                let url = new URL(window.location.href);
+                url.searchParams.set('page', page);
+
+                // 🟢 Yeh raha naya AJAX block jo aapne pucha hai
+                $.ajax({
+                    url: url.toString(),
+                    type: "GET",
+                    success: function(response) {
+                        $('.product-shimmer').remove();
+
+                        // Agar response mein products ki HTML khali hai ya koi products nahi aaye
+                        if(!response || $.trim(response).length === 0) {
+                            hasMorePages = false;
+                            $('#no-more-products').removeClass('hidden');
+                        } else {
+                            $('#product-grid').append(response);
+                            isLoading = false;
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log("AJAX Error: ", xhr.responseText);
+                        $('.product-shimmer').remove();
+                        isLoading = false;
+                    }
+                });
+            }
+        }
+
+        // Window scroll listener
+        $(window).scroll(function() {
+            checkScrollAndLoad(null, true);
+        });
+
+        // Main container scroll listener
+        $('main').scroll(function() {
+            checkScrollAndLoad($(this), false);
+        });
+    </script>
+@endpush

@@ -20,289 +20,13 @@
 
         <div class="flex flex-col lg:flex-row gap-6 py-6">
 
-            <!-- LEFT SIDEBAR (Desktop Only) -->
-            <aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible" x-data="{ showAllCategories: false, categoryLimit: 6 }">
-            @php
-                // 1. Helper function to build category path
-                $buildCategoryPath = function ($categoryItem) {
-                    $slugs = [];
-                    $item = $categoryItem;
-                    while ($item) {
-                        array_unshift($slugs, $item->slug);
-                        $item = $item->parent;
-                    }
-                    return implode('/', $slugs);
-                };
+        @include('frontend.partials.category-sidebar')
 
-                // 2. Display categories logic
-                if (!isset($currentCategory) || !$currentCategory) {
-                    $displayCategories = $categories->where('parent_id', 0);
-                } elseif ($currentCategory->children && $currentCategory->children->count() > 0) {
-                    $displayCategories = $currentCategory->children;
-                } elseif ($currentCategory->parent) {
-                    $displayCategories = $currentCategory->parent->children ?? collect();
-                } else {
-                    $displayCategories = collect();
-                }
-            @endphp
-
-            <!-- Form action -->
-                <form method="GET" action="{{ request()->url() }}" id="filterForm" onsubmit="return cleanEmptyInputs(this);" class="space-y-4">
-
-                    @if(request()->route('category'))
-                        <input type="hidden" name="category" value="{{ request()->route('category') }}">
-                    @endif
-
-                    @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
-                    @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
-
-                    <input type="hidden" name="color" id="selectedColorInput" value="{{ request('color') }}">
-                    <input type="hidden" name="size" id="selectedSizeInput" value="{{ request('size') }}">
-                    <input type="hidden" name="brand" id="selectedBrandInput" value="{{ request('brand') }}">
-
-                    {{-- ============================================================
-                         CATEGORIES HEADER WITH CLEAR FILTERS
-                    ============================================================= --}}
-                    <div class="flex items-center justify-between mb-2">
-                        <h2 class="font-bold text-sm tracking-tight">
-                            <span>Categories</span>
-                        </h2>
-
-                        {{-- Jab koi filter active ho ga tabhi yeh Clear link samne show ho ga --}}
-                        @if(request()->hasAny(['color', 'size', 'brand', 'max_price', 'min_price']))
-                            <a href="{{ request()->url() }}"
-                               class="text-[11px] font-semibold text-red-600 hover:text-red-800 transition underline cursor-pointer">
-                                Clear Filters
-                            </a>
-                        @endif
-                    </div>
-
-                        <div class="flex flex-col gap-1.5 pb-2">
-                            {{-- BACK TO PARENT OR PREVIOUS CATEGORY --}}
-                            @if(isset($currentCategory) && $currentCategory)
-                                @if($currentCategory->parent)
-                                    @php
-                                        $parentCategory = $currentCategory->parent;
-                                        $backSlug = $buildCategoryPath($parentCategory);
-                                    @endphp
-                                    <a href="{{ url('/collection/' . $backSlug) }}"
-                                       class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
-                                        <i class="fa-solid fa-arrow-left"></i>
-                                        Back to {{ $parentCategory->name }}
-                                    </a>
-                                @else
-                                    {{-- Jab user kisi Main Category (jaise Men's Fashion) par ho, toh root categories par wapas jaane ke liye --}}
-                                    <a href="{{ url('/collection') }}"
-                                       class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline">
-                                        <i class="fa-solid fa-arrow-left"></i>
-                                        All Categories
-                                    </a>
-                                @endif
-                            @endif
-
-                            {{-- CATEGORY LIST --}}
-                            @if(isset($displayCategories) && $displayCategories->count() > 0)
-                                @foreach($displayCategories as $index => $cat)
-                                    @php
-                                        $categoryPath = $buildCategoryPath($cat);
-                                        $currentUrlCategory = trim(request()->route('category') ?? '', '/');
-                                        $isCategorySelected = $currentUrlCategory === trim($categoryPath, '/');
-
-                                        $activeQueryParams = array_filter(request()->except('category'));
-                                        $queryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
-                                    @endphp
-
-                                    <a href="{{ url('/collection/' . $categoryPath) }}{{ $queryString }}"
-                                       x-show="showAllCategories || {{ $index }} < categoryLimit"
-                                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
-                                        {{ $cat->name }}
-                                    </a>
-                                @endforeach
-                            @endif
-                        </div>
-
-                    {{-- SEE MORE / SEE LESS BUTTON (Categories ke liye) --}}
-                    @if(isset($displayCategories) && $displayCategories->count() > 6)
-                        <button type="button"
-                                @click="showAllCategories = !showAllCategories"
-                                class="mt-1 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
-                            <span x-text="showAllCategories ? 'See Less' : 'See More ({{ $displayCategories->count() - 6 }})'"></span>
-                            <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllCategories ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                        </button>
-                    @endif
-
-                <!-- Price Range -->
-                    <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                        <span>Price</span>
-                    </h2>
-                    <div class="space-y-2 my-2 pb-3 border-b border-gray-100">
-                        <input type="range"
-                               id="priceSlider"
-                               name="max_price"
-                               min="0"
-                               max="100000"
-                               step="500"
-                               value="{{ request('max_price', 100000) }}"
-                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
-                               oninput="updatePriceLabel(this.value)"
-                               onchange="document.getElementById('filterForm').submit();">
-
-                        <input type="hidden" name="min_price" value="{{ request('min_price', 0) }}">
-
-                        <div class="flex justify-between text-xs text-gray-500 font-medium">
-                            <span>Rs 0</span>
-                            <span class="text-black font-bold">Max: Rs <span id="priceLabel">{{ number_format(request('max_price', 100000)) }}</span></span>
-                        </div>
-                    </div>
-
-                    <!-- Color Filter -->
-                    @if(isset($availableColors) && count($availableColors) > 0)
-                        <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                            <span>Color</span>
-                        </h2>
-                        <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
-                            @foreach($availableColors as $colorName)
-                                @php
-                                    $cleanColor = strtolower(trim($colorName));
-                                    $isSelected = request('color') == $cleanColor;
-                                    $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
-                                @endphp
-                                <button type="button" onclick="selectColorSwatch('{{ $cleanColor }}')"
-                                        title="{{ ucfirst($colorName) }}"
-                                        class="w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 relative flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-2 ring-black scale-110' : 'opacity-80 hover:opacity-100' }}"
-                                        style="{{ $inlineBg }}">
-                                    @if($isSelected)
-                                        <i class="fa-solid fa-check text-[10px] sm:text-xs {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
-                                    @endif
-                                </button>
-                            @endforeach
-                        </div>
-                    @endif
-
-                <!-- Size Filter -->
-                    @if(isset($availableSizes) && count($availableSizes) > 0)
-                        <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                            <span>Size</span>
-                        </h2>
-                        <div class="flex flex-wrap gap-2 my-2 pb-3 border-b border-gray-100">
-                            @foreach($availableSizes as $sizeName)
-                                @php
-                                    $cleanSize = trim($sizeName);
-                                    $isSizeSelected = request('size') == $cleanSize;
-                                @endphp
-                                <button type="button" onclick="selectSizeBox('{{ $cleanSize }}')"
-                                        class="px-2.5 py-1 cursor-pointer text-xs sm:text-sm rounded border transition-all duration-200 font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-black' }}">
-                                    {{ strtoupper($cleanSize) }}
-                                </button>
-                            @endforeach
-                        </div>
-                    @endif
-
-                <!-- Brands Filter -->
-                    @if(isset($availableBrands) && count($availableBrands) > 0)
-                        <div x-data="{ showAllBrands: false, brandLimit: 6 }">
-                            <h2 class="font-bold text-sm mt-4 mb-2 tracking-tight flex items-center gap-2">
-                                <span>Brands</span>
-                            </h2>
-
-                            <div class="flex flex-col gap-2 pb-1">
-                                @foreach($availableBrands as $index =>$brand)
-                                    @php
-                                        $isBrandSelected = request('brand') == $brand->slug;
-                                    @endphp
-                                    <label x-show="showAllBrands || {{ $index }} < brandLimit"
-                                           class="flex items-center gap-2.5 cursor-pointer group text-xs sm:text-sm text-gray-700 hover:text-black">
-                                        <input type="checkbox"
-                                               onchange="selectBrand('{{ $brand->slug }}')"
-                                               {{ $isBrandSelected ? 'checked' : '' }}
-                                               class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
-                                        <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
-                                {{ ucfirst($brand->name) }}
-                            </span>
-                                    </label>
-                                @endforeach
-                            </div>
-
-                            @if(count($availableBrands) > 6)
-                                <button type="button"
-                                        @click="showAllBrands = !showAllBrands"
-                                        class="mt-2 w-full py-1.5 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-2 transition-all duration-200 shadow-xs cursor-pointer">
-                                    <span x-text="showAllBrands ? 'See Less' : 'See More'"></span>
-                                    <i class="fa-solid text-[10px] text-gray-500 transition-transform duration-200" :class="showAllBrands ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                                </button>
-                            @endif
-                        </div>
-                    @endif
-
-                </form>
-            </aside>
-
-            <script>
-                function updatePriceLabel(val) {
-                    document.getElementById('priceLabel').innerText = Number(val).toLocaleString();
-                }
-
-                function selectColorSwatch(color) {
-                    let input = document.getElementById('selectedColorInput');
-                    input.value = (input.value === color) ? '' : color;
-                    document.getElementById('filterForm').submit();
-                }
-
-                function selectSizeBox(size) {
-                    let input = document.getElementById('selectedSizeInput');
-                    input.value = (input.value === size) ? '' : size;
-                    document.getElementById('filterForm').submit();
-                }
-
-                function selectBrand(brandSlug) {
-                    let input = document.getElementById('selectedBrandInput');
-                    input.value = (input.value === brandSlug) ? '' : brandSlug;
-                    document.getElementById('filterForm').submit();
-                }
-
-                // Yeh function empty inputs ko disable kar dega taake URL mein ?color=&size= jaisi fazool cheezein na jayein
-                function cleanEmptyInputs(form) {
-                    let inputs = form.elements;
-                    for (let i = 0; i < inputs.length; i++) {
-                        if (inputs[i].value === "" || inputs[i].value === null) {
-                            inputs[i].disabled = true;
-                        }
-                    }
-                    return true;
-                }
-            </script>
-
-            <!-- JavaScript Helper Functions (Agar pehle se defined nahi hain to inhein add kar dein) -->
-            <script>
-                function updatePriceLabel(val) {
-                    document.getElementById('priceLabel').innerText = Number(val).toLocaleString();
-                }
-
-                function selectColorSwatch(color) {
-                    let input = document.getElementById('selectedColorInput');
-                    // Agar same color dobara click ho to toggle off kar dein
-                    input.value = (input.value === color) ? '' : color;
-                    document.getElementById('filterForm').submit();
-                }
-
-                function selectSizeBox(size) {
-                    let input = document.getElementById('selectedSizeInput');
-                    input.value = (input.value === size) ? '' : size;
-                    document.getElementById('filterForm').submit();
-                }
-
-                function selectBrand(brandSlug) {
-                    let input = document.getElementById('selectedBrandInput');
-                    input.value = (input.value === brandSlug) ? '' : brandSlug;
-                    document.getElementById('filterForm').submit();
-                }
-            </script>
-
-            <!-- RIGHT SIDE (Products Grid - 5 columns) -->
+        <!-- RIGHT SIDE (Products Grid - 5 columns) -->
             <div class="w-full lg:w-4/5 container mx-auto ">
 
                 <!-- DESKTOP SORT BAR -->
-                <form method="GET" action="{{ request()->url() }}" id="searchSortForm"
+                <form method="GET" action="{{ request()->url() }}" id="searchSortForm" onsubmit="return false;"
                       class="mb-4 hidden lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 shadow-sm">
 
                     @if(request()->route('category')) <input type="hidden" name="category" value="{{ request()->route('category') }}"> @endif
@@ -318,7 +42,7 @@
                     <div class="flex items-center gap-3">
                         <div class="w-48 relative h-[40px]">
                             <select name="sort"
-                                    onchange="document.getElementById('searchSortForm').submit();"
+                                    id="desktopSortSelect"
                                     class="w-full h-full bg-white border border-gray-300 rounded-full pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-black text-sm cursor-pointer font-medium text-gray-700 appearance-none block leading-none">
                                 <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest Products</option>
                                 <option value="price_low_high" {{ request('sort') == 'price_low_high' ? 'selected' : '' }}>Price: Low to High</option>
@@ -335,8 +59,8 @@
                 <div class="mb-3 block lg:hidden bg-gray-50 border border-gray-200 rounded-xl p-3 shadow-sm space-y-2 relative">
                     <div class="flex justify-between items-center px-1">
                         <h2 class="text-sm font-semibold text-gray-700">Filters & Sort</h2>
-                        @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort') || request()->has('category'))
-                            <a href="{{ request()->url() }}" class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">
+                        @if(request()->hasAny(['min_price', 'max_price', 'color', 'size', 'brand', 'search', 'sort', 'category']))
+                            <a href="{{ request()->url() }}" onclick="fetchResetFilters(event, '{{ request()->url() }}')" class="text-xs text-red-500 underline font-medium hover:text-red-700 transition">
                                 Clear Filter
                             </a>
                         @else
@@ -378,25 +102,17 @@
                             <h3 class="font-bold text-gray-800 text-xs">Sort Products</h3>
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
-                        <form method="GET" action="{{ request()->url() }}" class="space-y-1">
-                            @if(request()->route('category')) <input type="hidden" name="category" value="{{ request()->route('category') }}"> @endif
-                            @if(request('min_price')) <input type="hidden" name="min_price" value="{{ request('min_price') }}"> @endif
-                            @if(request('max_price')) <input type="hidden" name="max_price" value="{{ request('max_price') }}"> @endif
-                            @if(request('color')) <input type="hidden" name="color" value="{{ request('color') }}"> @endif
-                            @if(request('size')) <input type="hidden" name="size" value="{{ request('size') }}"> @endif
-                            @if(request('brand')) <input type="hidden" name="brand" value="{{ request('brand') }}"> @endif
-                            @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
-
-                            <label class="block px-2.5 py-1.5 rounded border {{ request('sort') == 'latest' ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 cursor-pointer">
-                                <input type="radio" name="sort" value="latest" {{ request('sort') == 'latest' ? 'checked' : '' }} onchange="this.form.submit()" class="hidden"> Latest Products
-                            </label>
-                            <label class="block px-2.5 py-1.5 rounded border {{ request('sort') == 'price_low_high' ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 cursor-pointer">
-                                <input type="radio" name="sort" value="price_low_high" {{ request('sort') == 'price_low_high' ? 'checked' : '' }} onchange="this.form.submit()" class="hidden"> Price: Low to High
-                            </label>
-                            <label class="block px-2.5 py-1.5 rounded border {{ request('sort') == 'price_high_low' ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 cursor-pointer">
-                                <input type="radio" name="sort" value="price_high_low" {{ request('sort') == 'price_high_low' ? 'checked' : '' }} onchange="this.form.submit()" class="hidden"> Price: High to Low
-                            </label>
-                        </form>
+                        <div class="space-y-1">
+                            <button type="button" onclick="selectMobSort('latest')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ request('sort') == 'latest' || !request('sort') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                Latest Products
+                            </button>
+                            <button type="button" onclick="selectMobSort('price_low_high')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ request('sort') == 'price_low_high' ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                Price: Low to High
+                            </button>
+                            <button type="button" onclick="selectMobSort('price_high_low')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ request('sort') == 'price_high_low' ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                Price: High to Low
+                            </button>
+                        </div>
                     </div>
 
                     <div id="mobCategoryDropdown" class="mob-dropdown hidden absolute left-3 right-3 top-full mt-2 bg-white rounded-xl p-3 shadow-xl border border-gray-200 z-40 max-h-60 overflow-y-auto">
@@ -405,13 +121,24 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1">
-                            <a href="{{ request()->url() }}?{{ http_build_query(request()->except('category')) }}" class="block px-2.5 py-1.5 rounded border {{ !request()->route('category') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Categories</a>
+                            @php
+                                $buildCategoryPath = function ($categoryItem) {
+                                    $slugs = [];
+                                    $item = $categoryItem;
+                                    while ($item) {
+                                        array_unshift($slugs, $item->slug);
+                                        $item = $item->parent;
+                                    }
+                                    return implode('/', $slugs);
+                                };
+                            @endphp
+                            <a href="{{ url('/collection') }}" onclick="fetchCategoryProducts(event, '{{ url('/collection') }}', '')" class="block px-2.5 py-1.5 rounded border {{ !request()->route('category') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Categories</a>
                             @foreach($categories as $cat)
                                 @php
-                                    $activeQueryParams = array_filter(request()->except('category'));
-                                    $catQueryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
+                                    $catPath = $buildCategoryPath($cat);
+                                    $targetUrl = url('/collection/' . $catPath);
                                 @endphp
-                                <a href="{{ url('/product/' . $cat->slug) }}{{ $catQueryString }}" class="block px-2.5 py-1.5 rounded border {{ request()->route('category') == $cat->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                <a href="{{ $targetUrl }}" onclick="fetchCategoryProducts(event, '{{ $targetUrl }}', '{{ $catPath }}')" class="block px-2.5 py-1.5 rounded border {{ request()->route('category') == $cat->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
                                     {{ $cat->name }}
                                 </a>
                             @endforeach
@@ -424,20 +151,11 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1">
-                            @php
-                                $brandParams = request()->except('brand');
-                                if(request()->route('category')) { $brandParams['category'] = request()->route('category'); }
-                                $brandQueryString = !empty(array_filter($brandParams)) ? '?' . http_build_query(array_filter($brandParams)) : '';
-                            @endphp
-                            <a href="{{ request()->url() }}{{ $brandQueryString }}" class="block px-2.5 py-1.5 rounded border {{ !request('brand') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Brands</a>
+                            <button type="button" onclick="selectBrand('')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ !request('brand') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Brands</button>
                             @foreach($availableBrands as $brand)
-                                @php
-                                    $currentParams = array_merge(request()->query(), ['brand' => $brand->slug]);
-                                    if(request()->route('category')) { $currentParams['category'] = request()->route('category'); }
-                                @endphp
-                                <a href="{{ request()->url() }}?{{ http_build_query(array_filter($currentParams)) }}" class="block px-2.5 py-1.5 rounded border {{ request('brand') == $brand->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
+                                <button type="button" onclick="selectBrand('{{ $brand->slug }}')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ request('brand') == $brand->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">
                                     {{ ucfirst($brand->name) }}
-                                </a>
+                                </button>
                             @endforeach
                         </div>
                     </div>
@@ -448,28 +166,20 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1.5">
-                            @php
-                                $colorParams = request()->except('color');
-                                if(request()->route('category')) { $colorParams['category'] = request()->route('category'); }
-                                $colorQueryString = !empty(array_filter($colorParams)) ? '?' . http_build_query(array_filter($colorParams)) : '';
-                            @endphp
-                            <a href="{{ request()->url() }}{{ $colorQueryString }}" class="block px-2.5 py-1.5 rounded border {{ !request('color') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Colors</a>
+                            <button type="button" onclick="selectColorSwatch('')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ !request('color') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Colors</button>
                             <div class="flex flex-wrap gap-2 py-1">
                                 @foreach($availableColors as $colorName)
                                     @php
                                         $cleanColor = strtolower(trim($colorName));
                                         $isSelected = request('color') == $cleanColor;
                                         $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
-
-                                        $currentColorParams = array_merge(request()->query(), ['color' => $cleanColor]);
-                                        if(request()->route('category')) { $currentColorParams['category'] = request()->route('category'); }
                                     @endphp
-                                    <a href="{{ request()->url() }}?{{ http_build_query(array_filter($currentColorParams)) }}"
-                                       title="{{ ucfirst($colorName) }}"
-                                       class="w-7 h-7 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-1 ring-offset-1 ring-gray-600 scale-110' : 'opacity-90 hover:opacity-100' }}"
-                                       style="{{ $inlineBg }}">
+                                    <button type="button" onclick="selectColorSwatch('{{ $cleanColor }}')"
+                                            title="{{ ucfirst($colorName) }}"
+                                            class="w-7 h-7 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-1 ring-black scale-110' : 'opacity-90 hover:opacity-100' }}"
+                                            style="{{ $inlineBg }}">
                                         @if($isSelected) <i class="fa-solid fa-check text-[10px] {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i> @endif
-                                    </a>
+                                    </button>
                                 @endforeach
                             </div>
                         </div>
@@ -481,25 +191,17 @@
                             <button type="button" onclick="closeAllMobDropdowns()" class="text-gray-400 hover:text-black"><i class="fa-solid fa-xmark"></i></button>
                         </div>
                         <div class="space-y-1.5">
-                            @php
-                                $sizeParams = request()->except('size');
-                                if(request()->route('category')) { $sizeParams['category'] = request()->route('category'); }
-                                $sizeQueryString = !empty(array_filter($sizeParams)) ? '?' . http_build_query(array_filter($sizeParams)) : '';
-                            @endphp
-                            <a href="{{ request()->url() }}{{ $sizeQueryString }}" class="block px-2.5 py-1.5 rounded border {{ !request('size') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Sizes</a>
+                            <button type="button" onclick="selectSizeBox('')" class="w-full text-left block px-2.5 py-1.5 rounded border {{ !request('size') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700">All Sizes</button>
                             <div class="flex flex-wrap gap-1.5 py-1">
                                 @foreach($availableSizes as $sizeName)
                                     @php
                                         $cleanSize = trim($sizeName);
                                         $isSizeSelected = request('size') == $cleanSize;
-
-                                        $currentSizeParams = array_merge(request()->query(), ['size' => $cleanSize]);
-                                        if(request()->route('category')) { $currentSizeParams['category'] = request()->route('category'); }
                                     @endphp
-                                    <a href="{{ request()->url() }}?{{ http_build_query(array_filter($currentSizeParams)) }}"
-                                       class="px-2.5 py-1 text-xs rounded border transition font-medium {{ $isSizeSelected ? 'bg-gray-100 text-black border-gray-400 shadow-sm' : 'bg-gray-50 text-gray-700 border-gray-200' }}">
+                                    <button type="button" onclick="selectSizeBox('{{ $cleanSize }}')"
+                                            class="px-2.5 py-1 text-xs rounded border transition font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow-sm' : 'bg-gray-50 text-gray-700 border-gray-200' }}">
                                         {{ strtoupper($cleanSize) }}
-                                    </a>
+                                    </button>
                                 @endforeach
                             </div>
                         </div>
@@ -507,166 +209,249 @@
                 </div>
 
                 <!-- PRODUCTS GRID (5 columns on lg/xl) -->
-                <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-10 md:mb-5 sm:gap-3">
-                    @forelse($records as $product)
-                        @php
-                            $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
-                            $totalStock = $product->variants->sum('stock');
-
-                            $variant = $product->active_variant;
-                            $imagePath = $product->custom_image_path;
-                        @endphp
-
-                        <div class="relative bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300 group flex flex-col h-full w-full">
-
-                            <form action="{{ route('wishlists.store') }}" method="POST"
-                                  class="wishlistForm absolute top-2 right-2 sm:top-2 sm:right-2 z-30">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <button type="submit"
-                                        class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition flex items-center justify-center"
-                                        style="    padding: 7px 7px 6px 7px !important;">
-                                    <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
-                                </button>
-                            </form>
-
-                            <a href="{{ route('product.detail', $product->slug) }}{{ request('color') ? '?color='.request('color') : '' }}"
-                               class="block z-10 flex flex-col h-full">
-                                <div class="bg-gray-100 overflow-hidden relative h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55">
-                                    @if(!empty($imagePath))
-                                        <img src="{{ asset('storage/'.$imagePath) }}"
-                                             class="w-full h-full object-cover group-hover:scale-104 transition duration-300"
-                                             alt="{{ $product->name }}">
-                                    @else
-                                        <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs sm:text-base">
-                                            No Image
-                                        </div>
-                                    @endif
-                                </div>
-                                <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
-                                    <div>
-                                        <!-- NAME -->
-                                        <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
-                                            {{ $product->name }}
-                                        </h4>
-
-                                        <!-- DESCRIPTION -->
-                                        <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
-                                            {!! Str::limit(strip_tags($product->description), 150) !!}
-                                        </div>
-                                    </div>
-                                    @php
-                                        $avgRating = $product->avgRating ?? 0;
-                                    @endphp
-
-                                    {{-- Rating Section Blade Code --}}
-                                    <div class="flex items-center gap-1 sm:mt-1.5">
-                                        <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= floor($avgRating))
-                                                    <i class="fa-solid fa-star"></i>
-                                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                                    <i class="fa-solid fa-star-half-stroke"></i>
-                                                @else
-                                                    <i class="fa-regular fa-star text-gray-300"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
-                                    </div>
-
-                                    <div class="flex items-center justify-between gap-2 mt-auto">
-                                        <div class="flex flex-col">
-                                            @if($variant)
-                                                <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
-                    Rs {{ number_format($variant->price) }}
-                </span>
-                                                @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                                    <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                        Rs {{ number_format($variant->cut_price) }}
-                    </span>
-                                                @endif
-                                            @else
-                                                <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
-                    Rs {{ number_format($product->base_price ?? 0) }}
-                </span>
-                                            @endif
-                                        </div>
-
-                                        <div class="flex-shrink-0">
-                                            @if($totalStock <= 0)
-                                                <span class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                    Out of Stock
-                </span>
-                                            @else
-                                                <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    @empty
-                        <div class="col-span-full flex flex-col items-center justify-center text-center py-16 px-4 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
-                            <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mb-4 shadow-inner">
-                                <i class="fa-solid fa-magnifying-glass text-xl"></i>
-                            </div>
-                            <h3 class="text-lg font-semibold text-gray-800">No Products Found</h3>
-                            <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">
-                                We couldn't find anything matching your current filters. Try adjusting your price, color, size, or brand criteria.
-                            </p>
-                            @if(request()->has('min_price') || request()->has('max_price') || request()->has('color') || request()->has('size') || request()->has('brand') || request()->has('search') || request()->has('sort'))
-                                <a href="{{ route('categories', ['category' => request('category')]) }}"
-                                   class="mt-5 inline-flex items-center gap-2 bg-black text-white text-sm font-medium px-4 py-2 rounded-xl hover:bg-gray-800 transition shadow-sm">
-                                    <i class="fa-solid fa-rotate-right text-xs"></i>
-                                    Reset All Filters
-                                </a>
-                            @endif
-                        </div>
-                    @endforelse
+                <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-5 sm:gap-3">
+                    @include('frontend.partials.category-product-cards', ['records' => $records, 'wishlistProductIds' => $wishlistProductIds])
                 </div>
 
-                <div class="-mt-7 mb-5 lg:mt-8 lg:mb-2 mb-7 sm:mb-14">{{ $records->links() }}</div>
+                <!-- NO MORE PRODUCTS BUTTON -->
+                <div id="no-more-products" class="text-center my-6 hidden">
+        <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
+        </span>
+                </div>
             </div>
+
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+@endsection
+
+@push('scripts')
     <script>
+        // --- 1. PRICE & FILTER FUNCTIONS ---
         function updatePriceLabel(value) {
             document.getElementById('priceLabel').innerText = Number(value).toLocaleString();
         }
 
+        // AJAX Filter Trigger Function (Ab yeh sorting aur baqi sab filters ko ikatha serialize karega)
+        function fetchFilteredProducts(resetPage = true) {
+            if (resetPage) {
+                page = 1;
+                let url = new URL(window.location.href);
+                url.searchParams.set('page', 1);
+                window.history.pushState({}, '', url);
+            }
+
+            $('#productGrid').html('<div class="col-span-full text-center py-16"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-600"></i></div>');
+
+            // 1. Filter form ka data lo
+            let formData = $('#filterForm').serializeArray();
+
+            // 2. Desktop ya mobile sort ki current value ko bhi lazmi shamil karo
+            let currentSort = $('#desktopSortSelect').val() || new URLSearchParams(window.location.search).get('sort') || 'latest';
+
+            // Check karo agar formData mein pehle se sort hai toh theek, warna add kar do
+            let hasSort = false;
+            formData.forEach(function(item) {
+                if (item.name === 'sort') {
+                    item.value = currentSort;
+                    hasSort = true;
+                }
+            });
+            if (!hasSort) {
+                formData.push({name: 'sort', value: currentSort});
+            }
+
+            // Serialize data ko string banao
+            let serializedData = $.param(formData);
+
+            let cleanParams = serializedData.split('&').filter(function(item) {
+                let parts = item.split('=');
+                return parts[1] !== "" && parts[1] !== undefined;
+            }).join('&');
+
+            let actionUrl = $('#filterForm').attr('action') || window.location.pathname;
+            let fullQueryUrl = actionUrl + (cleanParams ? "?" + cleanParams : "");
+            let ajaxData = cleanParams + "&page=" + page;
+
+            $.ajax({
+                url: actionUrl,
+                type: 'GET',
+                data: ajaxData,
+                dataType: 'json',
+                success: function(response) {
+                    $('#loading-spinner').addClass('hidden');
+
+                    if ($.trim(response.products) === "") {
+                        hasMorePages = false;
+                        $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
+                        $('#no-more-products').removeClass('hidden');
+                    } else {
+                        $('#productGrid').html(response.products);
+                        $('aside').replaceWith(response.sidebar);
+                        hasMorePages = true;
+                        isLoading = false;
+                        $('#no-more-products').addClass('hidden');
+                    }
+
+                    window.history.pushState({path: fullQueryUrl}, '', fullQueryUrl);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    $('#loading-spinner').addClass('hidden');
+                }
+            });
+        }
+
+        // Price Slider Mouse Up Handler (Jahan chhodenge wahi filter apply ho jayega)
+        function applyPriceFilter(val) {
+            let urlParams = new URLSearchParams(window.location.search);
+            if(val) {
+                urlParams.set('max_price', val);
+            } else {
+                urlParams.delete('max_price');
+            }
+
+            // Browser URL update karein bina page reload kiye
+            window.history.pushState({}, '', '?' + urlParams.toString());
+
+            // Products fetch karne wala function chalayein
+            fetchFilteredProducts(true);
+        }
+
+        // --- Single Desktop Sort Change Event ---
+        $('#desktopSortSelect').on('change', function(e) {
+            e.preventDefault();
+
+            let sortVal = $(this).val();
+            let urlParams = new URLSearchParams(window.location.search);
+
+            if(sortVal) {
+                urlParams.set('sort', sortVal);
+            } else {
+                urlParams.delete('sort');
+            }
+
+            let newUrl = window.location.pathname + '?' + urlParams.toString();
+            window.history.pushState({path: newUrl}, '', newUrl);
+
+            fetchFilteredProducts(true);
+        });
+
+        // Mobile Sort Option Click Handler
+        function selectMobSort(sortValue) {
+            let urlParams = new URLSearchParams(window.location.search);
+            if(sortValue) {
+                urlParams.set('sort', sortValue);
+            } else {
+                urlParams.delete('sort');
+            }
+
+            window.history.pushState({}, '', '?' + urlParams.toString());
+            closeAllMobDropdowns();
+
+            // Desktop select dropdown ko bhi sync kar do
+            $('#desktopSortSelect').val(sortValue);
+
+            fetchFilteredProducts(true);
+        }
+
+        // Color, Size aur Brand ke selection handlers
         function selectColorSwatch(color) {
             const input = document.getElementById('selectedColorInput');
             input.value = (input.value === color) ? '' : color;
-            document.getElementById('filterForm').submit();
+            fetchFilteredProducts(true);
         }
 
         function selectSizeBox(size) {
             const input = document.getElementById('selectedSizeInput');
             input.value = (input.value === size) ? '' : size;
-            document.getElementById('filterForm').submit();
+            fetchFilteredProducts(true);
         }
 
         function selectBrand(brandSlug) {
             const input = document.getElementById('selectedBrandInput');
             input.value = (input.value === brandSlug) ? '' : brandSlug;
-            document.getElementById('filterForm').submit();
+            fetchFilteredProducts(true);
         }
 
-        // Mobile Dropdown Control (Daraz Style)
+        // --- 2. CATEGORY AJAX CLICK HANDLER ---
+        function fetchCategoryProducts(event, targetUrl, categoryPath) {
+            event.preventDefault();
+
+            page = 1;
+            $('#productGrid').html('<div class="col-span-full text-center py-16"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-600"></i></div>');
+
+            let categoryInput = $('#filterForm input[name="category"]');
+            if (categoryInput.length) {
+                categoryInput.val(categoryPath);
+            } else {
+                $('#filterForm').prepend('<input type="hidden" name="category" value="' + categoryPath + '">');
+            }
+
+            let form = $('#filterForm');
+            let serializedData = form.serialize();
+
+            let cleanParams = serializedData.split('&').filter(function(item) {
+                let parts = item.split('=');
+                return parts[1] !== "" && parts[1] !== undefined;
+            }).join('&');
+
+            let ajaxUrl = categoryPath ? "/collection/" + categoryPath : "/collection";
+            let fullQueryUrl = ajaxUrl + (cleanParams ? "?" + cleanParams : "");
+            let ajaxData = cleanParams + "&page=" + page;
+
+            $.ajax({
+                url: ajaxUrl,
+                type: "GET",
+                data: ajaxData,
+                dataType: 'json',
+                success: function(response) {
+                    $('#loading-spinner').addClass('hidden');
+
+                    if ($.trim(response.products) === "") {
+                        hasMorePages = false;
+                        $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
+                        $('#no-more-products').removeClass('hidden');
+                    } else {
+                        $('#productGrid').html(response.products);
+                        $('aside').replaceWith(response.sidebar);
+                        hasMorePages = true;
+                        isLoading = false;
+                        $('#no-more-products').addClass('hidden');
+                    }
+
+                    window.history.pushState({path: targetUrl}, '', targetUrl);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                    $('#loading-spinner').addClass('hidden');
+                }
+            });
+        }
+
+        // Price Slider Change Event
+        let priceTimer;
+        $('#priceSlider').on('input', function() {
+            updatePriceLabel(this.value);
+        }).on('change', function() {
+            clearTimeout(priceTimer);
+            priceTimer = setTimeout(function() {
+                fetchFilteredProducts(true);
+            }, 300);
+        });
+
+        // Brand Checkboxes Change Event
+        $(document).on('change', '#filterForm input[type="checkbox"]', function() {
+            fetchFilteredProducts(true);
+        });
+
+        // --- 3. MOBILE DROPDOWN CONTROL ---
         function toggleMobDropdown(dropdownId) {
             const target = document.getElementById(dropdownId);
             const isOpen = !target.classList.contains('hidden');
-
-            // Close all first
             closeAllMobDropdowns();
-
-            // Toggle target
             if (!isOpen) {
                 target.classList.remove('hidden');
             }
@@ -678,13 +463,13 @@
             });
         }
 
-        // Close dropdown when clicking outside
         window.addEventListener('click', function(e) {
             if (!e.target.closest('.block.lg\\:hidden')) {
                 closeAllMobDropdowns();
             }
         });
 
+        // --- 4. WISHLIST AJAX HANDLER ---
         document.addEventListener("DOMContentLoaded", function () {
             const Toast = Swal.mixin({
                 toast: true,
@@ -747,7 +532,7 @@
                                 icon.classList.toggle('text-red-500');
                                 icon.classList.toggle('fa-regular');
                                 icon.classList.toggle('text-gray-500');
-                                Toast.fire({icon: 'success', title: data.message || 'Wishlist updated!'});
+                                Toast.fire({icon: 'success', title: 'Wishlist updated!'});
                             }
                         })
                         .catch(error => {
@@ -759,5 +544,138 @@
                 });
             }
         });
+
+        // --- 5. INFINITE SCROLL PAGINATION (FIXED WITH SHIMMER) ---
+        let page = 1;
+        let hasMorePages = {{ $records->hasMorePages() ? 'true' : 'false' }};
+        let isLoading = false;
+
+        function handleInfiniteScroll($container, isWindow) {
+            if (!hasMorePages) return;
+
+            let scrollTop = isWindow ? $(window).scrollTop() : $container.scrollTop();
+            let innerHeight = isWindow ? $(window).height() : $container.innerHeight();
+            let scrollHeight = isWindow ? $(document).height() : $container[0].scrollHeight;
+
+            if (scrollTop + innerHeight >= scrollHeight - 300) {
+                if (isLoading) return;
+
+                isLoading = true;
+                page++;
+
+                // Shimmer Effect HTML (Spinner ki jagah grid mein append hoga)
+                let shimmerHtml = `
+            @for($i = 0; $i < 5; $i++)
+                <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
+                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
+                    <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
+                        <div>
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-full"></div>
+                        </div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="h-5 bg-gray-200 rounded w-1/3"></div>
+                            <div class="h-5 bg-gray-200 rounded w-1/4"></div>
+                        </div>
+                    </div>
+                </div>
+@endfor
+                `;
+                $('#productGrid').append(shimmerHtml);
+
+                let form = $('#filterForm');
+                let formData = form.serialize() + "&page=" + page;
+                let actionUrl = form.attr('action') || window.location.pathname;
+
+                $.ajax({
+                    url: actionUrl,
+                    type: "GET",
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        // Response aate hi shimmer cards hata dein
+                        $('.product-shimmer').remove();
+
+                        if (!response.products || $.trim(response.products) === "") {
+                            hasMorePages = false;
+                            $('#no-more-products').removeClass('hidden');
+                        } else {
+                            $('#productGrid').append(response.products);
+                            isLoading = false;
+                        }
+                    },
+                    error: function(xhr) {
+                        console.log(xhr.responseText);
+                        // Error aane par bhi shimmer hata dein
+                        $('.product-shimmer').remove();
+                        isLoading = false;
+                    }
+                });
+            }
+        }
+
+        // Agar aapke layout mein <main> khud scrollable hai (overflow-y-auto + fixed height)
+        $('main').on('scroll', function() {
+            handleInfiniteScroll($(this), false);
+        });
+
+        // Fallback: agar page normal window scroll use karta hai (zyada common case)
+        $(window).on('scroll', function() {
+            handleInfiniteScroll(null, true);
+        });
+
+        function fetchResetFilters(event, baseUrl) {
+            event.preventDefault();
+
+            // Filters ko visually bhi reset karo
+            $('#selectedColorInput').val('');
+            $('#selectedSizeInput').val('');
+            $('#selectedBrandInput').val('');
+            $('#priceSlider').val(100000);
+            $('#priceLabel').text('100,000');
+            $('#filterForm input[name="min_price"]').val(0);
+            $('#filterForm input[type="checkbox"]').prop('checked', false);
+
+            page = 1;
+            // Reset par bhi shimmer ya loader show kar sakte hain
+            $('#productGrid').html('<div class="col-span-full text-center py-16"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-600"></i></div>');
+
+            let category = $('#filterForm input[name="category"]').val() || '';
+            let search = $('#filterForm input[name="search"]').val() || '';
+            let sort = $('#filterForm input[name="sort"]').val() || '';
+
+            let params = { page: page };
+            if (category) params.category = category;
+            if (search) params.search = search;
+            if (sort) params.sort = sort;
+
+            let ajaxUrl = category ? "/collection/" + category : "/collection";
+
+            $.ajax({
+                url: ajaxUrl,
+                type: 'GET',
+                data: params,
+                dataType: 'json',
+                success: function(response) {
+                    if ($.trim(response.products) === "") {
+                        hasMorePages = false;
+                        $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
+                        $('#no-more-products').removeClass('hidden');
+                    } else {
+                        $('#productGrid').html(response.products);
+                        $('aside').replaceWith(response.sidebar);
+                        hasMorePages = true;
+                        isLoading = false;
+                        $('#no-more-products').addClass('hidden');
+                    }
+
+                    window.history.pushState({path: baseUrl}, '', baseUrl);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
     </script>
-@endsection
+@endpush

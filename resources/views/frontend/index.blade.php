@@ -85,6 +85,20 @@
             <div class="swiper-pagination !bottom-1 sm:!bottom-3"></div>
         </div>
     </div>
+
+    <style>
+        /* Active Dot Green Color */
+        .heroSwiper .swiper-pagination-bullet-active {
+            background-color: #10b981 !important; /* Emerald Green */
+            opacity: 1 !important;
+        }
+
+        /* Inactive Dots White Color */
+        .heroSwiper .swiper-pagination-bullet {
+            background-color: #ffffff !important;
+            opacity: 0.7 !important;
+        }
+    </style>
     <!-- 2. TOP 8 MOST ORDERED PRODUCTS (BESTSELLERS) -->
     <div
         class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 mx-auto  flex justify-between items-center">
@@ -497,6 +511,24 @@
         .brands-swiper-pagination {
             bottom: 0px !important; /* Position dots at the very bottom edge */
         }
+        .brandsSwiper {
+            padding-bottom: 40px !important;
+        }
+
+        .brands-swiper-pagination {
+            bottom: 0px !important;
+        }
+
+        /* Active Dot ka Color (Emerald Green) */
+        .brands-swiper-pagination .swiper-pagination-bullet-active {
+            background-color: #10b981 !important; /* Emerald-500 */
+            opacity: 1 !important;
+        }
+
+        /* Inactive Dots ka Color (Thoda halka background) */
+        .brands-swiper-pagination .swiper-pagination-bullet {
+            background-color: #9ca3af; /* Gray-400 */
+        }
     </style>
 
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
@@ -551,26 +583,15 @@
             @include('frontend.partials.for-you-cards', ['products' => $products])
         </div>
 
-        <!-- LOADING SPINNER -->
-        <div id="loading-spinner" class="text-center mb-16 hidden">
-            <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
-            <p class="text-xs text-gray-500 mt-1">Loading more products...</p>
-        </div>
-
         <!-- NO MORE PRODUCTS BUTTON -->
-        <div id="no-more-products" class="text-center -mt-3  mb-16 sm:mb-5 lg:mb-6 md:mt-3 hidden">
-        <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
-            <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
-        </span>
+        <div id="no-more-products" class="text-center -mt-3 mb-16 sm:mb-5 lg:mb-6 md:mt-3 hidden">
+            <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
+            </span>
         </div>
     @endif
 
-
-
-
-
 @endsection
-
 
 @push('scripts')
     <script>
@@ -588,13 +609,35 @@
 
                 isLoading = true;
                 page++;
-                $('#loading-spinner').removeClass('hidden');
+
+                // Shimmer Effect HTML (Spinner ki jagah grid mein append hoga)
+                let shimmerHtml = `
+                    @for($i = 0; $i < 6; $i++)
+                <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
+                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
+                    <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
+                        <div>
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-full"></div>
+                        </div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="h-5 bg-gray-200 rounded w-1/3"></div>
+                            <div class="h-5 bg-gray-200 rounded w-1/4"></div>
+                        </div>
+                    </div>
+                </div>
+@endfor
+                `;
+
+                $('#for-you-grid').append(shimmerHtml);
 
                 $.ajax({
                     url: "{{ route('index') }}?page=" + page,
                     type: "GET",
                     success: function(response) {
-                        $('#loading-spinner').addClass('hidden');
+                        // Response aate hi shimmer cards hata dena
+                        $('.product-shimmer').remove();
 
                         if($.trim(response) === "") {
                             hasMorePages = false;
@@ -606,7 +649,8 @@
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
-                        $('#loading-spinner').addClass('hidden');
+                        // Error aane par bhi shimmer hata dena
+                        $('.product-shimmer').remove();
                         isLoading = false;
                     }
                 });
@@ -635,23 +679,16 @@
                     disableOnInteraction: false,
                     pauseOnMouseEnter: true
                 },
-                // Pagination settings add ki hain
                 pagination: {
                     el: ".brands-swiper-pagination",
                     clickable: true,
                 },
-                slidesPerView: 2, // Mobile default
+                slidesPerView: 2,
                 spaceBetween: 12,
                 breakpoints: {
-                    640: {
-                        slidesPerView: 3,
-                    },
-                    768: {
-                        slidesPerView: 4,
-                    },
-                    1024: {
-                        slidesPerView: 6,
-                    }
+                    640: { slidesPerView: 3 },
+                    768: { slidesPerView: 4 },
+                    1024: { slidesPerView: 6 }
                 }
             });
         });

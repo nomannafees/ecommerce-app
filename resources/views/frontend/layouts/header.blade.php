@@ -190,160 +190,160 @@
 <!-- ================= END MAIN HEADER ================= -->
 
 
-<!-- ================= STICKY SUB-HEADER CATEGORIES & CENTER NAV BAR (In Container) ================= -->
-@if (!request()->is('login'))
-    <div class="bg-white shadow-md sticky top-0 z-40 hidden lg:block">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2 flex items-center justify-between">
+    <!-- ================= STICKY SUB-HEADER CATEGORIES & CENTER NAV BAR (In Container) ================= -->
+    @if (!request()->is('login'))
+        <div class="bg-white shadow-md sticky top-0 z-40 hidden lg:block">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2 flex items-center justify-between">
 
-            <!-- Left Side: All Categories Dropdown Button -->
-            <div class="relative w-64 shrink-0"
-                 x-data="{ activeMain: null, activeSub: null }"
-                 @mouseleave="activeMain = null; activeSub = null;">
+                <!-- Left Side: All Categories Dropdown Button -->
+                <div class="relative w-64 shrink-0"
+                     x-data="{ activeMain: null, activeSub: null }"
+                     @mouseleave="activeMain = null; activeSub = null;">
 
-                <div class="relative group/dropdown inline-block w-full">
+                    <div class="relative group/dropdown inline-block w-full">
 
-                    <!-- Toggle Button -->
-                    <div class="flex items-center justify-between bg-gray-100 transition px-4 py-2 cursor-pointer select-none">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-bars text-gray-800"></i>
-                            <span class="font-semibold text-sm text-gray-900">All Categories</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-xs text-gray-500 ml-1"></i>
-                    </div>
-
-                    <!-- MAIN DROPDOWN WRAPPER -->
-                    <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50" style="margin-top: 0px !important;">
-
-                        <!-- LEVEL 1: Main Categories Box -->
-                        <div class="w-[16rem] bg-white h-[27.7rem] overflow-y-auto custom-scrollbar p-2">
-                            <ul class="space-y-0.5 relative">
-                                @foreach($categories->where('parent_id',0) as $mainCat)
-                                    @php
-                                        $isMainActive = request('category') == $mainCat->slug;
-                                        $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
-                                    @endphp
-
-                                    <li class="relative">
-                                        <!-- Main Category Item -->
-                                        <div @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = null;"
-                                             class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isMainActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
-                                             :class="{ 'bg-emerald-50 text-emerald-600': activeMain === {{ $mainCat->id }} }">
-
-                                            <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug]) }}"
-                                               class="flex-1 text-sm font-semibold">
-                                                {{ $mainCat->name }}
-                                            </a>
-
-                                            @if($subCategories->count() > 0)
-                                                <i class="fa-solid fa-chevron-right text-xs"
-                                                   :class="activeMain === {{ $mainCat->id }} ? 'text-emerald-500' : 'text-gray-400'"></i>
-                                            @endif
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
+                        <!-- Toggle Button -->
+                        <div class="flex items-center justify-between bg-gray-100 transition px-4 py-2 cursor-pointer select-none">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-bars text-gray-800"></i>
+                                <span class="font-semibold text-sm text-gray-900">All Categories</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-gray-500 ml-1"></i>
                         </div>
 
-                        <!-- LEVEL 2 & 3 CONTAINERS -->
-                        <div class="relative">
-                        @foreach($categories->where('parent_id',0) as $mainCat)
-                            @php
-                                $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
-                            @endphp
+                        <!-- MAIN DROPDOWN WRAPPER -->
+                        <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50" style="margin-top: 0px !important;">
 
-                            @if($subCategories->count() > 0)
-                                <!-- LEVEL 2: Sub Categories Box -->
-                                    <div x-show="activeMain === {{ $mainCat->id }}"
-                                         x-cloak
-                                         @mouseenter="activeMain = {{ $mainCat->id }}"
-                                         class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
-
-                                        <ul class="space-y-0.5">
-                                            @foreach($subCategories as $subCat)
-                                                @php
-                                                    $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
-                                                    $isSubActive = request('category') == $subCat->slug || request('category') == $subSlugPath;
-                                                    $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
-                                                @endphp
-
-                                                <li class="relative">
-                                                    <!-- Sub Category Item -->
-                                                    <div @mouseenter="activeSub = {{ $subCat->id }}"
-                                                         class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
-                                                         :class="{ 'bg-emerald-50 text-emerald-600': activeSub === {{ $subCat->id }} }">
-
-                                                        <a href="{{ route('categoriesProduct', ['category' => $subSlugPath]) }}"
-                                                           class="flex-1 text-sm font-semibold">
-                                                            {{ $subCat->name }}
-                                                        </a>
-
-                                                        @if($childCategories->count() > 0)
-                                                            <i class="fa-solid fa-chevron-right text-xs"
-                                                               :class="activeSub === {{ $subCat->id }} ? 'text-emerald-500' : 'text-gray-400'"></i>
-                                                        @endif
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-
-                                    <!-- LEVEL 3: Child Categories Box -->
-                                    @foreach($subCategories as $subCat)
+                            <!-- LEVEL 1: Main Categories Box -->
+                            <div class="w-[16rem] bg-white h-[27.7rem] overflow-y-auto custom-scrollbar p-2">
+                                <ul class="space-y-0.5 relative">
+                                    @foreach($categories->where('parent_id',0) as $mainCat)
                                         @php
-                                            $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
-                                            $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
+                                            $isMainActive = request('category') == $mainCat->slug;
+                                            $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
                                         @endphp
 
-                                        @if($childCategories->count() > 0)
-                                            <div x-show="activeMain === {{ $mainCat->id }} && activeSub === {{ $subCat->id }}"
-                                                 x-cloak
-                                                 @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
-                                                 class="absolute left-64 top-0 bg-white w-[16rem] h-[27.7rem] p-2 z-50 overflow-y-auto custom-scrollbar">
+                                        <li class="relative">
+                                            <!-- Main Category Item -->
+                                            <div @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = null;"
+                                                 class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isMainActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
+                                                 :class="{ 'bg-emerald-50 text-emerald-600': activeMain === {{ $mainCat->id }} }">
 
-                                                <ul class="space-y-0.5">
-                                                    @foreach($childCategories as $childCat)
-                                                        @php
-                                                            $childSlugPath = $subSlugPath . '/' . $childCat->slug;
-                                                            $isChildActive = request('category') == $childSlugPath;
-                                                        @endphp
-                                                        <li>
-                                                            <a href="{{ route('categories', ['category' => $childSlugPath]) }}"
-                                                               class="block py-2 px-3 text-sm font-semibold transition {{ $isChildActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
-                                                                {{ $childCat->name }}
-                                                            </a>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
+                                                <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug]) }}"
+                                                   class="flex-1 text-sm font-semibold">
+                                                    {{ $mainCat->name }}
+                                                </a>
+
+                                                @if($subCategories->count() > 0)
+                                                    <i class="fa-solid fa-chevron-right text-xs"
+                                                       :class="activeMain === {{ $mainCat->id }} ? 'text-emerald-500' : 'text-gray-400'"></i>
+                                                @endif
                                             </div>
-                                        @endif
+                                        </li>
                                     @endforeach
+                                </ul>
+                            </div>
 
-                                @endif
-                            @endforeach
+                            <!-- LEVEL 2 & 3 CONTAINERS -->
+                            <div class="relative">
+                            @foreach($categories->where('parent_id',0) as $mainCat)
+                                @php
+                                    $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
+                                @endphp
+
+                                @if($subCategories->count() > 0)
+                                    <!-- LEVEL 2: Sub Categories Box -->
+                                        <div x-show="activeMain === {{ $mainCat->id }}"
+                                             x-cloak
+                                             @mouseenter="activeMain = {{ $mainCat->id }}"
+                                             class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
+
+                                            <ul class="space-y-0.5">
+                                                @foreach($subCategories as $subCat)
+                                                    @php
+                                                        $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
+                                                        $isSubActive = request('category') == $subCat->slug || request('category') == $subSlugPath;
+                                                        $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
+                                                    @endphp
+
+                                                    <li class="relative">
+                                                        <!-- Sub Category Item -->
+                                                        <div @mouseenter="activeSub = {{ $subCat->id }}"
+                                                             class="flex items-center justify-between py-2 px-3 rounded-md cursor-pointer transition {{ $isSubActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}"
+                                                             :class="{ 'bg-emerald-50 text-emerald-600': activeSub === {{ $subCat->id }} }">
+
+                                                            <a href="{{ route('categoriesProduct', ['category' => $subSlugPath]) }}"
+                                                               class="flex-1 text-sm font-semibold">
+                                                                {{ $subCat->name }}
+                                                            </a>
+
+                                                            @if($childCategories->count() > 0)
+                                                                <i class="fa-solid fa-chevron-right text-xs"
+                                                                   :class="activeSub === {{ $subCat->id }} ? 'text-emerald-500' : 'text-gray-400'"></i>
+                                                            @endif
+                                                        </div>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+
+                                        <!-- LEVEL 3: Child Categories Box -->
+                                        @foreach($subCategories as $subCat)
+                                            @php
+                                                $childCategories = $subCat->children ?? $categories->where('parent_id', $subCat->id);
+                                                $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
+                                            @endphp
+
+                                            @if($childCategories->count() > 0)
+                                                <div x-show="activeMain === {{ $mainCat->id }} && activeSub === {{ $subCat->id }}"
+                                                     x-cloak
+                                                     @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
+                                                     class="absolute left-64 top-0 bg-white w-[16rem] h-[27.7rem] p-2 z-50 overflow-y-auto custom-scrollbar">
+
+                                                    <ul class="space-y-0.5">
+                                                        @foreach($childCategories as $childCat)
+                                                            @php
+                                                                $childSlugPath = $subSlugPath . '/' . $childCat->slug;
+                                                                $isChildActive = request('category') == $childSlugPath;
+                                                            @endphp
+                                                            <li>
+                                                                <a href="{{ route('categories', ['category' => $childSlugPath]) }}"
+                                                                   class="block py-2 px-3 text-sm font-semibold transition {{ $isChildActive ? 'bg-gray-100 text-gray-900' : 'text-gray-700 hover:bg-gray-50 hover:text-black' }}">
+                                                                    {{ $childCat->name }}
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        @endforeach
+
+                                    @endif
+                                @endforeach
+                            </div>
+
                         </div>
-
                     </div>
                 </div>
+
+                <!-- Center: Navigation Links -->
+                <div class="flex items-center gap-8 text-sm font-semibold text-gray-800">
+                    <a href="{{ url('/') }}" class="hover:text-emerald-600 transition">Home</a>
+                    <a href="{{ url('/all-product') }}" class="hover:text-emerald-600 transition">Products</a>
+                    <a href="{{ url('/product') }}" class="hover:text-emerald-600 transition">Categories</a>
+                    <a href="{{ route('contact') }}" class="hover:text-emerald-600 transition">Contact Us</a>
+                </div>
+
+                <!-- Spacer element to balance out the left category width for absolute center alignment -->
+                <div class="w-64 shrink-0 hidden lg:block"></div>
+
             </div>
-
-            <!-- Center: Navigation Links -->
-            <div class="flex items-center gap-8 text-sm font-semibold text-gray-800">
-                <a href="{{ url('/') }}" class="hover:text-emerald-600 transition">Home</a>
-                <a href="{{ url('/all-product') }}" class="hover:text-emerald-600 transition">Products</a>
-                <a href="{{ url('/product') }}" class="hover:text-emerald-600 transition">Categories</a>
-                <a href="{{ route('contact') }}" class="hover:text-emerald-600 transition">Contact Us</a>
-            </div>
-
-            <!-- Spacer element to balance out the left category width for absolute center alignment -->
-            <div class="w-64 shrink-0 hidden lg:block"></div>
-
         </div>
-    </div>
-@endif
+    @endif
 
-<style>
-    /* Custom Thin Scrollbar for Categories Dropdown */
-    .custom-scrollbar::-webkit-scrollbar {
+    <style>
+        /* Custom Thin Scrollbar for Categories Dropdown */
+        .custom-scrollbar::-webkit-scrollbar {
         width: 5px;
     }
 

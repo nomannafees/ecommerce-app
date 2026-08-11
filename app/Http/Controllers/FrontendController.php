@@ -279,20 +279,31 @@ class FrontendController extends Controller
         $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews'])->latest();
 
         if (!empty($category)) {
-            // Slash wale nested slugs mein se aakhri slug nikalna
             $slugs = explode('/', $category);
-            $targetSlug = end($slugs);
 
-            $currentCategory = Categorie::where('slug', $targetSlug)->with('children.children')->first();
+            // Nested slugs ko sahi se trace karne ke liye parent-child chain check karein
+            $parent = null;
+            foreach ($slugs as $slug) {
+                $parent = Categorie::where('slug', $slug)
+                    ->when($parent, function($q) use ($parent) {
+                        return $q->where('parent_id', $parent->id);
+                    }, function($q) {
+                        return $q->where('parent_id', 0);
+                    })->first();
+
+                if (!$parent) break;
+            }
+
+            $currentCategory = $parent;
 
             if ($currentCategory) {
                 $getAllIds = function ($cat) use (&$getAllIds) {
                     $ids = [];
-                    foreach ($cat->children as $child) {
+                    // Naye Laravel/Eloquent relations ke mutabiq load children check karein
+                    $children = $cat->relationLoaded('children') ? $cat->children : $cat->children()->get();
+                    foreach ($children as $child) {
                         $ids[] = $child->id;
-                        if ($child->children->isNotEmpty()) {
-                            $ids = array_merge($ids, $getAllIds($child));
-                        }
+                        $ids = array_merge($ids, $getAllIds($child));
                     }
                     return $ids;
                 };
@@ -302,12 +313,18 @@ class FrontendController extends Controller
             }
         }
 
-        $products = $query->get();
+        $products = $query->paginate(12);
+        $wishlistProductIds = auth()->check() ? auth()->user()->wishlists()->pluck('product_id')->toArray() : [];
+
+        if ($request->ajax()) {
+            return view('frontend.partials.category-products-loop', compact('products', 'wishlistProductIds'))->render();
+        }
 
         return view('frontend.category-products', compact(
             'categories',
             'currentCategory',
-            'products'
+            'products',
+            'wishlistProductIds'
         ));
     }
 
@@ -409,8 +426,30 @@ class FrontendController extends Controller
             $query->latest();
         }
 
-        // 6. Pagination & Data Transformation
-        $records = $query->paginate(15  )->appends($request->query()); // Pagination ke sath query parameters zaroori hain
+        // 6. Custom Pagination Logic (1st page: 15 items, Subsequent pages: 10 items)
+        $page = max(1, (int) $request->get('page', 1));
+        $perPage = ($page == 1) ? 15 : 10;
+        $totalRecords = $query->count();
+
+        if ($page == 1) {
+            $offset = 0;
+            $limit = 15;
+        } else {
+            $offset = 15 + (($page - 2) * 10);
+            $limit = 10;
+        }
+
+        $cloneQuery = clone $query;
+        $recordsCollection = $cloneQuery->offset($offset)->limit($limit)->get();
+
+        $records = new \Illuminate\Pagination\LengthAwarePaginator(
+            $recordsCollection,
+            $totalRecords,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
 
         $records->getCollection()->transform(function ($product) use ($selectedColor) {
@@ -436,14 +475,39 @@ class FrontendController extends Controller
         });
 
         // 7. Wishlist Check
-        // 7. Wishlist Check
         $wishlistProductIds = Auth::check() ? Wishlist::where('user_id', Auth::id())->pluck('product_id')->toArray() : [];
+
+        if ($request->ajax()) {
+            // Agar records ka collection khali ho jaye (yani mazeed products na hon)
+            if ($recordsCollection->isEmpty()) {
+                return response()->json([
+                    'products' => '',
+                    'sidebar' => ''
+                ]);
+            }
+
+            $productHtml = view('frontend.partials.category-product-cards', compact('records', 'wishlistProductIds'))->render();
+
+            $sidebarHtml = view('frontend.partials.category-sidebar', compact(
+                'categories',
+                'activeCategory',
+                'currentCategory',
+                'availableColors',
+                'availableSizes',
+                'availableBrands'
+            ))->render();
+
+            return response()->json([
+                'products' => $productHtml,
+                'sidebar' => $sidebarHtml
+            ]);
+        }
 
         return view('frontend.categories', compact(
             'categories',
             'records',
             'wishlistProductIds',
-            'activeCategory',      // <--- Yahan se backticks (` `) hata diye gaye hain
+            'activeCategory',
             'currentCategory',
             'availableColors',
             'availableSizes',

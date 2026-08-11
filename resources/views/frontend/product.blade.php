@@ -20,14 +20,8 @@
             @include('frontend.partials.product-cards', ['products' => $products])
         </div>
 
-        <!-- LOADING SPINNER -->
-        <div id="loading-spinner" class="text-center py-6 hidden">
-            <i class="fa-solid fa-spinner fa-spin text-2xl text-emerald-600"></i>
-            <p class="text-xs text-gray-500 mt-1">Loading more products...</p>
-        </div>
-
         <!-- NO MORE PRODUCTS BUTTON STYLE -->
-        <div id="no-more-products" class="text-center mt-6 hidden">
+        <div id="no-more-products" class="text-center -mt-6  mb-10 sm:mb-3 lg:mb-0 md:mt-1 hidden">
             <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
                 <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
             </span>
@@ -57,13 +51,35 @@
 
                 isLoading = true;
                 page++;
-                $('#loading-spinner').removeClass('hidden');
+
+                // Shimmer Effect HTML (Scroll karte waqt grid mein append hoga)
+                let shimmerHtml = `
+                    @for($i = 0; $i < 6; $i++)
+                <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
+                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
+                    <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
+                        <div>
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div class="h-3 bg-gray-200 rounded w-full"></div>
+                        </div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="h-5 bg-gray-200 rounded w-1/3"></div>
+                            <div class="h-5 bg-gray-200 rounded w-1/4"></div>
+                        </div>
+                    </div>
+                </div>
+@endfor
+                `;
+
+                $('#product-grid').append(shimmerHtml);
 
                 $.ajax({
                     url: "{{ route('frontendProduct') }}?page=" + page,
                     type: "GET",
                     success: function(response) {
-                        $('#loading-spinner').addClass('hidden');
+                        // Response aate hi shimmer cards ko remove kar dein
+                        $('.product-shimmer').remove();
 
                         if($.trim(response) === "") {
                             hasMorePages = false;
@@ -75,7 +91,8 @@
                     },
                     error: function(xhr) {
                         console.log(xhr.responseText);
-                        $('#loading-spinner').addClass('hidden');
+                        // Error aane par bhi shimmer cards remove kar dein
+                        $('.product-shimmer').remove();
                         isLoading = false;
                     }
                 });

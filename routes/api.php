@@ -33,5 +33,5 @@ Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::cl
 Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
 Route::get('/cities/{id}', [\App\Http\Controllers\Api\CheckoutController::class, 'getCitiesByState']);
 Route::get('/categories', [CategoryController::class, 'index']);
-
+Route::get('/categories/products/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'categoriesProduct']);
 
