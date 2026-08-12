@@ -14,6 +14,7 @@ use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\Auth\LoginController;
 
 
 Route::get('/', [FrontendController::class, 'index'])->name('index');
@@ -52,6 +53,7 @@ Route::get('/thank-you', [FrontendController::class, 'thankYou'])->name('thankyo
 Route::post('/contact-us', [\App\Http\Controllers\ContactUsController::class, 'store'])->name('contact-us.store');
 Route::get('/load-more-products', [\App\Http\Controllers\HomeController::class, 'loadMoreProducts'])->name('load.more.products');
 
+Route::get('/admin/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
 
 Route::middleware('auth')->group(function () {
 

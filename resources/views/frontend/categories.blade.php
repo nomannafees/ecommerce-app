@@ -43,7 +43,7 @@
                         <div class="w-48 relative h-[40px]">
                             <select name="sort"
                                     id="desktopSortSelect"
-                                    class="w-full h-full bg-white border border-gray-300 rounded-full pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-black text-sm cursor-pointer font-medium text-gray-700 appearance-none block leading-none">
+                                    class="w-full h-full bg-white border border-gray-300 rounded-full pl-4 pr-10 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-400 text-sm cursor-pointer font-medium text-gray-700 appearance-none block leading-none">
                                 <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest Products</option>
                                 <option value="price_low_high" {{ request('sort') == 'price_low_high' ? 'selected' : '' }}>Price: Low to High</option>
                                 <option value="price_high_low" {{ request('sort') == 'price_high_low' ? 'selected' : '' }}>Price: High to Low</option>

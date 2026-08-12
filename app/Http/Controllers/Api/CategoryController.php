@@ -67,4 +67,6 @@ class CategoryController extends Controller
             'products' => $products
         ], 200);
     }
+
+
 }

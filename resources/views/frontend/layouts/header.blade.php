@@ -97,17 +97,19 @@
 
                 <!-- Trigger Header Element (Hoverable) -->
                 <a href="{{ auth()->check() ? route('frontend.user_info.index') : route('login') }}"
+                   id="navAuthLink"
+                   @guest onclick="handleNavAuthClick(event)" @endguest
                    class="flex items-center gap-1.5 sm:gap-2 text-white hover:text-emerald-400 transition text-sm font-medium cursor-pointer select-none">
                     <i class="fa-regular fa-user text-sm sm:text-lg"></i>
                     <div class="leading-tight text-left hidden sm:block">
                         <span class="block text-[10px] text-gray-400">Welcome</span>
                         <span class="font-semibold">
-                        @auth
+            @auth
                                 {{ Str::limit(Auth::user()->name, 10) }}
                             @else
                                 Sign in / Register
                             @endauth
-                    </span>
+        </span>
                     </div>
                 </a>
 
@@ -137,13 +139,13 @@
                     </a>
 
                     <a href="{{ route('cart') }}" class="flex sm:hidden items-center justify-between px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
-                    <span class="flex items-center gap-2">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        Cart
-                    </span>
+        <span class="flex items-center gap-2">
+            <i class="fa-solid fa-cart-shopping"></i>
+            Cart
+        </span>
                         <span class="bg-green-100 text-green-700 mt-1 font-bold text-xs rounded-full px-2 py-0.5">
-                        {{ $cartCount ?? 0 }}
-                    </span>
+            {{ $cartCount ?? 0 }}
+        </span>
                     </a>
 
                     <a href="{{ route('frontend.user_info.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
@@ -173,7 +175,9 @@
                     @endauth
 
                     @guest
+                    <!-- Dropdown ke andar wala Sign in / Register button -->
                         <a href="{{ route('login') }}"
+                           onclick="handleNavAuthClick(event)"
                            class="flex items-center gap-2 px-4 py-2.5 text-sm text-emerald-600 font-semibold hover:bg-gray-100 border-t border-gray-100">
                             <i class="fa-solid fa-right-to-bracket"></i>
                             Sign in / Register

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CategoryProduct;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -35,3 +36,5 @@ Route::get('/cities/{id}', [\App\Http\Controllers\Api\CheckoutController::class,
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/products/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'categoriesProduct']);
 
+Route::get('/category-sidebar/{slug?}', [CategoryProduct::class, 'getSidebarData'])->where('slug', '.*');
+Route::get('/categories-products/{slug?}', [CategoryProduct::class, 'getProducts'])->where('slug', '.*');

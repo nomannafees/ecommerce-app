@@ -3,7 +3,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
 
         <div class="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500 truncate">
             Home / Products / <span class="text-black font-medium">{{ $product->name }}</span>
@@ -338,256 +338,7 @@
         </div>
     </div>
 
-    <!-- AUTHENTICATION (LOGIN / REGISTER) MODAL DESIGNED USING YOUR EXACT UI -->
-    <div id="authModal"
-         class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 relative">
-            <!-- Close Button -->
-            <button onclick="closeAuthModal()" type="button"
-                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl cursor-pointer">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
 
-            <!-- LOGIN VIEW -->
-            <div id="loginView" class="max-w-md mx-auto p-2">
-                <!-- Top Icon & Header -->
-                <div class="text-center mb-6">
-
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">
-                        Welcome Back
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Please enter your credentials to log in to your account.
-                    </p>
-                </div>
-
-                <form id="modalLoginForm" onsubmit="submitModalLogin(event)">
-                @csrf
-
-                <!-- Email Field -->
-                    <div class="mb-5">
-                        <label for="modalLoginEmail" class="block mb-2 text-sm font-medium text-gray-700">
-                            Email Address
-                        </label>
-                        <div class="relative">
-                            <!-- Icon -->
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
-                                </svg>
-                            </div>
-                            <!-- Input -->
-                            <input id="modalLoginEmail"
-                                   type="email"
-                                   name="email"
-                                   required
-                                   autocomplete="email"
-                                   placeholder="name@company.com"
-                                   class="bg-gray-50 border border-gray-300 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div class="mb-5">
-                        <label for="modalLoginPassword" class="block mb-2 text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <div class="relative">
-                            <!-- Icon -->
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
-                                </svg>
-                            </div>
-                            <!-- Input -->
-                            <input id="modalLoginPassword"
-                                   type="password"
-                                   name="password"
-                                   required
-                                   autocomplete="current-password"
-                                   placeholder="••••••••"
-                                   class="bg-gray-50 border border-gray-300 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Submit Button with Login/Sign-in Icon -->
-                    <button type="submit"
-                            id="modalLoginBtn"
-                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md shadow-emerald-600/20 transition duration-300 cursor-pointer flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
-                             stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
-                        </svg>
-                        <span>Login</span>
-                    </button>
-                </form>
-
-                <!-- Register Link Trigger -->
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
-                        Don't have an account?
-                        <button type="button" onclick="switchAuthView('register')"
-                                class="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline cursor-pointer ml-1">
-                            Create Account
-                        </button>
-                    </p>
-                </div>
-            </div>
-
-            <!-- REGISTER VIEW -->
-            <div id="registerView" class="hidden max-w-md mx-auto p-2">
-                <!-- Header & Description -->
-                <div class="text-center mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">
-                        Create Account
-                    </h2>
-                    <p class="text-sm text-gray-500">
-                        Please fill in the details below to create your new account.
-                    </p>
-                </div>
-
-                <form id="modalRegisterForm" onsubmit="submitModalRegister(event)">
-                    @csrf
-                    <input type="hidden" value="customer" name="role">
-
-                    <!-- Name Field -->
-                    <div class="mb-5">
-                        <label for="modalRegisterName" class="block mb-2 text-sm font-medium text-gray-700">
-                            Full Name
-                        </label>
-                        <div class="relative">
-                            <!-- Icon -->
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                                </svg>
-                            </div>
-                            <!-- Input -->
-                            <input id="modalRegisterName"
-                                   type="text"
-                                   name="name"
-                                   required
-                                   autocomplete="name"
-                                   placeholder="Enter your full name"
-                                   class="bg-gray-50 border border-gray-300 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Email Field -->
-                    <div class="mb-5">
-                        <label for="modalRegisterEmail" class="block mb-2 text-sm font-medium text-gray-700">
-                            Email Address
-                        </label>
-                        <div class="relative">
-                            <!-- Icon -->
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/>
-                                </svg>
-                            </div>
-                            <!-- Input -->
-                            <input id="modalRegisterEmail"
-                                   type="email"
-                                   name="email"
-                                   required
-                                   autocomplete="email"
-                                   placeholder="name@company.com"
-                                   class="bg-gray-50 border border-gray-300 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Password Field -->
-                    <div class="mb-5">
-                        <label for="modalRegisterPassword" class="block mb-2 text-sm font-medium text-gray-700">
-                            Password
-                        </label>
-                        <div class="relative">
-                            <!-- Icon -->
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
-                                </svg>
-                            </div>
-                            <!-- Input -->
-                            <input id="modalRegisterPassword"
-                                   type="password"
-                                   name="password"
-                                   required
-                                   autocomplete="new-password"
-                                   placeholder="••••••••"
-                                   class="bg-gray-50 border border-gray-300 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password Field -->
-                    <div class="mb-6">
-                        <label for="modalRegisterPasswordConfirm" class="block mb-2 text-sm font-medium text-gray-700">
-                            Confirm Password
-                        </label>
-                        <div class="relative">
-                            <!-- Icon -->
-                            <div
-                                class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                          d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
-                                </svg>
-                            </div>
-                            <!-- Input -->
-                            <input id="modalRegisterPasswordConfirm"
-                                   type="password"
-                                   name="password_confirmation"
-                                   required
-                                   autocomplete="new-password"
-                                   placeholder="••••••••"
-                                   class="bg-gray-50 border border-gray-300 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <!-- Register Button with Icon -->
-                    <button type="submit"
-                            id="modalRegisterBtn"
-                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md shadow-emerald-600/20 transition duration-300 cursor-pointer flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
-                             stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.765Z"/>
-                        </svg>
-                        <span>Create Account</span>
-                    </button>
-                </form>
-
-                <!-- Login Link Trigger -->
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-gray-600">
-                        Already have an account?
-                        <button type="button" onclick="switchAuthView('login')"
-                                class="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline cursor-pointer ml-1">
-                            Login here
-                        </button>
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </div>
 
     <!-- SweetAlert2 aur Swiper CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -651,18 +402,22 @@
         });
 
         function triggerAddToCartAction() {
-
             window.lastAction = 'cart';
             let addToCartBtn = document.getElementById('addToCartBtn');
             let variantId = document.getElementById('selectedVariantId').value;
             let quantity = document.getElementById('qtyInput').value || 1;
             let stock = parseInt(document.getElementById('selectedVariantStock').value) || 0;
 
+            // Stock check ko pehle rakha hai taake direct toast show ho
             if (stock <= 0) {
                 Swal.fire({
+                    toast: true,
+                    position: 'top-end',
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'This product variant is out of stock!'
+                    title: 'Stock is not available',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
                 });
                 return;
             }
@@ -692,20 +447,16 @@
                 })
             })
                 .then(response => {
-
                     if (response.status === 401) {
                         throw new Error('Please login first.');
                     }
-
                     return response.json();
                 })
                 .then(data => {
-
                     addToCartBtn.disabled = false;
                     addToCartBtn.innerHTML = 'Add To Cart';
 
                     if (data.status) {
-
                         Swal.fire({
                             toast: true,
                             position: 'top-end',
@@ -716,23 +467,21 @@
                             timerProgressBar: true
                         });
                     } else {
-
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
                             text: data.message
                         });
-
                     }
-
                 })
                 .catch(error => {
-
                     addToCartBtn.disabled = false;
                     addToCartBtn.innerHTML = 'Add To Cart';
 
                     if (error.message === 'Please login first.') {
-                        openAuthModal();
+                        if (typeof openAuthModal === 'function') {
+                            openAuthModal();
+                        }
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -740,9 +489,7 @@
                             text: error.message
                         });
                     }
-
                 });
-
         }
 
         function triggerBuyNowAction() {
@@ -755,9 +502,13 @@
 
             if (stock <= 0) {
                 Swal.fire({
+                    toast: true,
+                    position: 'top-end',
                     icon: 'error',
-                    title: 'Oops...',
-                    text: 'This product variant is out of stock!',
+                    title: 'Stock is not available',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
                 });
                 return;
             }
@@ -806,7 +557,9 @@
                     buyNowBtn.disabled = false;
                     buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Buy Now';
                     if (error.message === 'Please login first.') {
-                        openAuthModal();
+                        if (typeof openAuthModal === 'function') {
+                            openAuthModal();
+                        }
                     } else {
                         console.error('Error:', error);
                         Swal.fire({
@@ -815,107 +568,6 @@
                             text: error.message || 'Failed to process request.'
                         });
                     }
-                });
-        }
-
-        // --- AUTH MODAL CONTROLLERS ---
-        function openAuthModal() {
-            document.getElementById('authModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            switchAuthView('login'); // Default open to login view
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function switchAuthView(viewName) {
-            const loginView = document.getElementById('loginView');
-            const registerView = document.getElementById('registerView');
-            if (viewName === 'register') {
-                loginView.classList.add('hidden');
-                registerView.classList.remove('hidden');
-            } else {
-                registerView.classList.add('hidden');
-                loginView.classList.remove('hidden');
-            }
-        }
-
-        function submitModalLogin(e) {
-            e.preventDefault();
-            let email = document.getElementById('modalLoginEmail').value;
-            let password = document.getElementById('modalLoginPassword').value;
-            let btn = document.getElementById('modalLoginBtn');
-
-            btn.disabled = true;
-            btn.innerText = 'Logging in...';
-
-            fetch("{{ route('login') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({email: email, password: password})
-            })
-                .then(res => {
-                    btn.disabled = false;
-                    btn.innerText = 'Login';
-                    if (res.ok || res.redirected) {
-                        closeAuthModal();
-                        location.reload();
-
-                    } else {
-                        return res.json().then(data => {
-                            throw new Error(data.message || 'Invalid credentials');
-                        });
-                    }
-                })
-                .catch(err => {
-                    btn.disabled = false;
-                    btn.innerText = 'Login';
-                    Swal.fire('Error', err.message || 'Invalid credentials or login failed.', 'error');
-                });
-        }
-
-        function submitModalRegister(e) {
-            e.preventDefault();
-            let name = document.getElementById('modalRegisterName').value;
-            let email = document.getElementById('modalRegisterEmail').value;
-            let password = document.getElementById('modalRegisterPassword').value;
-            let password_confirmation = document.getElementById('modalRegisterPasswordConfirm').value;
-            let btn = document.getElementById('modalRegisterBtn');
-
-            btn.disabled = true;
-            btn.innerText = 'Registering...';
-
-            fetch("{{ route('register') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({name, email, password, password_confirmation, role: 'customer'})
-            })
-                .then(res => {
-                    btn.disabled = false;
-                    btn.innerText = 'Register';
-                    if (res.ok || res.redirected) {
-                        closeAuthModal();
-                        location.reload();
-                    } else {
-                        return res.json().then(data => {
-                            throw new Error(data.message || 'Registration failed');
-                        });
-                    }
-                })
-                .catch(err => {
-                    btn.disabled = false;
-                    btn.innerText = 'Register';
-                    Swal.fire('Error', err.message || 'Registration failed. Please check inputs.', 'error');
                 });
         }
 
@@ -1030,9 +682,10 @@
                     toast: true,
                     position: 'top-end',
                     icon: 'warning',
-                    title: stock > 0 ? 'Only ' + stock + ' items available' : 'Product is out of stock',
+                    title: stock > 0 ? 'Only ' + stock + ' items available' : 'Stock is not available',
                     showConfirmButton: false,
-                    timer: 2000
+                    timer: 2000,
+                    timerProgressBar: true
                 });
                 return;
             }
@@ -1078,11 +731,10 @@
             }
         }
 
-        // ESC Key aur Backdrop Click Events
+        // ESC Key Events
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeReviewModal();
-                closeAuthModal();
             }
         });
     </script>

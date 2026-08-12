@@ -1,5 +1,5 @@
-<!-- LEFT SIDEBAR (Desktop Only) -->
-<aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible" x-data="{ showAllCategories: false, categoryLimit: 6 }">
+<!-- LEFT SIDEBAR (Desktop Only & Sticky) -->
+<aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible sticky top-18" x-data="{ showAllCategories: false, categoryLimit: 6 }">
     @php
         $buildCategoryPath = function ($categoryItem) {
             $slugs = [];
@@ -106,30 +106,30 @@
             </button>
         @endif
 
-        <!-- Price Range -->
-            <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                <span>Price</span>
-            </h2>
-            <div class="space-y-2 my-2 pb-3 border-b border-gray-100">
-                <input type="range"
-                       id="priceSlider"
-                       name="max_price"
-                       min="0"
-                       max="100000"
-                       step="500"
-                       value="{{ request('max_price', 100000) }}"
-                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
-                       oninput="document.getElementById('priceLabel').innerText = Number(this.value).toLocaleString();"
-                       onmouseup="applyPriceFilter(this.value)"
-                       ontouchend="applyPriceFilter(this.value)">
+    <!-- Price Range -->
+        <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+            <span>Price</span>
+        </h2>
+        <div class="space-y-2 my-2 pb-3 border-b border-gray-100">
+            <input type="range"
+                   id="priceSlider"
+                   name="max_price"
+                   min="0"
+                   max="100000"
+                   step="500"
+                   value="{{ request('max_price', 100000) }}"
+                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black"
+                   oninput="document.getElementById('priceLabel').innerText = Number(this.value).toLocaleString();"
+                   onmouseup="applyPriceFilter(this.value)"
+                   ontouchend="applyPriceFilter(this.value)">
 
-                <input type="hidden" name="min_price" value="{{ request('min_price', 0) }}">
+            <input type="hidden" name="min_price" value="{{ request('min_price', 0) }}">
 
-                <div class="flex justify-between text-xs text-gray-500 font-medium">
-                    <span>Rs 0</span>
-                    <span class="text-black font-bold">Max: Rs <span id="priceLabel">{{ number_format(request('max_price', 100000)) }}</span></span>
-                </div>
+            <div class="flex justify-between text-xs text-gray-500 font-medium">
+                <span>Rs 0</span>
+                <span class="text-black font-bold">Max: Rs <span id="priceLabel">{{ number_format(request('max_price', 100000)) }}</span></span>
             </div>
+        </div>
 
         <!-- Color Filter -->
         @if(isset($availableColors) && count($availableColors) > 0)
