@@ -61,7 +61,7 @@
                             <button type="button"
                                     @click="open = !open"
                                     @click.away="open = false"
-                                    class="w-full h-full bg-white border border-gray-300 rounded-full pl-4 pr-10 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-400 text-sm cursor-pointer font-medium text-gray-700 flex items-center justify-between shadow-sm">
+                                    class="w-full h-full bg-white border border-gray-200 rounded-full pl-4 pr-10 focus:outline-none  focus:ring-gray-200 focus:border-gray-200 text-sm cursor-pointer font-medium text-gray-700 flex items-center justify-between ">
                                 <span class="truncate leading-none"
                                       x-text="sortLabels[currentSort] || 'Latest Products'"></span>
                                 <span
@@ -74,7 +74,7 @@
                             <!-- Custom Dropdown Options (Without Page Reload) -->
                             <div x-show="open"
                                  style="display: none;"
-                                 class="absolute left-0 right-0 top-full bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden z-50 py-1">
+                                 class="absolute left-0 right-0 top-full bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50 py-1">
 
                                 <button type="button"
                                         @click="changeSort('latest')"
@@ -118,6 +118,19 @@
                         @endif
                     </div>
 
+                    @php
+                        $selectedBrandReq = request('brand');
+                        if (is_array($selectedBrandReq)) {
+                            $filteredBrands = array_filter($selectedBrandReq);
+                            $brandLabel = count($filteredBrands) > 0 ? 'Brand: ' . implode(', ', array_map('ucfirst', $filteredBrands)) : 'Brands';
+                        } elseif ($selectedBrandReq) {
+                            $brandLabel = 'Brand: ' . ucfirst($selectedBrandReq);
+                        } else {
+                            $brandLabel = 'Brands';
+                        }
+                        $currentSelectedBrands = array_filter((array) request('brand', []));
+                    @endphp
+
                     <div
                         class="flex items-center gap-2 overflow-x-auto -mb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         <button type="button" onclick="toggleMobDropdown('mobSortDropdown')"
@@ -132,7 +145,7 @@
                         </button>
                         <button type="button" onclick="toggleMobDropdown('mobBrandDropdown')"
                                 class="flex-shrink-0 h-[30px] bg-white border border-gray-200 rounded-full px-3 text-xs font-medium text-gray-700 flex items-center gap-2">
-                            <span>{{ request('brand') ? 'Brand: '.ucfirst(request('brand')) : 'Brands' }}</span>
+                            <span class="truncate max-w-[120px]">{{ $brandLabel }}</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                         </button>
                         <button type="button" onclick="toggleMobDropdown('mobColorDropdown')"
@@ -217,12 +230,15 @@
                         </div>
                         <div class="space-y-1">
                             <button type="button" onclick="selectBrand('')"
-                                    class="w-full text-left block px-2.5 py-1.5 rounded border {{ !request('brand') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
+                                    class="w-full text-left block px-2.5 py-1.5 rounded border {{ empty($currentSelectedBrands) ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
                                 All Brands
                             </button>
                             @foreach($availableBrands as $brand)
+                                @php
+                                    $isBrandActive = in_array($brand->slug, $currentSelectedBrands);
+                                @endphp
                                 <button type="button" onclick="selectBrand('{{ $brand->slug }}')"
-                                        class="w-full text-left block px-2.5 py-1.5 rounded border {{ request('brand') == $brand->slug ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
+                                        class="w-full text-left block px-2.5 py-1.5 rounded border {{ $isBrandActive ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
                                     {{ ucfirst($brand->name) }}
                                 </button>
                             @endforeach
@@ -296,10 +312,10 @@
 
                 <!-- NO MORE PRODUCTS BUTTON -->
                 <div id="no-more-products" class="text-center my-6 hidden">
-<span
-    class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
-    <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
-</span>
+                    <span
+                        class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
+                    </span>
                 </div>
             </div>
 
@@ -310,14 +326,71 @@
 @endsection
 
 @push('scripts')
+    {{-- 1. Shimmer Animation CSS --}}
+    <style>
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .animate-shimmer {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+
+    {{-- 2. Skeleton Generator Function --}}
     <script>
+        function renderProductSkeletons(count = 10) {
+            let skeletons = '';
+            for (let i = 0; i < count; i++) {
+                skeletons += `
+            <div class="bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
+                <!-- Image Box -->
+                <div class="bg-gray-200 h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55 animate-shimmer"></div>
+
+                    <!-- Content Area -->
+                <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2.5">
+                <div class="space-y-2">
+                    <!-- Title -->
+                <div class="h-4 bg-gray-200 rounded animate-shimmer w-3/4"></div>
+                    <!-- Description -->
+                <div class="h-3 bg-gray-200 rounded animate-shimmer w-full"></div>
+                </div>
+
+                    <!-- Stars -->
+                <div class="h-3 bg-gray-200 rounded animate-shimmer w-1/3"></div>
+
+                    <!-- Price & Stock -->
+                <div class="flex items-center justify-between gap-2 mt-auto pt-2">
+                <div class="h-4 bg-gray-200 rounded animate-shimmer w-1/3"></div>
+                <div class="h-4 bg-gray-200 rounded animate-shimmer w-1/4"></div>
+                </div>
+                </div>
+                </div>
+                `;
+            }
+            return skeletons;
+        }
+    </script>
+
+    <script>
+        // --- GLOBAL VARIABLES ---
+        let currentAjaxReq = null;
+        let page = 1;
+        let hasMorePages = {{ $records->hasMorePages() ? 'true' : 'false' }};
+        let isLoading = false;
+
         // --- 1. PRICE & FILTER FUNCTIONS ---
         function updatePriceLabel(value) {
             document.getElementById('priceLabel').innerText = Number(value).toLocaleString();
         }
 
-        // AJAX Filter Trigger Function (Ab yeh sorting aur baqi sab filters ko ikatha serialize karega)
         function fetchFilteredProducts(resetPage = true) {
+            if (currentAjaxReq) {
+                currentAjaxReq.abort();
+            }
+
             if (resetPage) {
                 page = 1;
                 let url = new URL(window.location.href);
@@ -325,15 +398,12 @@
                 window.history.pushState({}, '', url);
             }
 
-            $('#productGrid').html('<div class="col-span-full text-center py-16"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-600"></i></div>');
+            // 🔴 UPDATED: Spinner ki jagah Skeletons
+            $('#productGrid').html(renderProductSkeletons(10));
 
-            // 1. Filter form ka data lo
             let formData = $('#filterForm').serializeArray();
-
-            // 2. Desktop ya mobile sort ki current value ko bhi lazmi shamil karo
             let currentSort = $('#desktopSortSelect').val() || new URLSearchParams(window.location.search).get('sort') || 'latest';
 
-            // Check karo agar formData mein pehle se sort hai toh theek, warna add kar do
             let hasSort = false;
             formData.forEach(function (item) {
                 if (item.name === 'sort') {
@@ -345,7 +415,6 @@
                 formData.push({name: 'sort', value: currentSort});
             }
 
-            // Serialize data ko string banao
             let serializedData = $.param(formData);
 
             let cleanParams = serializedData.split('&').filter(function (item) {
@@ -357,12 +426,13 @@
             let fullQueryUrl = actionUrl + (cleanParams ? "?" + cleanParams : "");
             let ajaxData = cleanParams + "&page=" + page;
 
-            $.ajax({
+            currentAjaxReq = $.ajax({
                 url: actionUrl,
                 type: 'GET',
                 data: ajaxData,
                 dataType: 'json',
                 success: function (response) {
+                    currentAjaxReq = null;
                     $('#loading-spinner').addClass('hidden');
 
                     if ($.trim(response.products) === "") {
@@ -379,14 +449,15 @@
 
                     window.history.pushState({path: fullQueryUrl}, '', fullQueryUrl);
                 },
-                error: function (xhr) {
-                    console.log(xhr.responseText);
+                error: function (xhr, textStatus) {
+                    if (textStatus !== 'abort') {
+                        console.log(xhr.responseText);
+                    }
                     $('#loading-spinner').addClass('hidden');
                 }
             });
         }
 
-        // Price Slider Mouse Up Handler (Jahan chhodenge wahi filter apply ho jayega)
         function applyPriceFilter(val) {
             let urlParams = new URLSearchParams(window.location.search);
             if (val) {
@@ -395,14 +466,11 @@
                 urlParams.delete('max_price');
             }
 
-            // Browser URL update karein bina page reload kiye
             window.history.pushState({}, '', '?' + urlParams.toString());
-
-            // Products fetch karne wala function chalayein
             fetchFilteredProducts(true);
         }
 
-        // --- Single Desktop Sort Change Event ---
+        // --- Desktop Sort Change ---
         $('#desktopSortSelect').on('change', function (e) {
             e.preventDefault();
 
@@ -421,7 +489,7 @@
             fetchFilteredProducts(true);
         });
 
-        // Mobile Sort Option Click Handler
+        // Mobile Sort Handler
         function selectMobSort(sortValue) {
             let urlParams = new URLSearchParams(window.location.search);
             if (sortValue) {
@@ -433,28 +501,20 @@
             window.history.pushState({}, '', '?' + urlParams.toString());
             closeAllMobDropdowns();
 
-            // Desktop select dropdown ko bhi sync kar do
             $('#desktopSortSelect').val(sortValue);
-
             fetchFilteredProducts(true);
         }
 
-        // Color, Size aur Brand ke selection handlers
+        // Color & Size Selection Handlers
         function selectColorSwatch(color) {
             const input = document.getElementById('selectedColorInput');
-            input.value = (input.value === color) ? '' : color;
+            if (input) input.value = (input.value === color) ? '' : color;
             fetchFilteredProducts(true);
         }
 
         function selectSizeBox(size) {
             const input = document.getElementById('selectedSizeInput');
-            input.value = (input.value === size) ? '' : size;
-            fetchFilteredProducts(true);
-        }
-
-        function selectBrand(brandSlug) {
-            const input = document.getElementById('selectedBrandInput');
-            input.value = (input.value === brandSlug) ? '' : brandSlug;
+            if (input) input.value = (input.value === size) ? '' : size;
             fetchFilteredProducts(true);
         }
 
@@ -462,8 +522,14 @@
         function fetchCategoryProducts(event, targetUrl, categoryPath) {
             event.preventDefault();
 
+            if (currentAjaxReq) {
+                currentAjaxReq.abort();
+            }
+
             page = 1;
-            $('#productGrid').html('<div class="col-span-full text-center py-16"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-600"></i></div>');
+
+            // 🔴 UPDATED: Cleaned duplicate lines & set Skeletons
+            $('#productGrid').html(renderProductSkeletons(10));
 
             let categoryInput = $('#filterForm input[name="category"]');
             if (categoryInput.length) {
@@ -484,12 +550,13 @@
             let fullQueryUrl = ajaxUrl + (cleanParams ? "?" + cleanParams : "");
             let ajaxData = cleanParams + "&page=" + page;
 
-            $.ajax({
+            currentAjaxReq = $.ajax({
                 url: ajaxUrl,
                 type: "GET",
                 data: ajaxData,
                 dataType: 'json',
                 success: function (response) {
+                    currentAjaxReq = null;
                     $('#loading-spinner').addClass('hidden');
 
                     if ($.trim(response.products) === "") {
@@ -498,7 +565,7 @@
                         $('#no-more-products').removeClass('hidden');
                     } else {
                         $('#productGrid').html(response.products);
-                        $('aside').replaceWith(response.sidebar);
+                        if (response.sidebar) $('aside').replaceWith(response.sidebar);
                         hasMorePages = true;
                         isLoading = false;
                         $('#no-more-products').addClass('hidden');
@@ -506,25 +573,27 @@
 
                     window.history.pushState({path: targetUrl}, '', targetUrl);
                 },
-                error: function (xhr) {
-                    console.log(xhr.responseText);
+                error: function (xhr, textStatus) {
+                    if (textStatus !== 'abort') {
+                        console.log(xhr.responseText);
+                    }
                     $('#loading-spinner').addClass('hidden');
                 }
             });
         }
 
-        // Price Slider Change Event
+        // Price Slider Event Listener
         let priceTimer;
-        $('#priceSlider').on('input', function () {
+        $(document).on('input', '#priceSlider', function () {
             updatePriceLabel(this.value);
-        }).on('change', function () {
+        }).on('change', '#priceSlider', function () {
             clearTimeout(priceTimer);
             priceTimer = setTimeout(function () {
                 fetchFilteredProducts(true);
             }, 300);
         });
 
-        // Brand Checkboxes Change Event
+        // Brand Checkboxes Change Event (Handles Multiple Brands Selection)
         $(document).on('change', '#filterForm input[type="checkbox"]', function () {
             fetchFilteredProducts(true);
         });
@@ -561,7 +630,7 @@
                 timerProgressBar: true,
                 didOpen: (toast) => {
                     toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    toast.addEventListener('mouseleave', Swal.stopTimer)
                 }
             });
 
@@ -627,11 +696,7 @@
             }
         });
 
-        // --- 5. INFINITE SCROLL PAGINATION (FIXED WITH SHIMMER) ---
-        let page = 1;
-        let hasMorePages = {{ $records->hasMorePages() ? 'true' : 'false' }};
-        let isLoading = false;
-
+        // --- 5. INFINITE SCROLL PAGINATION ---
         function handleInfiniteScroll($container, isWindow) {
             if (!hasMorePages) return;
 
@@ -645,24 +710,23 @@
                 isLoading = true;
                 page++;
 
-                // Shimmer Effect HTML (Spinner ki jagah grid mein append hoga)
                 let shimmerHtml = `
-            @for($i = 0; $i < 5; $i++)
+                @for($i = 0; $i < 5; $i++)
                 <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
-                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
+                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full animate-shimmer"></div>
                     <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
                         <div>
-                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                            <div class="h-3 bg-gray-200 rounded w-full"></div>
+                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2 animate-shimmer"></div>
+                            <div class="h-3 bg-gray-200 rounded w-full animate-shimmer"></div>
                         </div>
-                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2 animate-shimmer"></div>
                         <div class="flex items-center justify-between mt-2">
-                            <div class="h-5 bg-gray-200 rounded w-1/3"></div>
-                            <div class="h-5 bg-gray-200 rounded w-1/4"></div>
+                            <div class="h-5 bg-gray-200 rounded w-1/3 animate-shimmer"></div>
+                            <div class="h-5 bg-gray-200 rounded w-1/4 animate-shimmer"></div>
                         </div>
                     </div>
                 </div>
-@endfor
+                @endfor
                 `;
                 $('#productGrid').append(shimmerHtml);
 
@@ -676,7 +740,6 @@
                     data: formData,
                     dataType: 'json',
                     success: function (response) {
-                        // Response aate hi shimmer cards hata dein
                         $('.product-shimmer').remove();
 
                         if (!response.products || $.trim(response.products) === "") {
@@ -689,7 +752,6 @@
                     },
                     error: function (xhr) {
                         console.log(xhr.responseText);
-                        // Error aane par bhi shimmer hata dein
                         $('.product-shimmer').remove();
                         isLoading = false;
                     }
@@ -697,31 +759,33 @@
             }
         }
 
-        // Agar aapke layout mein <main> khud scrollable hai (overflow-y-auto + fixed height)
         $('main').on('scroll', function () {
             handleInfiniteScroll($(this), false);
         });
 
-        // Fallback: agar page normal window scroll use karta hai (zyada common case)
         $(window).on('scroll', function () {
             handleInfiniteScroll(null, true);
         });
 
+        // --- 6. RESET FILTERS ---
         function fetchResetFilters(event, baseUrl) {
             event.preventDefault();
 
-            // Filters ko visually bhi reset karo
+            if (currentAjaxReq) {
+                currentAjaxReq.abort();
+            }
+
             $('#selectedColorInput').val('');
             $('#selectedSizeInput').val('');
-            $('#selectedBrandInput').val('');
             $('#priceSlider').val(100000);
             $('#priceLabel').text('100,000');
             $('#filterForm input[name="min_price"]').val(0);
             $('#filterForm input[type="checkbox"]').prop('checked', false);
 
             page = 1;
-            // Reset par bhi shimmer ya loader show kar sakte hain
-            $('#productGrid').html('<div class="col-span-full text-center py-16"><i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-600"></i></div>');
+
+            // 🔴 UPDATED: Spinner ki jagah Skeletons
+            $('#productGrid').html(renderProductSkeletons(10));
 
             let category = $('#filterForm input[name="category"]').val() || '';
             let search = $('#filterForm input[name="search"]').val() || '';
@@ -734,19 +798,20 @@
 
             let ajaxUrl = category ? "/collection/" + category : "/collection";
 
-            $.ajax({
+            currentAjaxReq = $.ajax({
                 url: ajaxUrl,
                 type: 'GET',
                 data: params,
                 dataType: 'json',
                 success: function (response) {
+                    currentAjaxReq = null;
                     if ($.trim(response.products) === "") {
                         hasMorePages = false;
                         $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
                         $('#no-more-products').removeClass('hidden');
                     } else {
                         $('#productGrid').html(response.products);
-                        $('aside').replaceWith(response.sidebar);
+                        if (response.sidebar) $('aside').replaceWith(response.sidebar);
                         hasMorePages = true;
                         isLoading = false;
                         $('#no-more-products').addClass('hidden');
@@ -754,8 +819,10 @@
 
                     window.history.pushState({path: baseUrl}, '', baseUrl);
                 },
-                error: function (xhr) {
-                    console.log(xhr.responseText);
+                error: function (xhr, textStatus) {
+                    if (textStatus !== 'abort') {
+                        console.log(xhr.responseText);
+                    }
                 }
             });
         }

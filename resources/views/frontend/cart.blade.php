@@ -30,7 +30,7 @@
         <!-- Layout Grid: Left for Items, Right for Summary -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
 
-                <!-- Left Column: Cart Items List (Takes 2 Columns on Large Screens) -->
+                <!-- Left Column: Cart Items List -->
                 <div class="lg:col-span-2 space-y-4">
                     @foreach($carts as $item)
 
@@ -41,7 +41,7 @@
 
                         @if($product)
 
-                            <div class="cart-item flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white rounded-2xl p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-md transition gap-4">
+                            <div class="cart-item flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white rounded-2xl p-4 sm:p-5 border border-gray-100 shadow-sm hover:shadow-md transition gap-4" data-id="{{ $item->id }}">
 
                                 <div class="flex items-start sm:items-center gap-4 w-full sm:w-3/4">
 
@@ -95,11 +95,13 @@
 
                                     <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
                                         <button
+                                            type="button"
                                             class="qty-minus px-3 py-1.5 bg-gray-100 hover:bg-gray-200 cursor-pointer text-gray-600 font-bold text-xs sm:text-sm transition"
                                             data-id="{{ $item->id }}">-
                                         </button>
                                         <span class="px-3 sm:px-4 item-qty font-semibold text-gray-800 text-xs sm:text-sm">{{ $item->quantity }}</span>
                                         <button
+                                            type="button"
                                             class="qty-plus px-3 py-1.5 bg-gray-100 hover:bg-gray-200 cursor-pointer text-gray-600 font-bold text-xs sm:text-sm transition"
                                             data-id="{{ $item->id }}">+
                                         </button>
@@ -121,7 +123,7 @@
                     @endforeach
                 </div>
 
-                <!-- Right Column: Cart Summary & Checkout Card (Takes 1 Column on Large Screens, sticky) -->
+                <!-- Right Column: Cart Summary -->
                 <div class="lg:col-span-1 lg:sticky lg:top-24 mb-10 sm:mb-20">
 
                     <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-md border border-gray-100">
@@ -194,7 +196,7 @@
                 "timeOut": "3000"
             };
 
-            // Delete Cart Item AJAX
+            // 1. Delete Cart Item AJAX (Fixed Header Cart Count Issue)
             $(document).on('click', '.deleteCart', function (e) {
                 e.preventDefault();
 
@@ -228,8 +230,9 @@
                                 $('.total-qty').text(response.total_quantity);
                                 $('.total-amount').text('Rs ' + response.total_amount);
 
+                                // Header count ko unique items (total_items) ke mutabiq set kiya hai
                                 if ($('.cart-count').length) {
-                                    $('.cart-count').text(response.total_quantity);
+                                    $('.cart-count').text(response.total_items);
                                 }
                             } else {
                                 toastr.error(response.message || 'Error executing request.');
@@ -241,6 +244,60 @@
                         }
                     });
                 }
+            });
+
+            // Quantity Increase (+) / Decrease (-) Dynamic AJAX Update
+            $(document).on('click', '.qty-plus, .qty-minus', function (e) {
+                e.preventDefault();
+
+                let button = $(this);
+                let cartId = button.data('id');
+                let isPlus = button.hasClass('qty-plus');
+                let cartRow = button.closest('.cart-item');
+                let qtySpan = cartRow.find('.item-qty');
+                let currentQty = parseInt(qtySpan.text());
+
+                let newQty = isPlus ? currentQty + 1 : currentQty - 1;
+
+                if (newQty < 1) {
+                    toastr.warning('Quantity cannot be less than 1.');
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ url('/cart/update') }}/" + cartId,
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        quantity: newQty
+                    },
+                    success: function (response) {
+                        if (response.status === 'success' || response.status === true) {
+                            // 1. Updated Quantity Display
+                            qtySpan.text(response.quantity);
+
+                            // 2. Row Subtotal Display
+                            cartRow.find('.item-subtotal').text('Rs ' + response.item_subtotal);
+
+                            // 3. Cart Summary Sidebar Display (Sirf Page Sidebar ke values update honge)
+                            $('.total-items').text(response.total_items);
+                            $('.total-qty').text(response.total_quantity);
+                            $('.total-amount').text('Rs ' + response.total_amount);
+
+                            // NOTE: Header Cart Badge ko quantity update par touch nahi karna
+                            // kyunki unique items count constant hi rehta hai.
+                        } else {
+                            toastr.error(response.message || 'Unable to update quantity.');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
+                            toastr.error(xhr.responseJSON.message);
+                        } else {
+                            toastr.error('Failed to update quantity.');
+                        }
+                    }
+                });
             });
 
         });

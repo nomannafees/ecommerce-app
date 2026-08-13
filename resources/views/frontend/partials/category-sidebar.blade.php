@@ -1,5 +1,6 @@
 <!-- LEFT SIDEBAR (Desktop Only & Sticky) -->
-<aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible sticky top-18" x-data="{ showAllCategories: false, categoryLimit: 6 }">
+<aside class="w-full lg:w-1/5 bg-white p-5 rounded-xl shadow h-fit hidden lg:block overflow-visible sticky top-18"
+       x-data="{ showAllCategories: false, categoryLimit: 6, showAllBrands: false, brandLimit: 6 }">
     @php
         $buildCategoryPath = function ($categoryItem) {
             $slugs = [];
@@ -20,6 +21,9 @@
         } else {
             $displayCategories = collect();
         }
+
+        // Safe Multi-brand Array Handler
+        $selectedBrands = array_filter((array) request('brand', []));
     @endphp
 
     <form method="GET" action="{{ request()->url() }}" id="filterForm" class="space-y-4">
@@ -33,7 +37,6 @@
 
         <input type="hidden" name="color" id="selectedColorInput" value="{{ request('color') }}">
         <input type="hidden" name="size" id="selectedSizeInput" value="{{ request('size') }}">
-        <input type="hidden" name="brand" id="selectedBrandInput" value="{{ request('brand') }}">
 
         {{-- CATEGORIES HEADER WITH CLEAR FILTERS --}}
         <div class="flex items-center justify-between mb-2">
@@ -176,7 +179,7 @@
 
     <!-- Brands Filter -->
         @if(isset($availableBrands) && count($availableBrands) > 0)
-            <div x-data="{ showAllBrands: false, brandLimit: 6 }">
+            <div>
                 <h2 class="font-bold text-sm mt-4 mb-2 tracking-tight flex items-center gap-2">
                     <span>Brands</span>
                 </h2>
@@ -184,12 +187,13 @@
                 <div class="flex flex-col gap-2 pb-1">
                     @foreach($availableBrands as $index => $brand)
                         @php
-                            $isBrandSelected = request('brand') == $brand->slug;
+                            $isBrandSelected = in_array($brand->slug, $selectedBrands);
                         @endphp
                         <label x-show="showAllBrands || {{ $index }} < brandLimit"
                                class="flex items-center gap-2.5 cursor-pointer group text-xs sm:text-sm text-gray-700 hover:text-black">
                             <input type="checkbox"
-                                   onchange="selectBrand('{{ $brand->slug }}')"
+                                   name="brand[]"
+                                   value="{{ $brand->slug }}"
                                    {{ $isBrandSelected ? 'checked' : '' }}
                                    class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
                             <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">

@@ -6,7 +6,7 @@ use App\Models\Categorie;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
-use App\Models\AdminStore; // <-- Store Model Import Kiya
+use App\Models\AdminStore;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,26 +26,27 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
 
-            // 1. Cart Count Logic
+            // 1. Cart Count Logic (FIXED: Unique items count instead of total sum of quantity)
             $cartCount = 0;
 
             if (Auth::check()) {
                 $cartCount = Cart::where('user_id', Auth::id())
-                    ->sum('quantity');
+                    ->has('variant') // Sirf un items ko count karega jin ka variant exist karta hai
+                    ->count();      // <-- sum('quantity') ki jagah count() kar diya hai
             }
 
             // 2. Store Data Logic
             $store = AdminStore::first();
 
-            $categories = Categorie::where('parent_id',0)
+            $categories = Categorie::where('parent_id', 0)
                 ->with('children.children')
                 ->get();
 
-            // Both variables passed to all Blade views
+            // All variables passed to all Blade views
             $view->with([
-                'cartCount' => $cartCount,
-                'store'     => $store,
-                'categories'     => $categories,
+                'cartCount'  => $cartCount,
+                'store'      => $store,
+                'categories' => $categories,
             ]);
         });
     }

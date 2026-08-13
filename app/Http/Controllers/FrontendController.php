@@ -285,9 +285,9 @@ class FrontendController extends Controller
             $parent = null;
             foreach ($slugs as $slug) {
                 $parent = Categorie::where('slug', $slug)
-                    ->when($parent, function($q) use ($parent) {
+                    ->when($parent, function ($q) use ($parent) {
                         return $q->where('parent_id', $parent->id);
-                    }, function($q) {
+                    }, function ($q) {
                         return $q->where('parent_id', 0);
                     })->first();
 
@@ -409,8 +409,11 @@ class FrontendController extends Controller
         if ($request->filled('size')) {
             $query->whereHas('variants', fn($q) => $q->where('size', $request->size));
         }
+
+// MULTIPLE BRANDS FILTER LOGIC (Updated)
         if ($request->filled('brand')) {
-            $query->whereHas('prod_brand', fn($q) => $q->where('slug', $request->brand));
+            $brands = is_array($request->brand) ? $request->brand : [$request->brand];
+            $query->whereHas('prod_brand', fn($q) => $q->whereIn('slug', $brands));
         }
 
         // 5. Sorting Logic
@@ -427,7 +430,7 @@ class FrontendController extends Controller
         }
 
         // 6. Custom Pagination Logic (1st page: 15 items, Subsequent pages: 10 items)
-        $page = max(1, (int) $request->get('page', 1));
+        $page = max(1, (int)$request->get('page', 1));
         $perPage = ($page == 1) ? 15 : 10;
         $totalRecords = $query->count();
 
@@ -760,8 +763,7 @@ class FrontendController extends Controller
 
     public function update(Request $request, $id = null)
     {
-
-        // Agar route se $id nahi aayi to request se utha lein (dono tarah safe)
+        // Agar route se $id nahi aayi to request se utha lein
         $cartId = $id ?? $request->id;
 
         $cart = Cart::with('variant.product')
@@ -770,13 +772,14 @@ class FrontendController extends Controller
             ->first();
 
         if (!$cart) {
-            return response()->json(['error' => 'Not found'], 404);
+            return response()->json(['error' => 'Cart item not found'], 404);
         }
 
-        // Agar request dynamic input quantity la rahi hai (Naya method)
+        // Dynamic input quantity check
         if ($request->has('quantity')) {
             $requestedQty = intval($request->quantity);
-            if ($requestedQty > $cart->variant->stock) {
+
+            if ($cart->variant && $requestedQty > $cart->variant->stock) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Stock limit reached. Only ' . $cart->variant->stock . ' available.'
@@ -784,9 +787,9 @@ class FrontendController extends Controller
             }
             $cart->quantity = $requestedQty;
         } else {
-            // Purana Type (plus/minus click) fallback logic
+            // Plus / Minus fallback
             if ($request->type === 'plus') {
-                if ($cart->quantity >= $cart->variant->stock) {
+                if ($cart->variant && $cart->quantity >= $cart->variant->stock) {
                     return response()->json([
                         'status' => false,
                         'message' => 'Stock limit reached'
@@ -801,16 +804,20 @@ class FrontendController extends Controller
 
         $cart->save();
 
-        // Variant price check karein, fallback base_price
+        // Variant price check with fallback
         $price = $cart->variant->price ?? ($cart->variant->product->base_price ?? 0);
         $subtotal = $price * $cart->quantity;
 
-        // CART totals nikalne ke liye saare items dobara calculation mein dalein
+        // CART totals (Filtering invalid/deleted variants or products to match AppServiceProvider)
         $userCarts = Cart::with('variant.product')
             ->where('user_id', Auth::id())
+            ->has('variant.product') // Ensures active relation only
             ->get();
 
+        // Unique Items Count (Matches header counter perfectly)
         $totalItems = $userCarts->count();
+
+        // Sum of all items quantities (Matches summary sidebar)
         $totalQuantity = $userCarts->sum('quantity');
 
         $totalAmount = $userCarts->sum(function ($c) {
@@ -818,23 +825,22 @@ class FrontendController extends Controller
             return $c->quantity * $itemPrice;
         });
 
-        // Response keys ko frontend script ke mutabik merge kar diya
         return response()->json([
-            'status' => 'success',
-            'quantity' => $cart->quantity,
-            'new_qty' => $cart->quantity,
-            'subtotal' => number_format($subtotal, 0),
-            'item_subtotal' => number_format($subtotal, 0),
-            'total_items' => $totalItems,
-            'total_quantity' => $totalQuantity,
-            'total_qty' => $totalQuantity,
-            'total_amount' => number_format($totalAmount, 0),
+            'status'         => 'success',
+            'quantity'       => $cart->quantity,
+            'new_qty'        => $cart->quantity,
+            'subtotal'       => number_format($subtotal, 0),
+            'item_subtotal'  => number_format($subtotal, 0),
+            'total_items'    => $totalItems,       // Unique items (e.g. 1)
+            'total_quantity' => $totalQuantity,    // Summed quantities (e.g. 2)
+            'total_qty'      => $totalQuantity,
+            'total_amount'   => number_format($totalAmount, 0),
         ]);
     }
 
     public function checkout()
     {
-        $user_id=Auth::id();
+        $user_id = Auth::id();
         $carts = Cart::with('variant.product')
             ->where('user_id', $user_id)
             ->get();
@@ -851,17 +857,16 @@ class FrontendController extends Controller
             $cities = City::where('state_id', $defaultState->id)->orderBy('name', 'asc')->get();
         }
 
-        $customer_info=CustomerInfo::where('user_id',$user_id)->first();
-        if($customer_info){
-            if(isset($customer_info->state_id)){
+        $customer_info = CustomerInfo::where('user_id', $user_id)->first();
+        if ($customer_info) {
+            if (isset($customer_info->state_id)) {
                 $cities = City::where('state_id', $customer_info->state_id)->orderBy('name', 'asc')->get();
             }
         }
 
-        return view('frontend.checkout', compact('carts', 'country', 'states', 'cities','customer_info'));
+        return view('frontend.checkout', compact('carts', 'country', 'states', 'cities', 'customer_info'));
     }
 
-    // AJAX ke liye yeh function add karein
     public function getCitiesByState($stateId)
     {
         $cities = City::where('state_id', $stateId)
