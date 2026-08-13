@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\AdminLoginController;
 
 
 Route::get('/', [FrontendController::class, 'index'])->name('index');
@@ -53,7 +54,9 @@ Route::get('/thank-you', [FrontendController::class, 'thankYou'])->name('thankyo
 Route::post('/contact-us', [\App\Http\Controllers\ContactUsController::class, 'store'])->name('contact-us.store');
 Route::get('/load-more-products', [\App\Http\Controllers\HomeController::class, 'loadMoreProducts'])->name('load.more.products');
 
-Route::get('/admin/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
+// Admin Login Routes
+Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AdminLoginController::class, 'adminLogin'])->name('admin.login.submit');
 
 Route::middleware('auth')->group(function () {
 

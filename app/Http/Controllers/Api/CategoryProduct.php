@@ -50,12 +50,19 @@ class CategoryProduct extends Controller
             $currentCategory = $parent;
         }
 
-        // 2. Sidebar categories ko exact current category aur uske children tak restrict karna
+        // 2. Categories tree ko request ke mutabiq restrict karna
         if ($currentCategory) {
-            // Yahan hum sirf current category aur uske children load kar rahe hain taake extra categories show na hon
-            $categories = Categorie::where('id', $currentCategory->id)->with('children.children')->get();
+            // Agar koi child ya sub-category khuli hai, toh sab se pehle uska top-level parent (main category) dhoondhein
+            $rootCategory = $currentCategory;
+            while ($rootCategory->parent_id != 0) {
+                $rootCategory = Categorie::find($rootCategory->parent_id);
+                if (!$rootCategory) break;
+            }
+
+            // Ab sirf us main parent ko load karein, aur `allChildren` ki jagah sirf wahi tree rakhein jo current path ya uske children ko represent kare
+            $categories = Categorie::where('id', $rootCategory->id)->with('allChildren')->get();
         } else {
-            // Agar koi category select nahi hai toh sari root main categories (`parent_id = 0`) aayengi
+            // Agar koi category URL mein nahi hai (All Products page), toh sirf root main categories (`parent_id = 0`) aayengi
             $categories = Categorie::where('parent_id', 0)->with('allChildren')->get();
         }
 

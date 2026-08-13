@@ -372,15 +372,34 @@
                 }
             });
 
-            let initialThumb = document.querySelector('.thumb[data-index="0"]');
-            if (initialThumb) {
-                updateThumbActiveState(initialThumb);
-            }
-
+            // Page load hotay hi default color wali slide par foran jump kar jayein (without visual flicker)
             if (selectedColor) {
                 let defaultVariantId = "{{ $defaultVariant->id ?? '' }}";
                 let matchedVariant = allVariants.find(v => v.color_name === selectedColor);
-                renderSizesForColor(selectedColor, defaultVariantId || (matchedVariant ? matchedVariant.id : null));
+
+                let slides = document.querySelectorAll('.mainImageSwiper .swiper-wrapper .swiper-slide:not(.swiper-slide-duplicate)');
+                let slideIndexToMove = -1;
+                slides.forEach((slide, idx) => {
+                    if (slide.getAttribute('data-color') === selectedColor) {
+                        if (slideIndexToMove === -1) {
+                            slideIndexToMove = idx;
+                        }
+                    }
+                });
+
+                if (slideIndexToMove !== -1 && mainSwiper) {
+                    mainSwiper.slideTo(slideIndexToMove, 0); // 0 millisecond delay taake flick na ho
+                }
+
+                let colorButton = Array.from(document.querySelectorAll('.color-btn')).find(btn => btn.getAttribute('onclick').includes(selectedColor));
+                if (colorButton) {
+                    selectColor(colorButton, selectedColor, defaultVariantId || (matchedVariant ? matchedVariant.id : null));
+                }
+            } else {
+                let initialThumb = document.querySelector('.thumb[data-index="0"]');
+                if (initialThumb) {
+                    updateThumbActiveState(initialThumb);
+                }
             }
 
             // --- BUY NOW CLICK HANDLER ---
@@ -408,7 +427,6 @@
             let quantity = document.getElementById('qtyInput').value || 1;
             let stock = parseInt(document.getElementById('selectedVariantStock').value) || 0;
 
-            // Stock check ko pehle rakha hai taake direct toast show ho
             if (stock <= 0) {
                 Swal.fire({
                     toast: true,
@@ -572,7 +590,7 @@
         }
 
         // 1. Color Select
-        function selectColor(element, colorName) {
+        function selectColor(element, colorName, preselectedVariantId = null) {
             selectedColor = colorName;
             document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.classList.remove('border-gray-300', 'bg-black/5', 'ring-1', 'ring-black/10');
@@ -580,6 +598,7 @@
             });
             element.classList.remove('border-gray-200');
             element.classList.add('border-gray-300', 'bg-black/5', 'ring-1', 'ring-black/10');
+
             let slides = document.querySelectorAll('.mainImageSwiper .swiper-wrapper .swiper-slide:not(.swiper-slide-duplicate)');
             let slideIndexToMove = -1;
             slides.forEach((slide, idx) => {
@@ -589,6 +608,7 @@
                     }
                 }
             });
+
             if (slideIndexToMove !== -1 && mainSwiper) {
                 mainSwiper.slideToLoop(slideIndexToMove);
                 let targetThumb = document.querySelector(`.thumb[data-index="${slideIndexToMove}"]`);
@@ -596,7 +616,8 @@
                     updateThumbActiveState(targetThumb);
                 }
             }
-            renderSizesForColor(colorName);
+
+            renderSizesForColor(colorName, preselectedVariantId);
         }
 
         // 2. Render Sizes
@@ -691,52 +712,6 @@
             }
             input.value = value;
         }
-
-        // ================= REVIEW LIGHTBOX MODAL FUNCTIONS =================
-        function openReviewModal(imageUrls, startIndex = 0) {
-            const modal = document.getElementById('reviewImageModal');
-            const wrapper = document.getElementById('reviewModalSwiperWrapper');
-            if (!imageUrls || imageUrls.length === 0) return;
-            wrapper.innerHTML = '';
-            imageUrls.forEach(url => {
-                const slide = document.createElement('div');
-                slide.className = 'swiper-slide flex items-center justify-center bg-black/20';
-                slide.innerHTML = `<img src="${url}" class="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl mx-auto" alt="Review Image">`;
-                wrapper.appendChild(slide);
-            });
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            if (reviewSwiperInstance) {
-                reviewSwiperInstance.destroy(true, true);
-            }
-            reviewSwiperInstance = new Swiper('.reviewModalSwiper', {
-                initialSlide: startIndex,
-                loop: imageUrls.length > 1,
-                navigation: {
-                    nextEl: '.reviewModalSwiper .swiper-button-next',
-                    prevEl: '.reviewModalSwiper .swiper-button-prev',
-                },
-                pagination: {
-                    el: '.reviewModalSwiper .swiper-pagination',
-                    clickable: true,
-                },
-            });
-        }
-
-        function closeReviewModal() {
-            const modal = document.getElementById('reviewImageModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        // ESC Key Events
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                closeReviewModal();
-            }
-        });
     </script>
 
     <style>

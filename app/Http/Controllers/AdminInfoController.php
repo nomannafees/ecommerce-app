@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
-class AdminInfoController extends Controller
+class   AdminInfoController extends Controller
 {
     /**
      * Display a listing of the resource.

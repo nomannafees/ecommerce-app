@@ -1116,7 +1116,11 @@ class FrontendController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        return view('frontend.user_info', compact('user'));
+
+        // Customer info ko user_id ke zariye fetch karna taake phone aur shipping address show ho sakein
+        $userInfo = \App\Models\CustomerInfo::where('user_id', $user->id)->first();
+
+        return view('frontend.user_info', compact('user', 'userInfo'));
     }
 
     public function updateProfile(Request $request)
@@ -1125,10 +1129,22 @@ class FrontendController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'shipping_address' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        // 1. Update user name
         $user->name = $request->name;
         $user->save();
+
+        // 2. Update or create customer info (phone & shipping address)
+        \App\Models\CustomerInfo::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'phone' => $request->phone,
+                'shipping_address' => $request->shipping_address,
+            ]
+        );
 
         return redirect()->back()->with('success', 'Profile details updated successfully!');
     }
@@ -1145,7 +1161,7 @@ class FrontendController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->back()->with('success', 'Password updated successfully!');
+        return redirect()->back()->with('password_success', 'Password updated successfully!');
     }
 
 }

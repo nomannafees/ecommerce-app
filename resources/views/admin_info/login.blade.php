@@ -19,13 +19,13 @@
     <div class="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
 </div>
 
-<!-- Main Wrapper Card (Padding aur spacing kam kar di gayi hai) -->
+<!-- Main Wrapper Card -->
 <div class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl shadow-md border border-white/20 px-5 py-3 relative z-10 overflow-hidden">
 
     <!-- Top Decorative Gradient Glow -->
     <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Header Section (Margin kam kiya hai) -->
+    <!-- Header Section -->
     <div class="text-center mb-5 relative z-10">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 mb-2.5 shadow-inner ring-4 ring-emerald-50">
             <i class="fa-solid fa-shield-halved text-xl"></i>
@@ -34,8 +34,8 @@
         <p class="text-xs text-gray-500 mt-1">Enter your administrative credentials to continue</p>
     </div>
 
-    <!-- Login Form (Space-y-4 kar ke fields ke darmiyan gap kam kiya hai) -->
-    <form method="POST" action="{{ route('login') }}" class="space-y-4 relative z-10">
+    <!-- Login Form -->
+    <form method="POST" action="{{ route('admin.login.submit') }}" class="space-y-4 relative z-10">
     @csrf
 
     <!-- Email Field -->
@@ -47,7 +47,7 @@
                 </span>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus
                        placeholder="admin@shopnest.com"
-                       class="bg-gray-50 border border-gray-200 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all">
+                       class="bg-gray-50 border rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all @error('email') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 @enderror">
             </div>
             @error('email')
             <span class="text-red-500 text-xs mt-1 block font-medium">{{ $message }}</span>
@@ -63,7 +63,7 @@
                 </span>
                 <input id="password" type="password" name="password" required autocomplete="current-password"
                        placeholder="••••••••"
-                       class="bg-gray-50 border border-gray-200 rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all">
+                       class="bg-gray-50 border rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all @error('password') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 @enderror">
             </div>
             @error('password')
             <span class="text-red-500 text-xs mt-1 block font-medium">{{ $message }}</span>

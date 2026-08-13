@@ -101,7 +101,7 @@
                 <div class="mb-4">
                     <label for="modalLoginEmail" class="block mb-2 text-sm font-medium text-gray-700">Email Address</label>
                     <input id="modalLoginEmail" type="email" name="email" required autocomplete="email" placeholder="name@company.com"
-                           class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                           class="bg-gray-50 border rounded-xl w-full px-4 py-3 text-sm text-gray-800 outline-none transition-all @error('email') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-300 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @enderror">
                     <!-- Email Error Message -->
                     <span id="modalLoginEmailError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
@@ -110,7 +110,7 @@
                 <div class="mb-4">
                     <label for="modalLoginPassword" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
                     <input id="modalLoginPassword" type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
-                           class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                           class="bg-gray-50 border rounded-xl w-full px-4 py-3 text-sm text-gray-800 outline-none transition-all @error('password') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-300 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @enderror">
                     <!-- Password Error Message -->
                     <span id="modalLoginPasswordError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
@@ -118,7 +118,7 @@
                 <!-- General Error Box (Agar credentials match na hon) -->
                 <div id="modalLoginGeneralError" class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs hidden text-center font-medium"></div>
 
-                <!-- Submit Button (Added disabled:opacity-60 and disabled:cursor-not-allowed) -->
+                <!-- Submit Button -->
                 <button type="submit" id="modalLoginBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md transition duration-300 cursor-pointer flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
