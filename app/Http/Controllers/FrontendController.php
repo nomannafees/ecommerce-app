@@ -367,6 +367,10 @@ class FrontendController extends Controller
             });
         }
 
+        if ($request->filled('product')) {
+            $query->where('slug', $request->product);
+        }
+
         $currentCategory = null;
         $activeCategory = null;
 
@@ -647,7 +651,7 @@ class FrontendController extends Controller
             ]);
         }
 
-        $cartCount = Cart::where('user_id', Auth::id())->sum('quantity');
+        $cartCount = Cart::where('user_id', Auth::id())->count();
 
         return response()->json([
             'status' => true,
@@ -737,18 +741,30 @@ class FrontendController extends Controller
 
     public function deleteCart($id)
     {
-        $cartItem = Cart::find($id);
+
+        $cartItem = Cart::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->first();
+
         if (!$cartItem) {
-            return response()->json(['status' => false, 'message' => 'Item not found']);
+            return response()->json([
+                'status' => false,
+                'message' => 'Item not found'
+            ], 404);
         }
 
         $cartItem->delete();
 
-        // Delete hone ke baad bache hue items ka naya total nikalen
-        $carts = Cart::with('variant.product')->where('user_id', auth()->id())->get();
+        $carts = Cart::with('variant.product')
+            ->where('user_id', Auth::id())
+            ->has('variant.product')
+            ->get();
 
         $totalAmount = $carts->sum(function ($c) {
-            $price = $c->variant->price ?? ($c->variant->product->base_price ?? 0);
+
+            $price = $c->variant->price
+                ?? ($c->variant->product->base_price ?? 0);
+
             return $c->quantity * $price;
         });
 
@@ -757,7 +773,7 @@ class FrontendController extends Controller
             'message' => 'Removed from cart',
             'total_items' => $carts->count(),
             'total_quantity' => $carts->sum('quantity'),
-            'total_amount' => number_format($totalAmount)
+            'total_amount' => number_format($totalAmount, 0),
         ]);
     }
 
@@ -1167,6 +1183,59 @@ class FrontendController extends Controller
         $user->save();
 
         return redirect()->back()->with('password_success', 'Password updated successfully!');
+    }
+
+    public function liveSearch(Request $request)
+    {
+        $query = $request->get('query');
+
+        if (!$query) {
+            return response()->json(['categories' => [], 'products' => []]);
+        }
+
+        // Matching Categories
+        $categories = Categorie::with('parent.parent')
+            ->where('name', 'LIKE', '%' . $query . '%')
+            ->select('id', 'name', 'slug', 'parent_id')
+            ->limit(5)
+            ->get()
+            ->map(function ($cat) {
+                return [
+                    'id'   => $cat->id,
+                    'name' => $cat->name,
+                    'url'  => route('collection', ['category' => $cat->category_path]),
+                ];
+            });
+
+        // Matching Products
+        $products = Product::with('category.parent.parent')
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', '%' . $query . '%')
+                    ->orWhereHas('category', function ($catQuery) use ($query) {
+                        $catQuery->where('name', 'LIKE', '%' . $query . '%');
+                    });
+            })
+            ->select('id', 'name', 'slug', 'category_id')
+            ->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", ['%' . $query . '%'])
+            ->limit(8)
+            ->get()
+            ->map(function ($product) {
+                $categoryPath = $product->category_path;
+
+                return [
+                    'id'   => $product->id,
+                    'name' => $product->name,
+                    'url'  => route('categories', [
+                        'category' => $categoryPath,
+                        'product'  => $product->slug,
+                    ]),
+                ];
+            });
+
+        return response()->json([
+            'categories' => $categories,
+            'products'   => $products,
+        ]);
     }
 
 }

@@ -475,6 +475,8 @@
                     addToCartBtn.innerHTML = 'Add To Cart';
 
                     if (data.status) {
+                        let headeCartCount = document.getElementById('header-cart-count');
+                        headeCartCount.innerText=data.cartCount
                         Swal.fire({
                             toast: true,
                             position: 'top-end',

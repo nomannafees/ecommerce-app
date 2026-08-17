@@ -13,7 +13,7 @@
 
         @if($carts->isEmpty())
 
-            <div class="text-center py-12 sm:py-16 px-4 bg-white rounded-2xl shadow-sm border border-gray-100  mx-auto">
+            <div class="empty-cart-message hidden text-center py-12 sm:py-16 px-4 bg-white rounded-2xl shadow-sm border border-gray-100 mx-auto">
                 <div class="w-16 h-16 mx-auto rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 mb-4">
                     <i class="fa-solid fa-cart-shopping text-3xl"></i>
                 </div>
@@ -182,21 +182,25 @@
 
     </div>
 
-    <script src="https://code.jquery.com/jquery-3-6.0.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+@endsection
 
+
+
+@push('scripts')
+    <liink rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
-
             toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "3000"
+                closeButton: true,
+                progressBar: true,
+                positionClass: "toast-top-right",
+                timeOut: "3000"
             };
 
-            // 1. Delete Cart Item AJAX (Fixed Header Cart Count Issue)
+            // =====================================================
+            // DELETE CART ITEM - AJAX
+            // =====================================================
             $(document).on('click', '.deleteCart', function (e) {
                 e.preventDefault();
 
@@ -204,103 +208,281 @@
                 let cartId = button.data('id');
                 let cartItemRow = button.closest('.cart-item');
 
-                if (confirm('Are you sure you want to remove this item from cart?')) {
-                    $.ajax({
-                        url: "{{ url('/cart/delete') }}/" + cartId,
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            _method: "DELETE"
-                        },
-                        success: function (response) {
-                            if (response.status == true || response.status == "true") {
+                // Prevent double click
+                button.prop('disabled', true);
 
-                                let successMsg = response.message ? response.message : 'Product removed from cart successfully!';
-                                toastr.success(successMsg);
+                $.ajax({
+                    url: "{{ url('/cart') }}/" + cartId,
+                    type: "POST",
 
-                                cartItemRow.fadeOut(300, function () {
-                                    $(this).remove();
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        _method: "DELETE"
+                    },
 
-                                    if ($('.cart-item').length === 0) {
-                                        location.reload();
-                                    }
-                                });
+                    success: function (response) {
 
-                                $('.total-items').text(response.total_items);
-                                $('.total-qty').text(response.total_quantity);
-                                $('.total-amount').text('Rs ' + response.total_amount);
+                        console.log('Delete Response:', response);
 
-                                // Header count ko unique items (total_items) ke mutabiq set kiya hai
-                                if ($('.cart-count').length) {
-                                    $('.cart-count').text(response.total_items);
+                        if (response.status === true || response.status === "true") {
+
+                            // =================================================
+                            // 1. REMOVE CART ITEM WITHOUT PAGE RELOAD
+                            // =================================================
+                            cartItemRow.fadeOut(250, function () {
+                                $(this).remove();
+
+                                // Check if cart is now empty
+                                if ($('.cart-item').length === 0) {
+
+                                    // Hide cart layout
+                                    $('.grid.grid-cols-1.lg\\:grid-cols-3').hide();
+
+                                    // Show empty cart message
+                                    $('.empty-cart-message').removeClass('hidden');
                                 }
+                            });
+
+
+                            // =================================================
+                            // 2. UPDATE CART SUMMARY
+                            // =================================================
+                            $('.total-items').text(response.total_items);
+                            $('.total-qty').text(response.total_quantity);
+
+                            $('.total-amount').text(
+                                'Rs ' + response.total_amount
+                            );
+
+
+                            // =================================================
+                            // 3. UPDATE DESKTOP HEADER CART COUNT
+                            // =================================================
+                            let cartCount = parseInt(response.total_items) || 0;
+
+                            console.log(cartCount)
+
+                            $('#header-cart-count').text(cartCount);
+
+
+                            // =================================================
+                            // 4. UPDATE MOBILE HEADER CART COUNT
+                            // =================================================
+                            $('#mobile-header-cart-count').text(cartCount);
+
+
+                            // =================================================
+                            // 5. SHOW / HIDE HEADER BADGE
+                            // =================================================
+                            if (cartCount > 0) {
+
+                                $('#header-cart-count').removeClass('hidden');
+
+                                $('#mobile-header-cart-count').removeClass('hidden');
+
                             } else {
-                                toastr.error(response.message || 'Error executing request.');
+
+                                $('#header-cart-count').addClass('hidden');
+
+                                $('#mobile-header-cart-count').addClass('hidden');
                             }
-                        },
-                        error: function (xhr) {
-                            console.error("Error Status: " + xhr.status + " | Response: " + xhr.responseText);
-                            toastr.error('Something went wrong on the server.');
+
+
+                            // =================================================
+                            // 6. SUCCESS MESSAGE
+                            // =================================================
+                            toastr.success(
+                                response.message || 'Removed from cart'
+                            );
+
+                        } else {
+
+                            button.prop('disabled', false);
+
+                            toastr.error(
+                                response.message || 'Unable to remove item'
+                            );
                         }
-                    });
-                }
+                    },
+
+                    // IMPORTANT: comma yahan hona chahiye
+                    error: function (xhr) {
+
+                        console.log('Delete Error:', xhr.responseText);
+
+                        button.prop('disabled', false);
+
+                        toastr.error(
+                            'Something went wrong while removing item.'
+                        );
+                    }
+                });
             });
 
-            // Quantity Increase (+) / Decrease (-) Dynamic AJAX Update
+
+
+            // =====================================================
+            // QUANTITY + / - AJAX UPDATE
+            // =====================================================
             $(document).on('click', '.qty-plus, .qty-minus', function (e) {
+
                 e.preventDefault();
 
                 let button = $(this);
                 let cartId = button.data('id');
                 let isPlus = button.hasClass('qty-plus');
+
                 let cartRow = button.closest('.cart-item');
                 let qtySpan = cartRow.find('.item-qty');
-                let currentQty = parseInt(qtySpan.text());
 
-                let newQty = isPlus ? currentQty + 1 : currentQty - 1;
+                let currentQty = parseInt(qtySpan.text()) || 1;
 
+                let newQty = isPlus
+                    ? currentQty + 1
+                    : currentQty - 1;
+
+
+                // Quantity 1 se kam nahi honi chahiye
                 if (newQty < 1) {
-                    toastr.warning('Quantity cannot be less than 1.');
+
+                    toastr.warning(
+                        'Quantity cannot be less than 1.'
+                    );
+
                     return;
                 }
 
+
+                // Prevent multiple clicks
+                button.prop('disabled', true);
+
+
                 $.ajax({
-                    url: "{{ url('/cart/update') }}/" + cartId,
+
+                    url: "{{ route('cart.update') }}",
+
                     type: "POST",
+
                     data: {
+
                         _token: "{{ csrf_token() }}",
-                        quantity: newQty
+
+                        quantity: newQty,
+
+                        cart_id: cartId
                     },
+
+
                     success: function (response) {
-                        if (response.status === 'success' || response.status === true) {
-                            // 1. Updated Quantity Display
+
+                        console.log('Quantity Response:', response);
+
+
+                        if (
+                            response.status === 'success' ||
+                            response.status === true
+                        ) {
+
+                            // =================================================
+                            // 1. UPDATE ITEM QUANTITY
+                            // =================================================
                             qtySpan.text(response.quantity);
 
-                            // 2. Row Subtotal Display
-                            cartRow.find('.item-subtotal').text('Rs ' + response.item_subtotal);
 
-                            // 3. Cart Summary Sidebar Display (Sirf Page Sidebar ke values update honge)
-                            $('.total-items').text(response.total_items);
-                            $('.total-qty').text(response.total_quantity);
-                            $('.total-amount').text('Rs ' + response.total_amount);
+                            // =================================================
+                            // 2. UPDATE ITEM SUBTOTAL
+                            // =================================================
+                            cartRow.find('.item-subtotal').text(
+                                'Rs ' + response.item_subtotal
+                            );
 
-                            // NOTE: Header Cart Badge ko quantity update par touch nahi karna
-                            // kyunki unique items count constant hi rehta hai.
+
+                            // =================================================
+                            // 3. UPDATE CART SUMMARY
+                            // =================================================
+                            $('.total-items').text(
+                                response.total_items
+                            );
+
+                            $('.total-qty').text(
+                                response.total_quantity
+                            );
+
+                            $('.total-amount').text(
+                                'Rs ' + response.total_amount
+                            );
+
+
+                            // =================================================
+                            // 4. UPDATE HEADER COUNT
+                            // =================================================
+                            let cartCount =
+                                parseInt(response.total_items) || 0;
+
+                            $('#header-cart-count').text(cartCount);
+
+                            $('#mobile-header-cart-count').text(cartCount);
+
+
+                            if (cartCount > 0) {
+
+                                $('#header-cart-count')
+                                    .removeClass('hidden');
+
+                                $('#mobile-header-cart-count')
+                                    .removeClass('hidden');
+
+                            } else {
+
+                                $('#header-cart-count')
+                                    .addClass('hidden');
+
+                                $('#mobile-header-cart-count')
+                                    .addClass('hidden');
+                            }
+
                         } else {
-                            toastr.error(response.message || 'Unable to update quantity.');
+
+                            toastr.error(
+                                response.message ||
+                                'Unable to update quantity.'
+                            );
                         }
                     },
+
+
                     error: function (xhr) {
-                        if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.message) {
-                            toastr.error(xhr.responseJSON.message);
-                        } else {
-                            toastr.error('Failed to update quantity.');
+
+                        console.log(
+                            'Quantity Error:',
+                            xhr.responseText
+                        );
+
+
+                        if (
+                            xhr.status === 422 &&
+                            xhr.responseJSON &&
+                            xhr.responseJSON.message
+                        ) {
+
+                            toastr.error(
+                                xhr.responseJSON.message
+                            );
+
                         }
+                    },
+
+
+                    complete: function () {
+
+                        button.prop('disabled', false);
                     }
                 });
+
             });
 
         });
+
     </script>
 
-@endsection
+@endpush

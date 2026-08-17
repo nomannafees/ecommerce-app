@@ -19,6 +19,19 @@ class Product extends Model
         return $this->belongsTo(Categorie::class, 'category_id');
     }
 
+    public function getCategoryPathAttribute()
+    {
+        $slugs = [];
+        $cat = $this->category;
+
+        while ($cat) {
+            array_unshift($slugs, $cat->slug);
+            $cat = $cat->parent;
+        }
+
+        return implode('/', $slugs);
+    }
+
     public function variants()
     {
         return $this->hasMany(ProductVariant::class, 'product_id');

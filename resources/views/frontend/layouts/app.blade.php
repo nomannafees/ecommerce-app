@@ -394,52 +394,7 @@
     });
 </script>
 
-<script>
-    $(document).on('click', '.deleteCart', function () {
 
-        let id = $(this).data('id');
-        let item = $(this);
-
-        $.ajax({
-            url: '/cart/' + id,
-            type: 'DELETE',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-
-            success: function (res) {
-
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: res.status ? 'success' : 'error',
-                    title: res.message,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-
-                if (res.status) {
-                    // آئٹم کو اسکرین سے غائب کریں
-                    item.closest('.cart-item').fadeOut(300, function () {
-                        $(this).remove();
-
-                        // اگر سارے آئٹمز ختم ہو جائیں تو پیج ریفریش کر دیں تاکہ خالی کارٹ کا میسج آ جائے
-                        if (res.total_items == 0) {
-                            location.reload();
-                        }
-                    });
-
-                    // کارٹ سمری کو لائیو اپڈیٹ کریں
-                    $('.total-items').text(res.total_items);
-                    $('.total-qty').text(res.total_quantity);
-                    $('.total-amount').text('Rs ' + res.total_amount);
-                }
-
-            }
-        });
-
-    });
-</script>
 
 <script>
     $(document).off('click', '.qty-plus, .qty-minus').on('click', '.qty-plus, .qty-minus', function () {
@@ -470,9 +425,7 @@
                     $('.total-qty').text(res.total_quantity || res.total_qty);
                     $('.total-amount').text('Rs ' + res.total_amount);
 
-                    if ($('.cart-count').length) {
-                        $('.cart-count').text(res.total_quantity || res.total_qty);
-                    }
+
                 }
             }
         });
@@ -654,7 +607,84 @@
         }
     });
 </script>
+
+
+<script>
+    $(document).ready(function () {
+
+        function fetchSuggestions(inputField) {
+            let query = inputField.val().trim();
+            let suggestionsBox = inputField.closest('.search-wrapper').find('.search-suggestions');
+
+            if (query.length > 0) {
+                $.ajax({
+                    url: "{{ route('live.search') }}",
+                    type: "GET",
+                    data: { query: query },
+                    success: function (data) {
+                        let html = '';
+
+                        // Categories Section
+                        if (data.categories.length > 0) {
+                            html += '<div class="py-2 border-b border-gray-100">';
+                            html += '<p class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categories</p>';
+                            data.categories.forEach(function (cat) {
+                                html += `
+                <a href="${cat.url}"
+                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition truncate">
+                    <i class="fa-solid fa-layer-group text-xs text-gray-400"></i>
+                    <span class="truncate">${cat.name}</span>
+                </a>`;
+                            });
+                            html += '</div>';
+                        }
+
+                        // Products Section
+                        if (data.products.length > 0) {
+                            html += '<div class="py-2">';
+                            html += '<p class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Products</p>';
+                            data.products.forEach(function (product) {
+                                html += `
+                <a href="${product.url}"
+                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition truncate">
+                    <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                    <span class="truncate">${product.name}</span>
+                </a>`;
+                            });
+                            html += '</div>';
+                        }
+
+                        // Kuch bhi match nahi hua
+                        if (data.categories.length === 0 && data.products.length === 0) {
+                            html = '<div class="px-4 py-3 text-sm text-gray-500 text-center">No results found</div>';
+                        }
+
+                        suggestionsBox.html(html).removeClass('hidden');
+                    }
+                });
+            } else {
+                suggestionsBox.html('').addClass('hidden');
+            }
+        }
+
+        $(document).on('click', '.search-input', function () {
+            fetchSuggestions($(this));
+        });
+
+        $(document).on('keyup', '.search-input', function () {
+            fetchSuggestions($(this));
+        });
+
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('.search-input, .search-suggestions').length) {
+                $('.search-suggestions').addClass('hidden');
+            }
+        });
+    });
+</script>
+
 @stack('scripts')
+
 </body>
 
 </html>

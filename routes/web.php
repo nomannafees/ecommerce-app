@@ -81,6 +81,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/reviews/store', [FrontendController::class, 'storeReview'])->name('reviews.store');
     });
 
+    Route::get('/live-search', [FrontendController::class, 'liveSearch'])->name('live.search');
+
     // ✅ Route Names Unique Honay Chahiye
 
     // Profile Routes

@@ -42,27 +42,27 @@
         </a>
 
         <!-- Center Search Bar (Exact AliExpress Style from Screenshot) -->
-        <div class="hidden md:flex ms-20 flex-1 max-w-xl mx-6 justify-center">
-            <!-- Action attribute updated to route('categories') -->
-            <form action="{{ route('categories') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
+        <!-- Center Search Bar -->
+        <div class="search-wrapper hidden md:flex ms-20 flex-1 max-w-xl mx-6 justify-center relative">
+            <form action="{{ route('categories') }}" method="GET" class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20">
 
-                <!-- Input Field -->
                 <input type="text"
                        name="search"
                        value="{{ request('search') }}"
                        placeholder="Search products, brands and more..."
-                       class="w-full pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+                       autocomplete="off"
+                       class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
-                <!-- QR / Image Scanner Icon inside Input -->
                 <button type="button" class="px-2.5 text-gray-500 hover:text-black transition" title="Search by Image">
                     <i class="fa-solid fa-qrcode text-base"></i>
                 </button>
 
-                <!-- Black Circular Search Submit Button -->
                 <button type="submit" class="bg-black hover:bg-gray-800 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0">
                     <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 </button>
             </form>
+
+            <div id="search-suggestions" class="search-suggestions absolute left-0 right-0 top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-30 hidden mt-1 max-h-96 overflow-y-auto"></div>
         </div>
 
         <!-- Right Side Icons & Sign In Hover Dropdown -->
@@ -84,9 +84,10 @@
             <a href="{{ route('cart') }}" class="relative text-lg hover:text-gray-300 hidden sm:block">
                 <i class="fa-solid fa-cart-shopping fa-sm"></i>
 
-                <span class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5">
-                {{ $cartCount ?? 0 }}
-            </span>
+                <span id="header-cart-count"
+                      class="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5">
+        {{ $cartCount ?? 0 }}
+    </span>
             </a>
 
             <!-- Divider -->
@@ -137,14 +138,19 @@
                         Wishlist
                     </a>
 
-                    <a href="{{ route('cart') }}" class="flex sm:hidden items-center justify-between px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
-                <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    Cart
-                </span>
-                        <span class="bg-green-100 text-green-700 mt-1 font-bold text-xs rounded-full px-2 py-0.5">
-                    {{ $cartCount ?? 0 }}
-                </span>
+                    <a href="{{ route('cart') }}"
+                       class="flex sm:hidden items-center justify-between px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+
+    <span class="flex items-center gap-2">
+        <i class="fa-solid fa-cart-shopping"></i>
+        Cart
+    </span>
+
+                        <span id="mobile-header-cart-count"
+                              class="bg-green-100 text-green-700 mt-1 font-bold text-xs rounded-full px-2 py-0.5">
+        {{ $cartCount ?? 0 }}
+    </span>
+
                     </a>
 
                     <a href="{{ route('frontend.user_info.index') }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">

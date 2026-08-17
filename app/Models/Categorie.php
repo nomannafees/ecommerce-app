@@ -27,4 +27,17 @@ class Categorie extends Model
         return $this->hasMany(Product::class, 'category_id');
     }
 
+    public function getCategoryPathAttribute()
+    {
+        $slugs = [];
+        $cat = $this;
+
+        while ($cat) {
+            array_unshift($slugs, $cat->slug);
+            $cat = $cat->parent;
+        }
+
+        return implode('/', $slugs);
+    }
+
 }
