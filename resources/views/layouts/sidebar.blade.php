@@ -3,8 +3,12 @@
     $store = $store ?? \App\Models\Store::first();
 @endphp
 
+<div id="sidebarBackdrop"
+     onclick="CloseNav()"
+     class="fixed inset-0 bg-black/50 z-10 hidden lg:hidden transition-opacity"></div>
+
 <div id="mySidenav"
-     class="bg-white w-64 h-screen overflow-y-auto shadow-md fixed lg:static transition-transform duration-300 -translate-x-64 lg:translate-x-0 z-12">
+     class="bg-white w-64 h-screen overflow-y-auto fixed lg:static transition-transform duration-300 -translate-x-64 lg:translate-x-0 z-12">
 
     <!-- Header / Branding Section -->
     <div class="relative flex justify-center items-center bg-gray-100 p-4 sticky top-0 z-10">

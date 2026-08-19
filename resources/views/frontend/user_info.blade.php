@@ -26,7 +26,7 @@
             </div>
         @endif
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
 
             <!-- LEFT SIDE: Main Profile Information (Bara Card) -->
             <div class="lg:col-span-2 bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
@@ -93,7 +93,7 @@
             </div>
 
             <!-- RIGHT SIDE: Password Update Security (Chota Card) -->
-            <div class="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
+            <div class="bg-white rounded-3xl p-6 border mb-8 sm-mb-10 border-gray-100 shadow-sm">
 
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
                     <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0">
@@ -131,7 +131,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('frontend.user_info.password') }}" method="POST">
+                <form action="{{ route('frontend.user_info.password') }}" method="POST" >
                     @csrf
 
                     <div class="space-y-4 mb-6">

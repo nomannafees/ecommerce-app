@@ -69,11 +69,17 @@
     function OpenNav() {
         document.getElementById("mySidenav").classList.add("translate-x-0");
         document.getElementById("mySidenav").classList.remove("-translate-x-64");
+
+        let backdrop = document.getElementById("sidebarBackdrop");
+        if (backdrop) backdrop.classList.remove("hidden");
     }
 
     function CloseNav() {
         document.getElementById("mySidenav").classList.add("-translate-x-64");
         document.getElementById("mySidenav").classList.remove("translate-x-0");
+
+        let backdrop = document.getElementById("sidebarBackdrop");
+        if (backdrop) backdrop.classList.add("hidden");
     }
 
     function toggleDropdown() {

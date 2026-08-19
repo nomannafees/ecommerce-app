@@ -14,7 +14,7 @@
                     </h2>
                     <p class="text-gray-500 text-sm mt-1 flex items-center gap-2">
                         <!-- Calendar Badge Container -->
-                        <span class="w-6 h-6 rounded-md bg-green-100 text-green-600 flex items-center justify-center shrink-0 border border-green-200/60 shadow-xs">
+                        <span class="w-6 h-6 rounded-md bg-green-100 text-green-600 flex items-center justify-center shrink-0 border border-green-200/60 shadow-sm">
                             <i class="fa-regular fa-calendar text-xs"></i>
                         </span>
 

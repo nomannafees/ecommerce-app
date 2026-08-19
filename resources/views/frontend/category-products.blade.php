@@ -13,11 +13,13 @@
 
                 <!-- Dynamic Category Banner & Heading -->
                 @if(isset($currentCategory))
-                    <div class="relative w-full bg-cover bg-center rounded-xl p-8 mb-6 text-white shadow-md overflow-hidden"
-                         style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ $currentCategory->image ? asset('storage/'.$currentCategory->image) : asset('default-banner.jpg') }}')">
+                    <div
+                        class="relative w-full bg-cover bg-center rounded-xl p-8 mb-6 text-white shadow-md overflow-hidden"
+                        style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ $currentCategory->image ? asset('storage/'.$currentCategory->image) : asset('default-banner.jpg') }}')">
                         <div class="relative z-10">
                             <h1 class="text-2xl sm:text-4xl font-bold mb-2">{{ $currentCategory->name }}</h1>
-                            <p class="text-xs sm:text-sm text-gray-200">Explore our exclusive items in {{ $currentCategory->name }}.</p>
+                            <p class="text-xs sm:text-sm text-gray-200">Explore our exclusive items
+                                in {{ $currentCategory->name }}.</p>
                         </div>
                     </div>
 
@@ -29,7 +31,8 @@
                                     <span class="w-1.5 h-4.5 bg-emerald-600 rounded-full inline-block"></span>
                                     Explore Sub-Categories
                                 </h3>
-                                <span class="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                                <span
+                                    class="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
                                     {{ $currentCategory->children->count() }} Items
                                 </span>
                             </div>
@@ -43,11 +46,13 @@
                                     <a href="{{ route('categories', array_merge(request()->except('page'), ['category' => $nestedSlug])) }}"
                                        class="group bg-white border border-gray-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col text-center relative">
                                         <div class="w-full h-24 sm:h-30 bg-gray-50 overflow-hidden relative">
-                                            <img src="{{ $subCat->image ? asset('storage/cat_image/' . $subCat->image) : asset('images/no-image.png') }}"
-                                                 alt="{{ $subCat->name }}"
-                                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out">
+                                            <img
+                                                src="{{ $subCat->image ? asset('storage/cat_image/' . $subCat->image) : asset('images/no-image.png') }}"
+                                                alt="{{ $subCat->name }}"
+                                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out">
                                         </div>
-                                        <div class="p-2.5 flex items-center justify-center bg-white border-t border-gray-100/60">
+                                        <div
+                                            class="p-2.5 flex items-center justify-center bg-white border-t border-gray-100/60">
                                             <h4 class="font-medium text-xs sm:text-sm text-gray-800 group-hover:text-emerald-600 transition-colors duration-200 line-clamp-1">
                                                 {{ $subCat->name }}
                                             </h4>
@@ -76,14 +81,16 @@
                     </h3>
 
                     <!-- GRID WITH ID FOR INFINITE SCROLL -->
-                    <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                    <div id="product-grid"
+                         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
                         @include('frontend.partials.category-products-loop', ['products' => $products, 'wishlistProductIds' => $wishlistProductIds])
                     </div>
                 </div>
 
                 <!-- NO MORE PRODUCTS BUTTON -->
                 <div id="no-more-products" class="text-center my-6 hidden">
-                    <span class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
+                    <span
+                        class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
                         <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
                     </span>
                 </div>
@@ -147,11 +154,11 @@
                 $.ajax({
                     url: url.toString(),
                     type: "GET",
-                    success: function(response) {
+                    success: function (response) {
                         $('.product-shimmer').remove();
 
                         // Agar response mein products ki HTML khali hai ya koi products nahi aaye
-                        if(!response || $.trim(response).length === 0) {
+                        if (!response || $.trim(response).length === 0) {
                             hasMorePages = false;
                             $('#no-more-products').removeClass('hidden');
                         } else {
@@ -159,7 +166,7 @@
                             isLoading = false;
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         console.log("AJAX Error: ", xhr.responseText);
                         $('.product-shimmer').remove();
                         isLoading = false;
@@ -169,12 +176,12 @@
         }
 
         // Window scroll listener
-        $(window).scroll(function() {
+        $(window).scroll(function () {
             checkScrollAndLoad(null, true);
         });
 
         // Main container scroll listener
-        $('main').scroll(function() {
+        $('main').scroll(function () {
             checkScrollAndLoad($(this), false);
         });
     </script>

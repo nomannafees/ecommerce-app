@@ -2,14 +2,14 @@
 
 @section('content')
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-8">
+    <div class="container mx-auto px-3 sm:px-6 md:px-5 py-4 sm:py-5">
 
         <!-- HEADER -->
-        <div class="text-center mb-6">
-            <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+        <div class="text-center mb-4">
+            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">
                 My Orders
             </h2>
-            <p class="text-gray-500 mt-1 text-sm">
+            <p class="text-gray-500 text-[16px] ">
                 Track your purchases and order status in real-time
             </p>
         </div>
@@ -29,7 +29,7 @@
                 </p>
 
                 <a href="{{ route('frontendProduct') }}"
-                   class="mt-6 inline-block bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition shadow-md">
+                   class="mt-6 inline-block bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition shadow-sm">
                     Browse Products
                 </a>
 
@@ -42,7 +42,7 @@
                 @foreach($orders as $order)
 
                     <a href="{{ route('frontend.orders.show', $order->id) }}"
-                       class="group block bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition duration-300 overflow-hidden">
+                       class="group block bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition duration-300 overflow-hidden">
 
                         <div class="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 

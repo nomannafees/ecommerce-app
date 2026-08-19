@@ -458,7 +458,7 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 pt-0 sm:mb-8 mb-3 lg:mb-12">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 pt-0 sm:mb-8 mb-3 lg:mb-12" style="margin-bottom: 20px !important;">
     @php $brandCount = count($brands ?? []); @endphp
     @if($brandCount > 6)
         <!-- Swiper Container with pb-12 for padding bottom -->
@@ -529,6 +529,11 @@
         .brands-swiper-pagination .swiper-pagination-bullet {
             background-color: #9ca3af; /* Gray-400 */
         }
+
+        .swiper-horizontal>.swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal, .swiper-pagination-custom, .swiper-pagination-fraction{
+            margin-bottom: 10px;
+        }
+
     </style>
 
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->

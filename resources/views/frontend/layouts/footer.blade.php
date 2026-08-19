@@ -55,7 +55,7 @@
                     <li><a href="{{ route('index') }}" class="hover:text-white transition">Home</a></li>
                     <li><a href="{{ route('frontendProduct') }}" class="hover:text-white transition">Products</a></li>
                     <li><a href="{{ route('categories') }}" class="hover:text-white transition">Categories</a></li>
-                    <li><a href="{{ route('index') }}" class="hover:text-white transition">About Us</a></li>
+{{--                    <li><a href="{{ route('index') }}" class="hover:text-white transition">About Us</a></li>--}}
                     <li><a href="{{ route('contact') }}" class="hover:text-white transition">Contact</a></li>
                 </ul>
             </div>
@@ -65,11 +65,15 @@
                 <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Categories</h3>
 
                 <ul class="space-y-2 sm:space-y-3 text-gray-400 text-xs sm:text-sm">
-                    <li><a href="{{ route('categories') }}" class="hover:text-white transition">All Products</a></li>
-                    <li><a href="#" class="hover:text-white transition">Fashion</a></li>
-                    <li><a href="#" class="hover:text-white transition">Home & Living</a></li>
-                    <li><a href="#" class="hover:text-white transition">Beauty</a></li>
-                    <li><a href="#" class="hover:text-white transition">Accessories</a></li>
+
+                    @foreach($categories->whereIn('slug', ['men-s-fashion', 'womens-fashion', 'mother-baby', 'home-lifestyle'])->values() as $mainCat)
+                        <li>
+                            <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug]) }}"
+                               class="hover:text-white transition block">
+                                {{ $mainCat->name }}
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
 

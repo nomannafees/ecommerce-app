@@ -8,91 +8,88 @@
 
     <div class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:pt-4 sm:pb-2">
 
-        <div class="text-center mt-2 lg:mt-4 px-4 lg:px-10">
-            <h1 class="text-2xl lg:text-4xl font-bold text-gray-900">
-                🛍️ Explore Our Products
-            </h1>
-            <p class="text-xs lg:text-base text-gray-500 mt-2 lg:mt-3 max-w-xl lg:max-w-2xl mx-auto leading-relaxed">
-                Discover the best products from multiple categories.
-                Use filters to find exactly what you need — by price, color, size, brand, and category.
-            </p>
-        </div>
+            <div class="text-center mt-2 px-3">
+                <h1 class="text-2xl font-bold text-gray-900">
+                    🛍️ Explore Our Products
+                </h1>
+                <p class="text-[16px] text-gray-500 mt-0.5 max-w-md mx-auto">
+                    Shop top products by category, price, color, and size.
+                </p>
+            </div>
 
-        <div class="flex flex-col lg:flex-row gap-6 py-6">
+        <div class="flex flex-col lg:flex-row gap-6 pb-6 pt-3 lg:mt-0">
 
         @include('frontend.partials.category-sidebar')
 
         <!-- RIGHT SIDE (Products Grid - 5 columns) -->
-            <div class="w-full lg:w-4/5 container mx-auto ">
+            <div class="w-full  lg:w-4/5 container mx-auto ">
 
                 <!-- DESKTOP SORT BAR -->
+                <!-- DESKTOP SORT BAR -->
                 <div
-                    class="mb-4 hidden lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 shadow-sm">
+                    class="mb-3 hidden bg-white lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl py-2 px-4">
                     <h2 class="text-base sm:text-lg font-semibold text-gray-700">Products</h2>
 
                     <div class="flex items-center gap-3">
-                        <div class="w-48 relative h-[40px]" x-data="{
-            open: false,
-            currentSort: '{{ request('sort', 'latest') }}',
-            sortLabels: {
-                'latest': 'Latest Products',
-                'price_low_high': 'Price: Low to High',
-                'price_high_low': 'Price: High to Low'
-            },
-            changeSort(value) {
-                this.currentSort = value;
-                this.open = false;
+                        <!-- Yahan width 'w-48' se kam kar ke 'w-40' aur height 'h-[40px]' se 'h-[34px]' kar di hai -->
+                        <div class="w-40 relative h-[34px]" x-data="{
+    open: false,
+    currentSort: '{{ request('sort', 'latest') }}',
+    sortLabels: {
+        'latest': 'Latest Products',
+        'price_low_high': 'Price: Low to High',
+        'price_high_low': 'Price: High to Low'
+    },
+    changeSort(value) {
+        this.currentSort = value;
+        this.open = false;
 
-                // Yahan aap apna AJAX function call karein jo page reload kiye baghair products fetch karta hai
-                // Misal ke tor par agar aapke paas fetch products ka function hai:
-                if (typeof fetchFilteredProducts === 'function') {
-                    // Agar URL update karna ho bina reload ke:
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('sort', value);
-                    window.history.pushState({}, '', url);
-                    fetchFilteredProducts(); // Products refresh karne ka function
-                } else {
-                    // Fallback agar direct URL par request bhejni ho
-                    window.location.href = window.location.pathname + '?' + new URLSearchParams(new FormData(document.getElementById('searchSortForm') || document.createElement('form'))).toString() + '&sort=' + value;
-                }
-            }
-        }">
-                            <!-- Trigger Button -->
+        if (typeof fetchFilteredProducts === 'function') {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sort', value);
+            window.history.pushState({}, '', url);
+            fetchFilteredProducts();
+        } else {
+            window.location.href = window.location.pathname + '?' + new URLSearchParams(new FormData(document.getElementById('searchSortForm') || document.createElement('form'))).toString() + '&sort=' + value;
+        }
+    }
+}">
+                            <!-- Trigger Button (Compact Padding & Text Size) -->
                             <button type="button"
                                     @click="open = !open"
                                     @click.away="open = false"
-                                    class="w-full h-full bg-white border border-gray-200 rounded-full pl-4 pr-10 focus:outline-none  focus:ring-gray-200 focus:border-gray-200 text-sm cursor-pointer font-medium text-gray-700 flex items-center justify-between ">
-                                <span class="truncate leading-none"
-                                      x-text="sortLabels[currentSort] || 'Latest Products'"></span>
+                                    class="w-full h-full bg-white border border-gray-200 rounded-full pl-3 pr-8 focus:outline-none focus:ring-gray-200 focus:border-gray-200 text-xs cursor-pointer font-medium text-gray-700 flex items-center justify-between">
+                <span class="truncate leading-none"
+                      x-text="sortLabels[currentSort] || 'Latest Products'"></span>
                                 <span
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400">
-                    <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                    <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"
                        :class="open ? 'rotate-180' : ''"></i>
                 </span>
                             </button>
 
-                            <!-- Custom Dropdown Options (Without Page Reload) -->
+                            <!-- Custom Dropdown Options -->
                             <div x-show="open"
                                  style="display: none;"
-                                 class="absolute left-0 right-0 top-full bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50 py-1">
+                                 class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden z-50 py-1">
 
                                 <button type="button"
                                         @click="changeSort('latest')"
-                                        class="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+                                        class="w-full text-left block px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition cursor-pointer"
                                         :class="currentSort == 'latest' ? 'bg-gray-50 font-semibold' : ''">
                                     Latest Products
                                 </button>
 
                                 <button type="button"
                                         @click="changeSort('price_low_high')"
-                                        class="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+                                        class="w-full text-left block px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition cursor-pointer"
                                         :class="currentSort == 'price_low_high' ? 'bg-gray-50 font-semibold' : ''">
                                     Price: Low to High
                                 </button>
 
                                 <button type="button"
                                         @click="changeSort('price_high_low')"
-                                        class="w-full text-left block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+                                        class="w-full text-left block px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 transition cursor-pointer"
                                         :class="currentSort == 'price_high_low' ? 'bg-gray-50 font-semibold' : ''">
                                     Price: High to Low
                                 </button>
@@ -310,13 +307,28 @@
                     @include('frontend.partials.category-product-cards', ['records' => $records, 'wishlistProductIds' => $wishlistProductIds])
                 </div>
 
+                <!-- PRODUCT NOT FOUND MESSAGE (Agar koi product na mile) -->
+                @if($records->isEmpty())
+                    <div class="w-full bg-white border border-gray-200 -mt-6 rounded-xl p-12 text-center my-6 no_products_found">
+                        <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-1">No Products Found</h3>
+                        <p class="text-sm text-gray-500 mb-5">We couldn't find any products matching your search or filters.</p>
+                        <a href="{{ route('categories') }}"
+                           class="inline-block bg-black hover:bg-gray-800 text-white text-xs font-semibold px-5 py-2.5 rounded-full transition">
+                            Reset Filters & Search
+                        </a>
+                    </div>
+                @endif
+
                 <!-- NO MORE PRODUCTS BUTTON -->
-                <div id="no-more-products" class="text-center my-6 hidden">
-                    <span
-                        class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">
-                        <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products
-                    </span>
-                </div>
+{{--                <div id="no-more-products" class="text-center my-6 hidden">--}}
+{{--                    <span--}}
+{{--                        class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">--}}
+{{--                        <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products--}}
+{{--                    </span>--}}
+{{--                </div>--}}
             </div>
 
         </div>
@@ -346,22 +358,20 @@
             for (let i = 0; i < count; i++) {
                 skeletons += `
             <div class="bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
-                <!-- Image Box -->
+
                 <div class="bg-gray-200 h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55 animate-shimmer"></div>
 
-                    <!-- Content Area -->
+
                 <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2.5">
                 <div class="space-y-2">
-                    <!-- Title -->
+
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-3/4"></div>
-                    <!-- Description -->
+
                 <div class="h-3 bg-gray-200 rounded animate-shimmer w-full"></div>
                 </div>
 
-                    <!-- Stars -->
                 <div class="h-3 bg-gray-200 rounded animate-shimmer w-1/3"></div>
 
-                    <!-- Price & Stock -->
                 <div class="flex items-center justify-between gap-2 mt-auto pt-2">
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-1/3"></div>
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-1/4"></div>
@@ -381,6 +391,23 @@
         let hasMorePages = {{ $records->hasMorePages() ? 'true' : 'false' }};
         let isLoading = false;
 
+        // --- REUSABLE "NO PRODUCTS FOUND" HTML FUNCTION ---
+        function getNoProductsHtml() {
+            return `
+            <div class="col-span-full w-full bg-white -mt-1 border border-gray-200 rounded-2xl p-12 text-center shadow-sm my-6">
+                <div class="w-16 h-16 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">No Products Found</h3>
+                <p class="text-sm text-gray-500 mb-5">We couldn't find any products matching your search or filters.</p>
+                <a href="{{ route('categories') }}"
+                   class="inline-block bg-black hover:bg-gray-800 text-white text-xs font-semibold px-5 py-2.5 rounded-full transition">
+                    Reset Filters & Search
+                </a>
+            </div>
+        `;
+        }
+
         // --- 1. PRICE & FILTER FUNCTIONS ---
         function updatePriceLabel(value) {
             document.getElementById('priceLabel').innerText = Number(value).toLocaleString();
@@ -398,7 +425,6 @@
                 window.history.pushState({}, '', url);
             }
 
-            // 🔴 UPDATED: Spinner ki jagah Skeletons
             $('#productGrid').html(renderProductSkeletons(10));
 
             let formData = $('#filterForm').serializeArray();
@@ -437,14 +463,16 @@
 
                     if ($.trim(response.products) === "") {
                         hasMorePages = false;
-                        $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
-                        $('#no-more-products').removeClass('hidden');
+                        $('.no_products_found').addClass('hidden')
+                        $('#productGrid').html(getNoProductsHtml());
+                        $('#no-more-products').addClass('hidden');
                     } else {
                         $('#productGrid').html(response.products);
                         $('aside').replaceWith(response.sidebar);
                         hasMorePages = true;
                         isLoading = false;
                         $('#no-more-products').addClass('hidden');
+
                     }
 
                     window.history.pushState({path: fullQueryUrl}, '', fullQueryUrl);
@@ -528,7 +556,6 @@
 
             page = 1;
 
-            // 🔴 UPDATED: Cleaned duplicate lines & set Skeletons
             $('#productGrid').html(renderProductSkeletons(10));
 
             let categoryInput = $('#filterForm input[name="category"]');
@@ -560,9 +587,10 @@
                     $('#loading-spinner').addClass('hidden');
 
                     if ($.trim(response.products) === "") {
+                        $('.no_products_found').addClass('hidden')
                         hasMorePages = false;
-                        $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
-                        $('#no-more-products').removeClass('hidden');
+                        $('#productGrid').html(getNoProductsHtml());
+                        $('#no-more-products').addClass('hidden');
                     } else {
                         $('#productGrid').html(response.products);
                         if (response.sidebar) $('aside').replaceWith(response.sidebar);
@@ -593,7 +621,7 @@
             }, 300);
         });
 
-        // Brand Checkboxes Change Event (Handles Multiple Brands Selection)
+        // Brand Checkboxes Change Event
         $(document).on('change', '#filterForm input[type="checkbox"]', function () {
             fetchFilteredProducts(true);
         });
@@ -711,7 +739,7 @@
                 page++;
 
                 let shimmerHtml = `
-                @for($i = 0; $i < 5; $i++)
+            @for($i = 0; $i < 5; $i++)
                 <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
                     <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full animate-shimmer"></div>
                     <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
@@ -726,7 +754,7 @@
                         </div>
                     </div>
                 </div>
-                @endfor
+@endfor
                 `;
                 $('#productGrid').append(shimmerHtml);
 
@@ -781,34 +809,24 @@
             $('#priceLabel').text('100,000');
             $('#filterForm input[name="min_price"]').val(0);
             $('#filterForm input[type="checkbox"]').prop('checked', false);
+            $('#filterForm input[name="search"]').val('');
 
             page = 1;
-
-            // 🔴 UPDATED: Spinner ki jagah Skeletons
             $('#productGrid').html(renderProductSkeletons(10));
 
-            let category = $('#filterForm input[name="category"]').val() || '';
-            let search = $('#filterForm input[name="search"]').val() || '';
-            let sort = $('#filterForm input[name="sort"]').val() || '';
-
-            let params = {page: page};
-            if (category) params.category = category;
-            if (search) params.search = search;
-            if (sort) params.sort = sort;
-
-            let ajaxUrl = category ? "/collection/" + category : "/collection";
+            let ajaxUrl = baseUrl;
 
             currentAjaxReq = $.ajax({
                 url: ajaxUrl,
                 type: 'GET',
-                data: params,
+                data: { page: page },
                 dataType: 'json',
                 success: function (response) {
                     currentAjaxReq = null;
                     if ($.trim(response.products) === "") {
                         hasMorePages = false;
-                        $('#productGrid').html('<div class="col-span-full text-center py-16 text-gray-500 font-medium">No Products Found</div>');
-                        $('#no-more-products').removeClass('hidden');
+                        $('#productGrid').html(getNoProductsHtml());
+                        $('#no-more-products').addClass('hidden');
                     } else {
                         $('#productGrid').html(response.products);
                         if (response.sidebar) $('aside').replaceWith(response.sidebar);

@@ -358,12 +358,31 @@ class FrontendController extends Controller
             'reviews'
         ]);
 
-        // 2. Search Filter
+        // 2. Clean & Error-Free Search Filter
         if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+            $searchTerm = trim($request->search);
+            $length = mb_strlen($searchTerm);
+            $wildcard = '%' . $searchTerm . '%';
+
+            $query->where(function($q) use ($searchTerm, $wildcard, $length) {
+
+                // 1. Standard Wildcard Match for Name & Description
+                $q->where('name', 'LIKE', $wildcard)
+                    ->orWhere('description', 'LIKE', $wildcard);
+
+                // 2. Reverse Match (User typed 'shirtpk', DB has 'shirt')
+                $q->orWhereRaw("LOWER(?) LIKE CONCAT('%', LOWER(name), '%')", [$searchTerm]);
+
+                // 3. Any-where 3+ Character Partial Match (Safe Bindings)
+                if ($length >= 3) {
+                    $q->orWhereRaw("LOWER(name) LIKE CONCAT('%', SUBSTRING(LOWER(?), 1, 3), '%')", [$searchTerm])
+                        ->orWhereRaw("LOWER(name) LIKE CONCAT('%', SUBSTRING(LOWER(?), GREATEST(1, CHAR_LENGTH(?) - 2), 3), '%')", [$searchTerm, $searchTerm]);
+                }
+
+                // 4. Category name match
+                $q->orWhereHas('category', function($catQ) use ($wildcard) {
+                    $catQ->where('name', 'LIKE', $wildcard);
+                });
             });
         }
 
@@ -842,15 +861,15 @@ class FrontendController extends Controller
         });
 
         return response()->json([
-            'status'         => 'success',
-            'quantity'       => $cart->quantity,
-            'new_qty'        => $cart->quantity,
-            'subtotal'       => number_format($subtotal, 0),
-            'item_subtotal'  => number_format($subtotal, 0),
-            'total_items'    => $totalItems,       // Unique items (e.g. 1)
+            'status' => 'success',
+            'quantity' => $cart->quantity,
+            'new_qty' => $cart->quantity,
+            'subtotal' => number_format($subtotal, 0),
+            'item_subtotal' => number_format($subtotal, 0),
+            'total_items' => $totalItems,       // Unique items (e.g. 1)
             'total_quantity' => $totalQuantity,    // Summed quantities (e.g. 2)
-            'total_qty'      => $totalQuantity,
-            'total_amount'   => number_format($totalAmount, 0),
+            'total_qty' => $totalQuantity,
+            'total_amount' => number_format($totalAmount, 0),
         ]);
     }
 
@@ -1201,40 +1220,45 @@ class FrontendController extends Controller
             ->get()
             ->map(function ($cat) {
                 return [
-                    'id'   => $cat->id,
+                    'id' => $cat->id,
                     'name' => $cat->name,
-                    'url'  => route('collection', ['category' => $cat->category_path]),
+                    'url' => route('collection', ['category' => $cat->category_path]),
                 ];
             });
 
+        $searchTerm = $query;
+        $wildcardTerm = '%' . $searchTerm . '%';
+
         // Matching Products
         $products = Product::with('category.parent.parent')
-            ->where(function ($q) use ($query) {
-                $q->where('name', 'LIKE', '%' . $query . '%')
-                    ->orWhereHas('category', function ($catQuery) use ($query) {
-                        $catQuery->where('name', 'LIKE', '%' . $query . '%');
+            ->where(function ($q) use ($searchTerm, $wildcardTerm) {
+                $q->where('name', 'LIKE', $wildcardTerm)
+                    // Agar database ka naam user ki query ke andar fit ho raha ho
+                    ->orWhereRaw("LOWER(?) LIKE CONCAT('%', LOWER(name), '%')", [$searchTerm])
+                    ->orWhereHas('category', function ($catQuery) use ($wildcardTerm) {
+                        $catQuery->where('name', 'LIKE', $wildcardTerm);
                     });
             })
             ->select('id', 'name', 'slug', 'category_id')
-            ->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", ['%' . $query . '%'])
+            ->orderByRaw("CASE WHEN name LIKE ? THEN 0 ELSE 1 END", [$wildcardTerm])
             ->limit(8)
             ->get()
             ->map(function ($product) {
-                $categoryPath = $product->category_path;
+                $categoryPath = $product->category_path ?? '';
 
                 return [
-                    'id'   => $product->id,
+                    'id' => $product->id,
                     'name' => $product->name,
-                    'url'  => route('categories', [
+                    'url' => route('categories', [
                         'category' => $categoryPath,
-                        'product'  => $product->slug,
+                        'product' => $product->slug,
                     ]),
                 ];
             });
 
         return response()->json([
             'categories' => $categories,
-            'products'   => $products,
+            'products' => $products,
         ]);
     }
 

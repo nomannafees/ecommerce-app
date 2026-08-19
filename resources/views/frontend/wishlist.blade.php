@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="px-4 md:px-10 pb-10 pt-6 bg-gray-50">
+    <div class="px-4 md:px-10 pb-10 pt-6 bg-gray-50 min-h-[49vh]">
 
         <!-- HEADER -->
         <div class="mb-4 text-center">
@@ -48,7 +48,7 @@
                                 <div class="flex-1 min-w-0">
 
                                     <a href="{{ route('product.detail', $product->slug) }}">
-                                        <h3 class="font-semibold text-gray-900 text-base hover:text-indigo-600 transition truncate">
+                                        <h3 class="font-semibold text-gray-900 text-base hover:text-green-600 transition truncate">
                                             {{ $product->name }}
                                         </h3>
                                     </a>
@@ -75,10 +75,10 @@
 
                                 <!-- View Product -->
                                 <a href="{{ route('product.detail', $product->slug) }}"
-                                   class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all duration-300 shadow-sm">
+                                   class="flex-1 md:flex-none flex items-center justify-center gap-2 w-10 h-10 bg-green-50 text-green-600 border border-green-100 rounded-xl hover:bg-green-100 transition-all duration-300 shadow-xs cursor-pointer">
 
                                     <i class="fa-solid fa-eye"></i>
-                                    <span>View Product</span>
+
                                 </a>
 
                                 <!-- Delete -->

@@ -37,6 +37,11 @@ class LoginController extends Controller
         );
     }
 
+    public function showLoginForm()
+{
+    return redirect('/');
+}
+
     /**
      * Send the response after the user was authenticated.
      */

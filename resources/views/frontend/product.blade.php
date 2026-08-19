@@ -7,10 +7,10 @@
 
         <!-- TITLE -->
         <div class="text-center mb-2 sm:mb-4">
-            <h2 class="text-2xl sm:text-4xl font-bold text-gray-900">
+            <h1 class="text-2xl  font-bold text-gray-900">
                 All Products
-            </h2>
-            <p class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 max-w-2xl mx-auto">
+            </h1>
+            <p class="text-[16px] text-gray-500 max-w-2xl mx-auto">
                 Choose your favorite products and add them to your cart.
             </p>
         </div>

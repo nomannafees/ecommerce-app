@@ -6,12 +6,12 @@
     <div class="container mx-auto px-3 sm:px-6 md:px-7  sm:py-3">
 
         <!-- HEADER -->
-        <div class="text-center mt-2 sm:mt-4 mb-2 sm:mb-5 px-4">
-            <h2 class="text-2xl sm:text-4xl font-bold text-gray-900">
+        <div class="text-center mt-1 sm:mt-3 mb-2 sm:mb-5 px-4">
+            <h1 class="text-2xl font-bold text-gray-900">
                 Contact Us
-            </h2>
+            </h1>
 
-            <p class="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-1 max-w-xl mx-auto">
+            <p class="text-[16px] text-gray-500 max-w-xl mx-auto">
                 We'd love to hear from you. Send us a message.
             </p>
         </div>

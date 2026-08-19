@@ -18,6 +18,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\AdminLoginController;
 
 
+
+
 Route::get('/', [FrontendController::class, 'index'])->name('index');
 Route::get('/product/{slug}', [FrontendController::class, 'productDetail'])->name('product.detail');
 Route::get('/all-product', [FrontendController::class, 'frontendProduct'])->name('frontendProduct');
@@ -54,6 +56,8 @@ Route::get('/thank-you', [FrontendController::class, 'thankYou'])->name('thankyo
 Route::post('/contact-us', [\App\Http\Controllers\ContactUsController::class, 'store'])->name('contact-us.store');
 Route::get('/load-more-products', [\App\Http\Controllers\HomeController::class, 'loadMoreProducts'])->name('load.more.products');
 
+Route::get('/live-search', [FrontendController::class, 'liveSearch'])->name('live.search');
+
 // Admin Login Routes
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AdminLoginController::class, 'adminLogin'])->name('admin.login.submit');
@@ -81,7 +85,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/reviews/store', [FrontendController::class, 'storeReview'])->name('reviews.store');
     });
 
-    Route::get('/live-search', [FrontendController::class, 'liveSearch'])->name('live.search');
 
     // ✅ Route Names Unique Honay Chahiye
 

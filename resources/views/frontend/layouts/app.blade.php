@@ -70,7 +70,9 @@
                 <span class="text-[10px] mt-0.5">Account</span>
             </a>
         @else
-            <a href="{{ route('login') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('login') ? 'text-black font-bold' : '' }}">
+            <a href="javascript:void(0);"
+               onclick="handleNavAuthClick(event)"
+               class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition">
                 <i class="fa-solid fa-user text-base"></i>
                 <span class="text-[10px] mt-0.5">Login</span>
             </a>
@@ -612,59 +614,100 @@
 <script>
     $(document).ready(function () {
 
+        const RECENT_KEY = 'recentSearches';
+
+        // ===== Recent Search Helpers =====
+        function getRecentSearches() {
+            return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+        }
+
+        function saveRecentSearch(term) {
+            term = term.trim();
+            if (!term) return;
+            let list = getRecentSearches().filter(t => t.toLowerCase() !== term.toLowerCase());
+            list.unshift(term);
+            list = list.slice(0, 8);
+            localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+        }
+
+        function renderRecentSearches(suggestionsBox) {
+            let list = getRecentSearches();
+
+            if (list.length === 0) {
+                suggestionsBox.html('').addClass('hidden');
+                return;
+            }
+
+            let html = `<div class="py-2">
+                <div class="flex justify-between items-center px-4 py-1.5">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Search History</p>
+                    <button type="button" class="clear-recent text-xs text-orange-500 hover:underline">CLEAR</button>
+                </div>`;
+
+            list.forEach(term => {
+                html += `<div class="recent-term flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer transition">
+                            <i class="fa-regular fa-clock text-xs text-gray-400"></i>
+                            <span class="truncate">${term}</span>
+                         </div>`;
+            });
+
+            html += '</div>';
+            suggestionsBox.html(html).removeClass('hidden');
+        }
+
+        // ===== Live Suggestions (Categories + Products) =====
         function fetchSuggestions(inputField) {
             let query = inputField.val().trim();
             let suggestionsBox = inputField.closest('.search-wrapper').find('.search-suggestions');
 
-            if (query.length > 0) {
-                $.ajax({
-                    url: "{{ route('live.search') }}",
-                    type: "GET",
-                    data: { query: query },
-                    success: function (data) {
-                        let html = '';
-
-                        // Categories Section
-                        if (data.categories.length > 0) {
-                            html += '<div class="py-2 border-b border-gray-100">';
-                            html += '<p class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categories</p>';
-                            data.categories.forEach(function (cat) {
-                                html += `
-                <a href="${cat.url}"
-                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition truncate">
-                    <i class="fa-solid fa-layer-group text-xs text-gray-400"></i>
-                    <span class="truncate">${cat.name}</span>
-                </a>`;
-                            });
-                            html += '</div>';
-                        }
-
-                        // Products Section
-                        if (data.products.length > 0) {
-                            html += '<div class="py-2">';
-                            html += '<p class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Products</p>';
-                            data.products.forEach(function (product) {
-                                html += `
-                <a href="${product.url}"
-                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition truncate">
-                    <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
-                    <span class="truncate">${product.name}</span>
-                </a>`;
-                            });
-                            html += '</div>';
-                        }
-
-                        // Kuch bhi match nahi hua
-                        if (data.categories.length === 0 && data.products.length === 0) {
-                            html = '<div class="px-4 py-3 text-sm text-gray-500 text-center">No results found</div>';
-                        }
-
-                        suggestionsBox.html(html).removeClass('hidden');
-                    }
-                });
-            } else {
-                suggestionsBox.html('').addClass('hidden');
+            if (query.length === 0) {
+                // Khali input pe click -> recent searches dikhao
+                renderRecentSearches(suggestionsBox);
+                return;
             }
+
+            $.ajax({
+                url: "{{ route('live.search') }}",
+                type: "GET",
+                data: { query: query },
+                success: function (data) {
+                    let html = '';
+
+                    if (data.categories.length > 0) {
+                        html += '<div class="py-2 border-b border-gray-100">';
+                        html += '<p class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categories</p>';
+                        data.categories.forEach(function (cat) {
+                            html += `
+                                <a href="${cat.url}"
+                                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition truncate">
+                                    <i class="fa-solid fa-layer-group text-xs text-gray-400"></i>
+                                    <span class="truncate">${cat.name}</span>
+                                </a>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    if (data.products.length > 0) {
+                        html += '<div class="py-2">';
+                        html += '<p class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Products</p>';
+                        data.products.forEach(function (product) {
+                            html += `
+                                <a href="${product.url}"
+                                   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 transition truncate">
+                                    <i class="fa-solid fa-magnifying-glass text-xs text-gray-400"></i>
+                                    <span class="truncate">${product.name}</span>
+                                </a>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    if (data.categories.length === 0 && data.products.length === 0) {
+                        html = '<div class="px-4 py-3 text-sm text-gray-500 text-center">No results found</div>';
+                    }
+
+                    suggestionsBox.html(html).removeClass('hidden');
+                }
+            });
         }
 
         $(document).on('click', '.search-input', function () {
@@ -675,6 +718,28 @@
             fetchSuggestions($(this));
         });
 
+        // Recent search term pe click -> us se search karna
+        $(document).on('click', '.recent-term', function () {
+            let term = $(this).find('span').text().trim();
+            let inputField = $('.search-input');
+            inputField.val(term);
+            inputField.closest('form').submit();
+        });
+
+        // Clear history button
+        $(document).on('click', '.clear-recent', function (e) {
+            e.stopPropagation();
+            localStorage.removeItem(RECENT_KEY);
+            $('.search-suggestions').html('').addClass('hidden');
+        });
+
+        // Form submit hone par term save karna
+        $(document).on('submit', '.search-wrapper form', function () {
+            let term = $(this).find('.search-input').val();
+            saveRecentSearch(term);
+        });
+
+        // Bahir click pe band ho jaye
         $(document).on('click', function (e) {
             if (!$(e.target).closest('.search-input, .search-suggestions').length) {
                 $('.search-suggestions').addClass('hidden');

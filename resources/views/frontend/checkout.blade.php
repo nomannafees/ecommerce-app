@@ -66,11 +66,11 @@
     <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
 
         <div class="text-center mb-5 max-w-2xl mx-auto">
-            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900 tracking-tight">
+            <h1 class="text-2xl md:text-2xl font-semibold text-gray-900 tracking-tight">
                 Checkout
             </h1>
-            <div class="w-12 h-0.5 bg-emerald-600 mx-auto mt-1 rounded-full opacity-80"></div>
-            <p class="text-gray-500 text-sm md:text-base mt-1 leading-relaxed font-normal">
+            <div class="w-12 h-0.5 bg-emerald-600 mx-auto rounded-full opacity-80"></div>
+            <p class="text-gray-500 text-[16px] md:text-base mt-1 leading-relaxed font-normal">
                 Please provide your details, choose shipping & payment options to complete your order.
             </p>
         </div>
@@ -83,12 +83,12 @@
             <input type="hidden" name="shipping_cost" id="shipping_cost_input" value="0">
 
             <!-- MAIN GRID -->
-            <div class="grid lg:grid-cols-5 gap-8 mb-8 items-start relative">
+            <div class="grid lg:grid-cols-5 gap-5 mb-8 items-start relative">
 
                 <!-- LEFT: FORM SECTION -->
                 <div class="lg:col-span-3 space-y-6">
 
-                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 space-y-8">
+                    <div class="bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100 space-y-8">
 
                         <!-- Part 1: Personal Information -->
                         <div>
@@ -263,7 +263,7 @@
                     </div>
 
                     <!-- SHIPPING METHOD SECTION -->
-                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex items-center gap-3 mb-6">
                             <div
                                 class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
@@ -324,7 +324,7 @@
                     </div>
 
                     <!-- PAYMENT METHOD SECTION -->
-                    <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <div class="bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex items-center gap-3 mb-6">
                             <div
                                 class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
@@ -503,7 +503,7 @@
 
                 <!-- RIGHT: STICKY ORDER SUMMARY / CART BOX -->
                 <div
-                    class="lg:col-span-2 bg-white p-6 md:p-8 rounded-2xl shadow-md border border-gray-100 h-fit lg:sticky lg:top-[110px] self-start z-10">
+                    class="lg:col-span-2 bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100 h-fit lg:sticky lg:top-[110px] self-start z-10">
 
                     <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-3">
                         <div
@@ -581,7 +581,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit" form="checkout-form"
-                            class="w-full cursor-pointer mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl shadow-md shadow-emerald-600/20 transition-all duration-200 text-center block">
+                            class="w-full cursor-pointer mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-xl shadow-sm transition-all duration-200 text-center block">
                         Place Order Now
                     </button>
 
