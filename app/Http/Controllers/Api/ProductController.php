@@ -16,7 +16,23 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $records = Product::with('variants', 'mainVariantImage')->get();
+        $records = Product::with([
+            'variants',
+            'mainVariantImage',
+            'reviews' => function ($query) {
+                $query->where('is_approved', true);
+            }
+        ])->get();
+
+        // Har product ke liye average rating aur total reviews calculate karna
+        $records->each(function ($product) {
+            $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
+            $product->total_reviews = $product->reviews->count();
+
+            // Agar aap JSON mein reviews ki list nahi bhejna chahte to yeh line uncomment kar dein:
+            // unset($product->reviews);
+        });
+
         return response()->json([
             'status' => true,
             'data' => $records
@@ -25,22 +41,37 @@ class ProductController extends Controller
 
     public function productDetail($slug)
     {
-
-        $product = Product::with(['images', 'variants.variantImage'])
+        $product = Product::with([
+            'images',
+            'variants.variantImage',
+            'prod_brand',
+            'reviews' => function ($query) {
+                $query->where('is_approved', true);
+            }
+        ])
             ->where('slug', $slug)
             ->first();
+
         if (!$product) {
             return response()->json([
                 'status' => false,
                 'message' => 'Product not found!'
             ], 404);
         }
+
+        // --- RATING & REVIEWS CALCULATION ---
+        $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
+        $product->total_reviews = $product->reviews->count();
+
+        // Agar aap JSON response mein reviews ki poori list nahi dikhana chahte, to yeh line uncomment kar dein:
+        // unset($product->reviews);
+        // ------------------------------------
+
         return response()->json([
             'status' => true,
             'message' => 'Product retrieved successfully',
             'data' => $product
         ], 200);
-
     }
 
     public function bestsellingProducts()

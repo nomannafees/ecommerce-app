@@ -20,7 +20,7 @@ class CategorieController extends Controller
         }
 
         // Duplicate rows hone se bachane ke liye aur clean 5 items paginate karne ke liye
-        $record = $query->latest('id')->paginate(5);
+        $record = $query->latest('id')->paginate(5)->onEachSide(0);
 
         return view('categorie.index', compact('record'));
     }

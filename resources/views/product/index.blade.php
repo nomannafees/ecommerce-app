@@ -33,17 +33,17 @@
 
                         <!-- Input Field -->
                         <input
-                            type="text"
-                            name="search"
-                            id="search_product"
-                            value="{{ request('search') }}"
-                            placeholder=" "
-                            class="peer w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50/50 text-gray-700 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
+                                type="text"
+                                name="search"
+                                id="search_product"
+                                value="{{ request('search') }}"
+                                placeholder=" "
+                                class="peer w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50/50 text-gray-700 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
 
                         <!-- Floating Label -->
                         <label
-                            for="search_product"
-                            class="absolute left-10 top-2 text-gray-400 text-sm pointer-events-none transition-all duration-200
+                                for="search_product"
+                                class="absolute left-10 top-2 text-gray-400 text-sm pointer-events-none transition-all duration-200
             peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-4 peer-focus:left-3 peer-focus:bg-white peer-focus:px-1
             peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-xs">
                             Search product...
@@ -54,8 +54,8 @@
                     <div class="flex items-center gap-2">
                         <!-- Search Button (Emerald Green) -->
                         <button
-                            type="submit"
-                            class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition duration-200 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm font-medium">
+                                type="submit"
+                                class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition duration-200 shadow-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm font-medium">
                             <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             <span>Search</span>
                         </button>
@@ -241,6 +241,14 @@
                                 <td class="px-4 py-3.5">
                                     <div class="flex items-center justify-center gap-2">
 
+                                        <!-- Flash Sale Modal Button -->
+                                        <button type="button"
+                                                onclick="openFlashSaleModal('{{ $record->id }}', '{{ addslashes($record->name) }}')"
+                                                class="w-9 h-9 flex items-center justify-center bg-amber-50 text-amber-600 border border-amber-100 rounded-xl hover:bg-amber-100 transition-all duration-200 shadow-xs cursor-pointer"
+                                                title="Add to Flash Sale">
+                                            <i class="fa-solid fa-bolt text-xs"></i>
+                                        </button>
+
                                         <!-- View -->
                                         <a href="{{ route('products.show', $record->id) }}"
                                            class="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-100 transition-all duration-200 shadow-xs cursor-pointer"
@@ -301,5 +309,77 @@
         </div>
 
     </div>
+
+    <!-- Flash Sale Modal -->
+    <div id="flashSaleModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl relative animate-in fade-in zoom-in duration-200">
+
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-800">Add to Flash Sale</h3>
+                    <p id="modal-product-name" class="text-xs text-emerald-600 font-semibold mt-0.5"></p>
+                </div>
+                <button type="button" onclick="closeFlashSaleModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Flash Sale Form -->
+            <form id="flashSaleForm" action="{{ route('flash-sales.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" id="modal_product_id">
+
+                <div class="space-y-4 mb-6">
+                    <!-- Discount Percentage -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Discount Percentage (%)</label>
+                        <input type="number" name="discount_percentage" min="1" max="99" placeholder="e.g. 20"
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                        <p class="text-[10px] text-gray-400 mt-1">This percentage will apply to all variants of this product.</p>
+                    </div>
+
+                    <!-- Start Time -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Start Time</label>
+                        <input type="datetime-local" name="start_time"
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                    </div>
+
+                    <!-- End Time -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">End Time</label>
+                        <input type="datetime-local" name="end_time"
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none" required>
+                    </div>
+                </div>
+
+                <!-- Modal Actions -->
+                <div class="flex items-center justify-end gap-3">
+                    <button type="button" onclick="closeFlashSaleModal()"
+                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl cursor-pointer transition">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-md cursor-pointer transition">
+                        Save Flash Sale
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal JavaScript Functions -->
+    <script>
+        function openFlashSaleModal(productId, productName) {
+            document.getElementById('modal_product_id').value = productId;
+            document.getElementById('modal-product-name').innerText = "Product: " + productName;
+            document.getElementById('flashSaleModal').classList.remove('hidden');
+        }
+
+        function closeFlashSaleModal() {
+            document.getElementById('flashSaleModal').classList.add('hidden');
+        }
+    </script>
 
 @endsection

@@ -45,7 +45,7 @@
     </style>
 
 
-
+    @if(isset($setting) && $setting->is_sliders  == 1)
     <div class="w-full">
         <div
             class="swiper heroSwiper w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] relative overflow-hidden">
@@ -85,6 +85,8 @@
             <div class="swiper-pagination !bottom-1 sm:!bottom-3"></div>
         </div>
     </div>
+    @endif
+
 
     <style>
         /* Active Dot Green Color */
@@ -235,45 +237,100 @@
         @endforeach
     </div>
 
-    <!-- 3. PROMOTIONAL MID BANNERS GRID -->
-    <div class="container mx-auto px-3 sm:px-6 md:px-7  sm:py-2 mb-2">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+    @if(isset($setting) && $setting->show_mid_banners == 1)
+        @php
+            // Sort order ke mutabik banners ko safely map karna agar $banners mojood ho
+            $banner1 = isset($banners) ? $banners->where('sort_order', 1)->first() : null;
+            $banner2 = isset($banners) ? $banners->where('sort_order', 2)->first() : null;
+            $banner3 = isset($banners) ? $banners->where('sort_order', 3)->first() : null;
 
-            <div class="relative rounded-xl sm:rounded-2xl overflow-hidden group h-[280px] sm:h-[400px] lg:h-[500px]">
-                <img src="{{ asset('storage/banner/1721825245.png') }}"
-                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                <div class="absolute inset-0 bg-black/40 flex items-end p-5 sm:p-8">
-                    <div>
-                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Summer Collection</h2>
-                        <p class="text-xs sm:text-sm lg:text-base text-white mt-1 sm:mt-2">Up to 50% OFF</p>
-                        <a href="{{ route('frontendProduct') }}"
-                           class="inline-block mt-3 sm:mt-4 bg-white text-black px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-200 transition">
-                            Shop Now
-                        </a>
+            // Check conditions for images
+            $hasImage1 = ($banner1 && !empty($banner1->image) && file_exists(public_path('storage/' . $banner1->image)));
+            $hasImage2 = ($banner2 && !empty($banner2->image) && file_exists(public_path('storage/' . $banner2->image)));
+            $hasImage3 = ($banner3 && !empty($banner3->image) && file_exists(public_path('storage/' . $banner3->image)));
+        @endphp
+
+        <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:py-2 mb-2">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+
+                <!-- 1st Banner (Large Left Side) -->
+                <div class="relative rounded-xl sm:rounded-2xl overflow-hidden group h-[280px] sm:h-[400px] lg:h-[500px] bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                    @if(!$hasImage1)
+                        <span class="absolute top-3 right-3 z-20 bg-amber-500 text-black text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
+                        Default View
+                    </span>
+                    @else
+                        <img src="{{ asset('storage/' . $banner1->image) }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    @endif
+                    <div class="absolute inset-0 bg-black/40 flex items-end p-5 sm:p-8">
+                        <div>
+                            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+                                {{ $banner1->name ?? ($banners[0]->name ?? '') }}
+                            </h2>
+                            <p class="text-xs sm:text-sm lg:text-base text-white/90 mt-1 sm:mt-2">
+                                {{ $banner1->description ?? ($banners[0]->description ?? '') }}
+                            </p>
+                            <a href="{{ route('frontendProduct') }}"
+                               class="inline-block mt-3 sm:mt-4 bg-white text-black px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-200 transition">
+                                Shop Now
+                            </a>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Small Banners (Right Side Stack) -->
+                <div class="grid grid-rows-2 gap-4 sm:gap-6 h-[280px] sm:h-[400px] lg:h-[500px]">
+
+                    <!-- 2nd Banner (Top Right) -->
+                    <div class="relative rounded-xl sm:rounded-2xl overflow-hidden h-full group bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                        @if(!$hasImage2)
+                            <span class="absolute top-3 right-3 z-20 bg-amber-500 text-black text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
+                            Default View
+                        </span>
+                        @else
+                            <img src="{{ asset('storage/' . $banner2->image) }}"
+                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
+                        @endif
+                        <div class="absolute inset-0 bg-black/40 flex items-end p-4 sm:p-6">
+                            <div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white">
+                                    {{ $banner2->name ?? ($banners[1]->name ?? '') }}
+                                </h3>
+                                <p class="text-xs sm:text-sm text-white/95 mt-1">
+                                    {{ $banner2->description ?? ($banners[1]->description ?? '') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3rd Banner (Bottom Right) -->
+                    <div class="relative rounded-xl sm:rounded-2xl overflow-hidden h-full group bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                        @if(!$hasImage3)
+                            <span class="absolute top-3 right-3 z-20 bg-amber-500 text-black text-[10px] font-bold px-2.5 py-1 rounded-md shadow-md uppercase tracking-wider">
+                            Default View
+                        </span>
+                        @else
+                            <img src="{{ asset('storage/' . $banner3->image) }}"
+                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
+                        @endif
+                        <div class="absolute inset-0 bg-black/40 flex items-end p-4 sm:p-6">
+                            <div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white">
+                                    {{ $banner3->name ?? ($banners[2]->name ?? '') }}
+                                </h3>
+                                <p class="text-xs sm:text-sm text-white/95 mt-1">
+                                    {{ $banner3->description ?? ($banners[2]->description ?? '') }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
-
-            <!-- Small Banners (Right Side Stack) -->
-            <div class="grid grid-rows-2 gap-4 sm:gap-6 h-[280px] sm:h-[400px] lg:h-[500px]">
-                <div class="relative rounded-xl sm:rounded-2xl overflow-hidden h-full group">
-                    <img src="{{ asset('storage/banner/1721825256.png') }}"
-                         class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-black/40 flex items-end p-4 sm:p-6">
-                        <h3 class="text-xl sm:text-2xl font-bold text-white">New Arrival</h3>
-                    </div>
-                </div>
-                <div class="relative rounded-xl sm:rounded-2xl overflow-hidden h-full group">
-                    <img src="{{ asset('storage/banner/1721825269.png') }}"
-                         class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
-                    <div class="absolute inset-0 bg-black/40 flex items-end p-4 sm:p-6">
-                        <h3 class="text-xl sm:text-2xl font-bold text-white">Exclusive Deals</h3>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </div>
+    @endif
 
     <!-- 4. FEATURED PRODUCTS -->
     @if($featuredProducts->isNotEmpty())
@@ -412,34 +469,33 @@
     @endif
 
     <!-- 4.1 STICKY BACKGROUND FULL-WIDTH CONTAINER -->
-    <div
-        class="relative w-full sm:my-1 bg-fixed bg-center bg-cover h-[220px] sm:h-[350px] md:h-[400px] flex items-center justify-center"
-        style="background-image: url('{{ asset('storage/banner/1721825245.png') }}');">
+    @if(isset($setting) && $setting->show_featured_banner  == 1)
+    <div class="relative w-full sm:my-1 bg-fixed bg-center bg-cover h-[220px] sm:h-[350px] md:h-[400px] flex items-center justify-center"
+         style="background-image: url('{{ isset($featuredBanner) && $featuredBanner->image ? asset('storage/' . $featuredBanner->image) : asset('') }}');">
 
         <div class="absolute inset-0 bg-black/85"></div>
 
         <div class="relative z-10 text-center text-white px-4 sm:px-6 max-w-3xl mx-auto">
-        <span
-            class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-1 sm:mb-3 inline-block">
+        <span class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-1 sm:mb-3 inline-block">
             Special Selection
         </span>
 
             <h2 class="text-xl sm:text-3xl md:text-5xl font-extrabold tracking-tight mb-1 sm:mb-4">
-                Discover Excellence in Every Detail
+                {{ $featuredBanner->name ?? 'Default Banner Title Here' }}
             </h2>
 
             <p class="text-gray-300 text-[11px] sm:text-sm md:text-base leading-relaxed mb-3 sm:mb-6 line-clamp-2 sm:line-clamp-none">
-                Our handpicked featured collection brings you unmatched quality, trendsetting designs, and everyday
-                reliability. Upgrade your style and elevate your lifestyle today.
+                {{ $featuredBanner->description ?? 'Yeh default description hai jo backend se data na milne par automatically show hogi.' }}
             </p>
 
             <a href="{{ route('frontendProduct') }}"
                class="inline-flex items-center gap-2 bg-white text-gray-900 font-semibold px-5 sm:px-8 py-2 sm:py-3.5 rounded-xl hover:bg-amber-400 hover:text-black transition duration-300 shadow-lg group text-xs sm:text-base">
                 <i class="fa-solid fa-cart-shopping transition-transform group-hover:scale-105"></i>
-                <span>Explore Featured Range</span>
+                <span>{{ $featuredBanner->button_name ?? 'Shop Now' }}</span>
             </a>
         </div>
     </div>
+    @endif
 
     <!-- 5. TOP BRANDS SECTION -->
     <div class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto sm:mt-4">
@@ -537,40 +593,38 @@
     </style>
 
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
-    <div class="relative w-full     mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
-        <div
-            class="container mx-auto px-3 sm:px-6 md:px-7 py-3 sm:py-6 mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
-            <div
-                class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
-            <span
-                class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
-                <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
-            </span>
+    @if(isset($setting) && $setting->show_brand_banner  == 1)
+    <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
+        <div class="container mx-auto px-3 sm:px-6 md:px-7 py-3 sm:py-6 grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
+            <div class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
+        <span class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
+            <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
+        </span>
                 <h2 class="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 sm:mb-6 leading-tight">
-                    Shop Premium Brands You Trust
+                    {{ $brandBanner->name ?? 'Exclusive Brand Showcase' }}
                 </h2>
                 <p class="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed mb-3 sm:mb-8 line-clamp-2 sm:line-clamp-none">
-                    Explore products directly sourced from top-rated industry leaders. Guaranteed authenticity, premium
-                    build, and exclusive collection updates waiting just for you.
+                    {{ $brandBanner->description ?? 'Discover our premium collections and official brand partners with exceptional quality and style tailored just for you.' }}
                 </p>
                 <div>
                     <a href="{{ route('frontendProduct') }}"
                        class="inline-flex items-center gap-2 sm:gap-3 bg-white text-gray-900 font-bold px-5 sm:px-8 py-2 sm:py-4 rounded-xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-xl group text-xs sm:text-base">
-                        <span>Explore All Brands</span>
+                        <span>{{ $brandBanner->button_name ?? 'Explore Collection' }}</span>
                         <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
                     </a>
                 </div>
             </div>
-            <!-- Mobile par image hide aur Large screen par show karne ke liye 'hidden lg:block' lagaya hai -->
+
+            <!-- Dynamic Background Image from Database with Fallback -->
             <div class="relative hidden lg:block min-h-[300px] sm:min-h-[350px] lg:min-h-full">
                 <div class="absolute inset-0 bg-scroll sm:bg-fixed bg-center bg-cover"
-                     style="background-image: url('{{ asset('storage/banner/1721825256.png') }}');">
-                    <div
-                        class="absolute inset-0 bg-black/65 lg:bg-gradient-to-r lg:from-gray-900 lg:via-black/50 lg:to-black/60"></div>
+                     style="background-image: url('{{ isset($brandBanner) && $brandBanner->image ? asset('storage/' . $brandBanner->image) : '' }}');">
+                    <div class="absolute inset-0 bg-black/65 lg:bg-gradient-to-r lg:from-gray-900 lg:via-black/50 lg:to-black/60"></div>
                 </div>
             </div>
         </div>
     </div>
+    @endif
 
     <!-- 6. "FOR YOU" PERSONALIZED PRODUCTS SECTION -->
     @if(isset($products) && $products->isNotEmpty())

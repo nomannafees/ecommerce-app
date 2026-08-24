@@ -32,13 +32,17 @@ class AdminStoreController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title'    => 'required|string|max:255',
-            'email'    => 'nullable|email|max:255',
-            'phone'    => 'nullable|string|max:50',
-            'address'  => 'nullable|string|max:500',
-            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:5120',
-            'is_logo'  => 'nullable|boolean',
-            'is_title' => 'nullable|boolean',
+            'title'                => 'required|string|max:255',
+            'email'                => 'nullable|email|max:255',
+            'phone'                => 'nullable|string|max:50',
+            'address'              => 'nullable|string|max:500',
+            'logo'                 => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:5120',
+            'is_logo'              => 'nullable|boolean',
+            'is_title'             => 'nullable|boolean',
+            'is_sliders'           => 'nullable|boolean',
+            'show_mid_banners'     => 'nullable|boolean',
+            'show_featured_banner' => 'nullable|boolean',
+            'show_brand_banner'    => 'nullable|boolean',
         ]);
 
         $store = AdminStore::first() ?? new AdminStore();
@@ -52,13 +56,18 @@ class AdminStoreController extends Controller
             $store->logo = $logoPath;
         }
 
-        $store->title    = $request->title;
-        $store->email    = $request->email;
-        $store->phone    = $request->phone;
-        $store->address  = $request->address;
+        $store->title                = $request->title;
+        $store->email                = $request->email;
+        $store->phone                = $request->phone;
+        $store->address              = $request->address;
 
-        $store->is_logo  = $request->has('is_logo') ? true : false;
-        $store->is_title = $request->has('is_title') ? true : false;
+        // Toggles mapping
+        $store->is_logo              = $request->has('is_logo') ? true : false;
+        $store->is_title             = $request->has('is_title') ? true : false;
+        $store->is_sliders           = $request->has('is_sliders') ? true : false;
+        $store->show_mid_banners     = $request->has('show_mid_banners') ? true : false;
+        $store->show_featured_banner = $request->has('show_featured_banner') ? true : false;
+        $store->show_brand_banner    = $request->has('show_brand_banner') ? true : false;
 
         $store->save();
 

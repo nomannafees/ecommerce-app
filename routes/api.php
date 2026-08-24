@@ -5,36 +5,47 @@ use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CategoryProduct;
+use App\Http\Controllers\Api\ProfileController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
 
+// frontent routes
 Route::get('/sliders', [\App\Http\Controllers\Api\SliderController::class,'index']);
 Route::get('/all-products', [\App\Http\Controllers\Api\ProductController::class,'index']);
 Route::get('/product/{slug}', [\App\Http\Controllers\Api\ProductController::class,'productDetail']);
 Route::get('/products/bestselling', [\App\Http\Controllers\Api\ProductController::class, 'bestsellingProducts']);
 Route::get('/products/featured', [\App\Http\Controllers\Api\ProductController::class, 'featuredProducts']);
 Route::get('/products/for-you', [\App\Http\Controllers\Api\ProductController::class, 'forYouProducts']);
-
 Route::get('/brands', [\App\Http\Controllers\Api\BrandController::class,'index']);
-Route::post('/add-to-cart', [\App\Http\Controllers\Api\OrderController::class,'addToCart']);
-Route::get('/cart', [\App\Http\Controllers\Api\CartController::class,'cart']);
-Route::post('/cart-remove-item/{id}', [\App\Http\Controllers\Api\CartController::class,'cartRemove']);
-Route::put('/cart-update-quantity/{id}', [\App\Http\Controllers\Api\CartController::class, 'updateQuantity']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::get('/wish-list', [\App\Http\Controllers\Api\WishlistController::class, 'index']);
-Route::post('/wish-list-add', [\App\Http\Controllers\Api\WishlistController::class, 'storeWishList']);
-Route::post('/place-order', [\App\Http\Controllers\Api\CheckoutController::class, 'checkoutStore']);
-Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
-Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
-Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
 Route::get('/cities/{id}', [\App\Http\Controllers\Api\CheckoutController::class, 'getCitiesByState']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/products/{id}', [\App\Http\Controllers\Api\CategoryController::class, 'categoriesProduct']);
-
 Route::get('/category-sidebar/{slug?}', [CategoryProduct::class, 'getSidebarData'])->where('slug', '.*');
 Route::get('/categories-products/{slug?}', [CategoryProduct::class, 'getProducts'])->where('slug', '.*');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    // cart auth routes
+    Route::post('/add-to-cart', [\App\Http\Controllers\Api\OrderController::class,'addToCart']);
+    Route::get('/cart', [\App\Http\Controllers\Api\CartController::class,'cart']);
+    Route::post('/cart-remove-item/{id}', [\App\Http\Controllers\Api\CartController::class,'cartRemove']);
+    Route::put('/cart-update-quantity/{id}', [\App\Http\Controllers\Api\CartController::class, 'updateQuantity']);
+
+    Route::get('/wish-list', [\App\Http\Controllers\Api\WishlistController::class, 'index']);
+    Route::post('/wish-list-add', [\App\Http\Controllers\Api\WishlistController::class, 'storeWishList']);
+
+    Route::get('/checkout', [\App\Http\Controllers\Api\CheckoutController::class, 'checkout']);
+    Route::post('/place-order', [\App\Http\Controllers\Api\CheckoutController::class, 'checkoutStore']);
+    Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
+    Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
+
+
+   // user profile
+    Route::get('/profile/{user_id}', [ProfileController::class, 'profile']);
+    Route::post('/profile/update/{user_id}', [ProfileController::class, 'updateProfile']);
+});

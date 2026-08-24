@@ -145,6 +145,7 @@
                 </div>
 
                 <!-- FRONTEND DISPLAY TOGGLES (Integrated inside Main Card) -->
+                <!-- FRONTEND DISPLAY TOGGLES (Integrated inside Main Card) -->
                 <div class="pt-6 border-t border-gray-100 mb-8">
                     <h3 class="text-xs font-bold text-gray-900 mb-3 uppercase tracking-wider">Frontend Display Settings</h3>
 
@@ -157,7 +158,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" name="is_logo" value="1" class="sr-only peer"
-                                    {{ old('is_logo', $store->is_logo ?? true) ? 'checked' : '' }}>
+                                        {{ old('is_logo', $store->is_logo ?? true) ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                             </label>
                         </div>
@@ -170,13 +171,64 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" name="is_title" value="1" class="sr-only peer"
-                                    {{ old('is_title', $store->is_title ?? true) ? 'checked' : '' }}>
+                                        {{ old('is_title', $store->is_title ?? true) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 3: Show Sliders -->
+                        <div class="p-4 rounded-2xl bg-gray-50/60 border border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-800">Show Sliders</h4>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Display hero sliders section</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="is_sliders" value="1" class="sr-only peer"
+                                        {{ old('is_sliders', $store->is_sliders ?? true) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 4: Show Mid Banners -->
+                        <div class="p-4 rounded-2xl bg-gray-50/60 border border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-800">Show Promotional Mid Banners</h4>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Display mid promotional grid</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="show_mid_banners" value="1" class="sr-only peer"
+                                        {{ old('show_mid_banners', $store->show_mid_banners ?? true) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 5: Show Featured Banner -->
+                        <div class="p-4 rounded-2xl bg-gray-50/60 border border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-800">Show Sticky Featured Banner</h4>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Display background full-width banner</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="show_featured_banner" value="1" class="sr-only peer"
+                                        {{ old('show_featured_banner', $store->show_featured_banner ?? true) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- Toggle 6: Show Brand Banner -->
+                        <div class="p-4 rounded-2xl bg-gray-50/60 border border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-800">Show Brand Showcase Banner</h4>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Display brand showcase section</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="show_brand_banner" value="1" class="sr-only peer"
+                                        {{ old('show_brand_banner', $store->show_brand_banner ?? true) ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                             </label>
                         </div>
                     </div>
                 </div>
-
                 <button type="submit"
                         class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-6 py-3 rounded-xl shadow-md shadow-emerald-600/20 transition-all inline-flex items-center gap-2 cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

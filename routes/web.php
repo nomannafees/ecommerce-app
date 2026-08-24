@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\AdminLoginController;
-
-
+use App\Http\Controllers\BannerController;
+use App\Http\Controllers\FeaturedBannerController;
+use App\Http\Controllers\BrandsBannerController;
+use App\Http\Controllers\FlashSaleController;
 
 
 Route::get('/', [FrontendController::class, 'index'])->name('index');
@@ -119,4 +121,11 @@ Route::middleware(['auth', 'admin'])->prefix('/admin')->group(function () {
     Route::resource('/admin-info', \App\Http\Controllers\AdminInfoController::class);
     Route::resource('/admin-store', \App\Http\Controllers\AdminStoreController::class);
     Route::resource('/contacts', ContactUsController::class);
+    Route::resource('/banners', BannerController::class);
+    Route::resource('/featuredbanners', FeaturedBannerController::class)
+        ->parameters(['featuredbanners' => 'featuredBanner']);
+    Route::resource('/brandbanners', BrandsBannerController::class)
+        ->parameters(['brandbanners' => 'brandsBanner']);
+
+    Route::resource('/flash-sales', FlashSaleController::class);
 });

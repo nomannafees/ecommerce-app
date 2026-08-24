@@ -83,7 +83,7 @@
 
 <!-- GLOBAL AUTHENTICATION MODAL -->
 <div id="authModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-8 relative">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-lg p-3.5 relative">
         <!-- Close Button -->
         <button onclick="closeAuthModal()" type="button" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl cursor-pointer">
             <i class="fa-solid fa-xmark"></i>

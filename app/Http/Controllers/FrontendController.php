@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdminStore;
+use App\Models\Banner;
+use App\Models\BrandsBanner;
 use App\Models\Cart;
 use App\Models\Categorie;
 use App\Models\CustomerInfo;
+use App\Models\FeaturedBanner;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -48,6 +52,10 @@ class FrontendController extends Controller
 
         // 4. BRANDS
         $brands = Brand::latest()->get();
+        $brandBanner = BrandsBanner::latest()->first();
+        $featuredBanner = FeaturedBanner::latest()->first();
+        $banners = Banner::orderBy('sort_order', 'asc')->take(3)->get();
+        $setting = AdminStore::latest()->first();
 
         // --- SIDEBAR VARIABLES ---
         $availableColors = ProductVariant::whereNotNull('color_name')
@@ -158,6 +166,8 @@ class FrontendController extends Controller
             return view('frontend.partials.for-you-cards', compact('products', 'wishlistProductIds'))->render();
         }
 
+
+
         return view('frontend.index', compact(
             'topOrderedProducts',
             'featuredProducts',
@@ -165,9 +175,13 @@ class FrontendController extends Controller
             'wishlistProductIds',
             'brands',
             'products',
+            'brandBanner',
+            'banners',
+            'featuredBanner',
             'availableColors',
             'availableSizes',
-            'availableBrands'
+            'availableBrands',
+            'setting',
         ));
     }
 

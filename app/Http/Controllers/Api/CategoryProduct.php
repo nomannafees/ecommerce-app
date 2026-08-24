@@ -169,7 +169,7 @@ class CategoryProduct extends Controller
 
         if ($page == 1) {
             $offset = 0;
-            $limit = 15;
+            $limit = 10;
         } else {
             $offset = 15 + (($page - 2) * 10);
             $limit = 10;
