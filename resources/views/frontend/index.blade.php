@@ -101,11 +101,160 @@
             opacity: 0.7 !important;
         }
     </style>
+
+    <!-- FLASH SALE SECTION -->
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 flex justify-between items-center">
+        <div>
+            <h2 class="text-xl sm:text-2xl mt-2 sm:mt-4 font-bold text-gray-900 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-amber-500 animate-bounce"></i> Flash Sales
+            </h2>
+            <p class="text-xs sm:text-sm text-gray-500">Hurry up! Limited time offers on top products</p>
+        </div>
+        <a href="#" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+            <span>More Products</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
+    </div>
+
+    <!-- Responsive Grid Setup -->
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-3">
+        @forelse($flashSaleProducts as $index => $product)
+            @php
+                $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
+                $avgRating = $product->reviews->avg('rating') ?? 0;
+
+                // Logic: Agar screen lg (bari screen se aik step choti) hai toh sirf pehle 5 products dikhein, baqi sab screens par 6 ke 6 dikhein.
+                if ($index < 5) {
+                    $displayClass = 'flex';
+                } elseif ($index == 5) {
+                    $displayClass = 'flex lg:hidden xl:flex'; // LG par 5 dikhane ke liye 6th product ko hide kar diya hai
+                } else {
+                    $displayClass = 'hidden';
+                }
+            @endphp
+
+            <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
+                {{-- Card Container --}}
+                <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
+
+                    {{-- High Contrast & Vibrant Flash Sale Badge --}}
+                    @if($product->flashSale)
+                        <div class="absolute top-2 -left-1 z-20 bg-gradient-to-r from-orange-600 to-amber-500 text-white pl-3 pr-3.5 py-1 rounded-r-full text-[10px] sm:text-[11px] font-extrabold shadow-md flex items-center gap-1 tracking-wide">
+                            <i class="fa-solid fa-bolt text-yellow-200 text-[10px]"></i>
+                            <span>{{ number_format($product->flashSale->discount_percentage, 0) }}% OFF</span>
+                        </div>
+                    @endif
+
+                    {{-- IMAGE CONTAINER --}}
+                    <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
+                        <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                            <button type="submit"
+                                    class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
+                                    style="padding: 4px 9px 4px 9px !important;">
+                                <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
+                            </button>
+                        </form>
+
+                        @if($product->mainVariantImage)
+                            <img src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
+                                 alt="{{ $product->name }}"
+                                 class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
+                        @else
+                            <img src="{{ asset('upload/no-image.jpg') }}"
+                                 alt="No Image Available"
+                                 class="w-full h-full object-cover">
+                        @endif
+                    </div>
+
+                    {{-- CARD CONTENT --}}
+                    <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
+                        <div>
+                            {{-- Product Name --}}
+                            <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                                {{ $product->name }}
+                            </h4>
+
+                            {{-- Description --}}
+                            <div class="text-[11px] sm:text-xs text-gray-600 line-clamp-1 sm:line-clamp-1 mt-0.5">
+                                {!! $product->description !!}
+                            </div>
+
+                            {{-- Rating Section --}}
+                            <div class="flex items-center gap-1 sm:mt-1.5">
+                                <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($avgRating))
+                                            <i class="fa-solid fa-star"></i>
+                                        @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                            <i class="fa-solid fa-star-half-stroke"></i>
+                                        @else
+                                            <i class="fa-regular fa-star text-gray-300"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">({{ number_format($avgRating, 1) }})</span>
+                            </div>
+                        </div>
+
+                        {{-- Price & Stock Section (Dynamic Calculation based on Percentage) --}}
+                        <div class="flex items-center justify-between gap-2 mt-auto">
+                            @php
+                                $variant = $product->mainVariant ?? $product->variants->first();
+                                $originalPrice = $variant->cut_price ?? $variant->price ?? 0;
+                                $discountPercent = $product->flashSale->discount_percentage ?? 0;
+
+                                if ($discountPercent > 0 && !empty($variant->cut_price)) {
+                                    $discountedPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                                } else {
+                                    $discountedPrice = $variant->price ?? 0;
+                                }
+                            @endphp
+
+                            <div class="flex flex-col">
+                                {{-- Discounted / Main Sale Price --}}
+                                <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                                Rs {{ number_format($discountedPrice) }}
+                            </span>
+
+                                {{-- Original / Cut Price --}}
+                                @if($discountPercent > 0 && !empty($variant->cut_price) && $variant->cut_price > $discountedPrice)
+                                    <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                    Rs {{ number_format($variant->cut_price) }}
+                                </span>
+                                @endif
+                            </div>
+
+                            <div class="flex-shrink-0">
+                                @php $totalStock = $product->variants->sum('stock'); @endphp
+                                @if($totalStock <= 0)
+                                    <span class="inline-block bg-red-100 text-red-700 text-[9px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                    Out of Stock
+                                </span>
+                                @else
+                                    <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        @empty
+            <div class="col-span-full py-8 text-center text-gray-400 text-sm bg-white rounded-lg border border-gray-200">
+                No active flash sales right now. Check back later!
+            </div>
+        @endforelse
+    </div>
+
     <!-- 2. TOP 8 MOST ORDERED PRODUCTS (BESTSELLERS) -->
     <div
         class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 mx-auto  flex justify-between items-center">
         <div>
-            <h2 class="text-xl sm:text-2xl mt-2 sm:mt-4 font-bold text-gray-900 flex items-center gap-2">
+            <h2 class="text-xl  font-bold text-gray-900 flex items-center gap-2">
                 <i class="fa-solid fa-fire text-rose-500"></i> Bestselling Products
             </h2>
             <p class="text-xs sm:text-sm text-gray-500">Our top 8 most popular and ordered items</p>
@@ -207,7 +356,7 @@
                         <div class="flex items-center justify-between gap-2 mt-auto">
                             @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
                             <div class="flex flex-col">
-                        <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
+                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
                             Rs {{ number_format($variant->price ?? 0) }}
                         </span>
                                 @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
@@ -436,7 +585,7 @@
                             <div class="flex items-center justify-between gap-2 mt-auto">
                                 @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
                                 <div class="flex flex-col">
-                <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
+                <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
                     Rs {{ number_format($variant->price ?? 0) }}
                 </span>
                                     @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)

@@ -18,7 +18,7 @@ class OrderController extends Controller
     public function orders(Request $request)
     {
         // Auth token se ID uthayen, agar nahi mila toh query parameter se ($request->user_id)
-        $user_id = Auth::id() ?? $request->query('user_id') ?? $request->user_id;
+        $user_id =  $request->user_id;
 
         if (!$user_id) {
             return response()->json([
@@ -57,7 +57,7 @@ class OrderController extends Controller
             ], 422);
         }
 
-        $user_id = Auth::id() ?? $request->query('user_id') ?? $request->user_id;
+        $user_id = $request->user_id;
 
         if (!$user_id) {
             return response()->json([

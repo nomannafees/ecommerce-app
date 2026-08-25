@@ -128,4 +128,5 @@ Route::middleware(['auth', 'admin'])->prefix('/admin')->group(function () {
         ->parameters(['brandbanners' => 'brandsBanner']);
 
     Route::resource('/flash-sales', FlashSaleController::class);
+    Route::get('/flash-sales/get-data/{productId}', [FlashSaleController::class, 'getFlashSaleData'])->name('flash-sales.get-data');
 });

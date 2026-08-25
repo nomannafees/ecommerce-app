@@ -55,7 +55,7 @@
                 <div class="flex items-center justify-between gap-2 mt-auto">
                     @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
                     <div class="flex flex-col">
-                        <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">
+                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
                             Rs {{ number_format($variant->price ?? 0) }}
                         </span>
                         @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)

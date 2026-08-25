@@ -104,22 +104,30 @@ class ProductController extends Controller
 
     public function forYouProducts(Request $request)
     {
-        // Guest token handle karna agar request mein header/cookie se aaye
+        $perPage = 6;
+        $page = (int) $request->get('page', 1);
+
+        // 1. Pehle API Guard ke zariye check karein ke user logged in hai ya nahi
+        // (Agar aap Sanctum use kar rahe hain toh 'sanctum' guard dein)
+        $user = auth('sanctum')->user() ?? auth()->user();
+
+        // 2. Guest token handle (Cookie ya Header se)
         $guestToken = $request->cookie('guest_unique_token') ?? $request->header('X-Guest-Token');
 
         $recentInteractions = collect();
 
-        if (Auth::check()) {
-            $recentInteractions = UserProductInteraction::where('user_id', Auth::id())
+        // 3. Agar User Login hai (Bearer token ke through)
+        if ($user) {
+            $recentInteractions = UserProductInteraction::where('user_id', $user->id)
                 ->orderBy('weight', 'desc')
                 ->orderBy('updated_at', 'desc')
-                ->take(20)
                 ->get();
-        } elseif ($guestToken) {
+        }
+        // 4. Agar User Login nahi hai lekin Guest Token mojood hai
+        elseif ($guestToken) {
             $recentInteractions = UserProductInteraction::where('session_id', $guestToken)
                 ->orderBy('weight', 'desc')
                 ->orderBy('updated_at', 'desc')
-                ->take(20)
                 ->get();
         }
 
@@ -130,6 +138,7 @@ class ProductController extends Controller
             $categoryIds = $recentInteractions->pluck('category_id')->filter()->unique()->toArray();
             $brandIds = $recentInteractions->pluck('brand_id')->filter()->unique()->toArray();
 
+            // 1. Interacted Products
             if (!empty($viewedProductIds)) {
                 $productListString = implode(',', $viewedProductIds);
                 $interactedProducts = Product::whereIn('id', $viewedProductIds)
@@ -140,6 +149,7 @@ class ProductController extends Controller
                 $products = $products->concat($interactedProducts);
             }
 
+            // 2. Recommended Products
             $recommendedQuery = Product::with(['variants', 'mainVariantImage', 'reviews'])
                 ->whereNotIn('id', $products->pluck('id')->toArray())
                 ->where(function ($query) use ($categoryIds, $brandIds) {
@@ -160,22 +170,41 @@ class ProductController extends Controller
                 $recommendedQuery->orderByRaw("FIELD(brand_id, $brandList) DESC");
             }
 
-            $recommendedProducts = $recommendedQuery->take(20)->get();
+            $recommendedProducts = $recommendedQuery->get();
             $products = $products->concat($recommendedProducts);
         }
 
-        // Fallback: Agar koi interaction nahi mili toh latest products return hongi
+        // Fallback: Agar interactions na milen
         if ($products->isEmpty()) {
             $products = Product::with(['variants', 'mainVariantImage', 'reviews'])
                 ->latest()
-                ->take(20)
                 ->get();
         }
 
+        // Manual Collection Pagination for API Response
+        $total = $products->count();
+        $offset = ($page - 1) * $perPage;
+        $paginatedItems = $products->slice($offset, $perPage)->values();
+
+        $paginatedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedItems,
+            $total,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         return response()->json([
             'success' => true,
-            'data' => $products
-        ]);
+            'data' => $paginatedData->items(),
+            'meta' => [
+                'current_page' => $paginatedData->currentPage(),
+                'last_page'    => $paginatedData->lastPage(),
+                'per_page'     => $paginatedData->perPage(),
+                'total'        => $paginatedData->total(),
+                'has_more'     => $paginatedData->hasMorePages()
+            ]
+        ], 200);
     }
 
 }

@@ -40,6 +40,16 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
+        // FLASH SALE PRODUCTS (Sirf 6 active products fetch karne ke liye)
+        $flashSaleProducts = Product::whereHas('flashSale', function($query) {
+            $query->whereDate('start_time', '<=', now())
+                ->whereDate('end_time', '>=', now());
+        })
+            ->with(['variants', 'mainVariantImage', 'reviews', 'flashSale'])
+            ->take(6) // <--- Yahan 6 kar dein
+            ->get();
+
+
         // 2. TOP 12 FEATURED PRODUCTS (Based on product_type column)
         $featuredProducts = Product::where('product_type', 'featured')
             ->with(['variants', 'mainVariantImage', 'reviews'])
@@ -182,6 +192,7 @@ class FrontendController extends Controller
             'availableSizes',
             'availableBrands',
             'setting',
+            'flashSaleProducts',
         ));
     }
 

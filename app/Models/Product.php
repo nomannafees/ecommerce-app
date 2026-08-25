@@ -89,6 +89,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function flashSale()
+    {
+        return $this->hasOne(FlashSale::class, 'product_id');
+    }
+
 
 
 

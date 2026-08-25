@@ -123,8 +123,18 @@
                                 </td>
 
                                 <!-- Product Name -->
-                                <td class="px-4 py-3.5 border-r border-gray-200 font-semibold text-gray-800">
-                                    {{ $record->name }}
+                                <td class="px-4 py-3.5 border-r border-gray-200">
+                                    <div class="font-semibold text-gray-800">{{ $record->name }}</div>
+
+                                    <!-- Agar flash sale active hai toh alert badge yahan show hoga -->
+                                    @if($record->flashSale)
+                                        <div class="mt-1 inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-md text-[10px] font-medium shadow-2xs">
+                                          <span class="inline-block h-2 w-2 rounded-full bg-emerald-300 animate-ping position-relative">
+                                              <i class="fa-solid fa-bolt text-amber-500 absolute left-[1.8px] top-[2px] text-[5px]"></i>
+                                          </span>
+                                            <span>{{ $record->flashSale->discount_percentage }}% Flash Sale Active</span>
+                                        </div>
+                                    @endif
                                 </td>
 
                                 <!-- Category -->
@@ -317,7 +327,7 @@
             <!-- Modal Header -->
             <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-800">Add to Flash Sale</h3>
+                    <h3 id="modal-title" class="text-lg font-bold text-gray-800">Add to Flash Sale</h3>
                     <p id="modal-product-name" class="text-xs text-emerald-600 font-semibold mt-0.5"></p>
                 </div>
                 <button type="button" onclick="closeFlashSaleModal()" class="text-gray-400 hover:text-gray-600 cursor-pointer">
@@ -334,7 +344,7 @@
                     <!-- Discount Percentage -->
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">Discount Percentage (%)</label>
-                        <input type="number" name="discount_percentage" min="1" max="99" placeholder="e.g. 20"
+                        <input type="number" name="discount_percentage" id="modal_discount" min="1" max="99" placeholder="e.g. 20"
                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none" required>
                         <p class="text-[10px] text-gray-400 mt-1">This percentage will apply to all variants of this product.</p>
                     </div>
@@ -342,14 +352,14 @@
                     <!-- Start Time -->
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">Start Time</label>
-                        <input type="datetime-local" name="start_time"
+                        <input type="date" name="start_time" id="modal_start_time"
                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none" required>
                     </div>
 
                     <!-- End Time -->
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-1">End Time</label>
-                        <input type="datetime-local" name="end_time"
+                        <input type="date" name="end_time" id="modal_end_time"
                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:ring-2 focus:ring-emerald-500 outline-none" required>
                     </div>
                 </div>
@@ -360,7 +370,7 @@
                             class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-xl cursor-pointer transition">
                         Cancel
                     </button>
-                    <button type="submit"
+                    <button type="submit" id="modal-submit-btn"
                             class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-md cursor-pointer transition">
                         Save Flash Sale
                     </button>
@@ -369,12 +379,40 @@
         </div>
     </div>
 
-    <!-- Modal JavaScript Functions -->
+    <!-- Modal JavaScript Functions with AJAX Check -->
+    <!-- Modal JavaScript Functions with AJAX Check -->
     <script>
         function openFlashSaleModal(productId, productName) {
+            // 1. Pehle fields ko reset/khali kar dein taake purana data na dikhe
             document.getElementById('modal_product_id').value = productId;
             document.getElementById('modal-product-name').innerText = "Product: " + productName;
+            document.getElementById('modal_discount').value = '';
+            document.getElementById('modal_start_time').value = '';
+            document.getElementById('modal_end_time').value = '';
+
+            // Default text
+            document.getElementById('modal-title').innerText = "Add to Flash Sale";
+            document.getElementById('modal-submit-btn').innerText = "Save Flash Sale";
+
+            // 2. Modal ko foran screen par show karein
             document.getElementById('flashSaleModal').classList.remove('hidden');
+
+            // 3. Server se AJAX call ke zariye check karein ke kya flash sale bani hui hai?
+            fetch('/admin/flash-sales/get-data/' + productId)
+                .then(response => response.json())
+                .then(res => {
+                    if (res.status && res.data) {
+                        // Agar data mil gaya, toh fields mein values set kar dein
+                        document.getElementById('modal_discount').value = res.data.discount_percentage;
+                        document.getElementById('modal_start_time').value = res.data.start_time;
+                        document.getElementById('modal_end_time').value = res.data.end_time;
+
+                        // Title aur button ko Edit/Update ke liye change kar dein
+                        document.getElementById('modal-title').innerText = "Edit Flash Sale";
+                        document.getElementById('modal-submit-btn').innerText = "Update Flash Sale";
+                    }
+                })
+                .catch(error => console.error('Error fetching flash sale data:', error));
         }
 
         function closeFlashSaleModal() {
