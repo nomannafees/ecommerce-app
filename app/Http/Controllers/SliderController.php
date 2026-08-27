@@ -39,27 +39,27 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'heading'     => 'nullable|string',
-            'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'heading'        => 'nullable|string',
+            'description'    => 'nullable|string',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $imagePath = null;
-
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $imagePath = str_replace('\\', '/', $file->store('sliders', 'public'));
         }
 
         Slider::create([
-            'heading'     => $request->heading,
-            'description' => $request->description,
-            'image'       => $imagePath,
+            'heading'        => $request->heading,
+            'description'    => $request->description,
+            'image'          => $imagePath,
+            'is_title'       => $request->has('is_title') ? 1 : 0,
+            'is_image'       => $request->has('is_image') ? 1 : 0,
+            'is_description' => $request->has('is_description') ? 1 : 0,
         ]);
 
-        return redirect()
-            ->route('sliders.index')
-            ->with('success', 'Slider created successfully.');
+        return redirect()->route('sliders.index')->with('success', 'Slider created successfully.');
     }
 
     /**
@@ -67,7 +67,7 @@ class SliderController extends Controller
      */
     public function show(Slider $slider)
     {
-        //
+        return view('slider.show', compact('slider'));
     }
 
     /**
@@ -87,33 +87,31 @@ class SliderController extends Controller
         $slider = Slider::findOrFail($id);
 
         $request->validate([
-            'heading'     => 'nullable|string',
-            'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'heading'        => 'nullable|string',
+            'description'    => 'nullable|string',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $imagePath = $slider->image;
 
         if ($request->hasFile('image')) {
-            // Delete old image
             if (!empty($slider->image) && Storage::disk('public')->exists($slider->image)) {
                 Storage::disk('public')->delete($slider->image);
             }
-
-            // Upload new image
             $file = $request->file('image');
             $imagePath = str_replace('\\', '/', $file->store('sliders', 'public'));
         }
 
         $slider->update([
-            'heading'     => $request->heading,
-            'description' => $request->description,
-            'image'       => $imagePath,
+            'heading'        => $request->heading,
+            'description'    => $request->description,
+            'image'          => $imagePath,
+            'is_title'       => $request->input('is_title', 0),
+            'is_image'       => $request->input('is_image', 0),
+            'is_description' => $request->input('is_description', 0),
         ]);
 
-        return redirect()
-            ->route('sliders.index')
-            ->with('success', 'Slider updated successfully.');
+        return redirect()->route('sliders.index')->with('success', 'Slider visibility settings updated successfully.');
     }
 
     /**

@@ -23,7 +23,7 @@ class FlashSaleController extends Controller
     public function create()
     {
         $products = Product::all();
-        return view('flash_sales.create_edit', compact('products'));
+        return view('flash_sales.show', compact('products'));
     }
 
     /**
@@ -81,7 +81,7 @@ class FlashSaleController extends Controller
     {
         $flashSale = FlashSale::findOrFail($id);
         $products = Product::all();
-        return view('flash_sales.create_edit', compact('flashSale', 'products'));
+        return view('flash_sales.show', compact('flashSale', 'products'));
     }
 
     /**

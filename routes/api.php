@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CategoryProduct;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\BannerController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,6 +30,12 @@ Route::get('/category-sidebar/{slug?}', [CategoryProduct::class, 'getSidebarData
 Route::get('/categories-products/{slug?}', [CategoryProduct::class, 'getProducts'])->where('slug', '.*');
 
 
+Route::get('/banner/brand', [BannerController::class, 'getBrandBanner']);
+Route::get('/banner/featured', [BannerController::class, 'getFeaturedBanner']);
+Route::get('/banner/main', [BannerController::class, 'getGeneralBanners']);
+Route::get('/sliders', [BannerController::class, 'getSliders']);
+
+
 Route::middleware('auth:sanctum')->group(function () {
     // cart auth routes
     Route::post('/add-to-cart', [\App\Http\Controllers\Api\OrderController::class,'addToCart']);
@@ -48,4 +55,5 @@ Route::middleware('auth:sanctum')->group(function () {
    // user profile
     Route::get('/profile/{user_id}', [ProfileController::class, 'profile']);
     Route::post('/profile/update/{user_id}', [ProfileController::class, 'updateProfile']);
+    Route::post('/profile/update-password/{user_id}', [ProfileController::class, 'updatePassword']);
 });

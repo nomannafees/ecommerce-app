@@ -41,13 +41,22 @@ class FeaturedBannerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'button_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'name'           => 'required|string|max:255',
+            'button_name'    => 'nullable|string|max:255',
+            'description'    => 'nullable|string',
+            'sort_order'     => 'nullable|integer',
+            'image'          => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'is_title'       => 'nullable|boolean',
+            'is_image'       => 'nullable|boolean',
+            'is_description' => 'nullable|boolean',
         ]);
 
         $data = $request->except('image');
+
+        // Set default values for checkboxes if not provided
+        $data['is_title']       = $request->input('is_title', 0);
+        $data['is_image']       = $request->input('is_image', 0);
+        $data['is_description'] = $request->input('is_description', 0);
 
         // Handle Image Upload
         if ($request->hasFile('image')) {
@@ -65,7 +74,7 @@ class FeaturedBannerController extends Controller
      */
     public function show(FeaturedBanner $featuredBanner)
     {
-        //
+        return view('featuredbanner.show', compact('featuredBanner'));
     }
 
     /**
@@ -82,13 +91,22 @@ class FeaturedBannerController extends Controller
     public function update(Request $request, FeaturedBanner $featuredBanner)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'button_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'name'           => 'nullable|string|max:255',
+            'button_name'    => 'nullable|string|max:255',
+            'description'    => 'nullable|string',
+            'sort_order'     => 'nullable|integer',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'is_title'       => 'nullable|boolean',
+            'is_image'       => 'nullable|boolean',
+            'is_description' => 'nullable|boolean',
         ]);
 
         $data = $request->except('image');
+
+        // Handle visibility switches explicitly so 0 / unchecked values are properly updated
+        $data['is_title']       = $request->input('is_title', 0);
+        $data['is_image']       = $request->input('is_image', 0);
+        $data['is_description'] = $request->input('is_description', 0);
 
         // Handle Image Update
         if ($request->hasFile('image')) {
@@ -103,7 +121,7 @@ class FeaturedBannerController extends Controller
 
         $featuredBanner->update($data);
 
-        return redirect()->route('featuredbanners.index')->with('success', 'Featured Banner updated successfully.');
+        return redirect()->route('featuredbanners.index')->with('success', 'Banner display settings updated successfully!');
     }
 
     /**
@@ -111,8 +129,6 @@ class FeaturedBannerController extends Controller
      */
     public function destroy(FeaturedBanner $featuredBanner)
     {
-
-//        dd('Delete request aagai hai!', $featuredBanner->id);
         // Delete image file from storage
         if ($featuredBanner->image && Storage::disk('public')->exists($featuredBanner->image)) {
             Storage::disk('public')->delete($featuredBanner->image);

@@ -14,39 +14,66 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $records = Product::with([
+        $perPage = 12; // Aap apni marzi se items per page change kar sakte hain (jaise 12)
+        $page = (int) $request->get('page', 1);
+
+        // 1. Sare products with relations fetch karein
+        $products = Product::with([
             'variants',
             'mainVariantImage',
             'reviews' => function ($query) {
                 $query->where('is_approved', true);
             }
-        ])->get();
+        ])->latest()->get();
 
-        // Har product ke liye average rating aur total reviews calculate karna
-        $records->each(function ($product) {
+        // 2. Har product ke liye average rating aur total reviews calculate karna
+        $products->each(function ($product) {
             $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
             $product->total_reviews = $product->reviews->count();
 
-            // Agar aap JSON mein reviews ki list nahi bhejna chahte to yeh line uncomment kar dein:
+            // Agar aap JSON mein reviews ki list nahi bhejna chahte to yeh line uncomment kar sakte hain:
             // unset($product->reviews);
         });
 
+        // 3. Manual Collection Pagination for API Response (Jaise forYouProducts mein kiya hai)
+        $total = $products->count();
+        $offset = ($page - 1) * $perPage;
+        $paginatedItems = $products->slice($offset, $perPage)->values();
+
+        $paginatedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $paginatedItems,
+            $total,
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
         return response()->json([
             'status' => true,
-            'data' => $records
+            'data' => $paginatedData->items(),
+            'meta' => [
+                'current_page' => $paginatedData->currentPage(),
+                'last_page'    => $paginatedData->lastPage(),
+                'per_page'     => $paginatedData->perPage(),
+                'total'        => $paginatedData->total(),
+                'has_more'     => $paginatedData->hasMorePages()
+            ]
         ], 200);
     }
 
-    public function productDetail($slug)
+    public function productDetail(Request $request, $slug)
     {
         $product = Product::with([
             'images',
             'variants.variantImage',
             'prod_brand',
             'reviews' => function ($query) {
-                $query->where('is_approved', true);
+                // Yahan par with(['user', 'images']) add kiya hai
+                $query->where('is_approved', true)
+                    ->with(['user', 'images'])
+                    ->latest();
             }
         ])
             ->where('slug', $slug)
@@ -59,12 +86,43 @@ class ProductController extends Controller
             ], 404);
         }
 
+        // --- TRACK USER INTERACTION ---
+        $user = auth('sanctum')->user() ?? auth()->user();
+
+        if ($user) {
+            UserProductInteraction::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'product_id' => $product->id
+                ],
+                [
+                    'category_id' => $product->category_id ?? null,
+                    'brand_id' => $product->brand_id ?? ($product->prod_brand->id ?? null),
+                    'weight' => \DB::raw('weight + 1')
+                ]
+            );
+        } else {
+            $guestToken = $request->cookie('guest_unique_token') ?? $request->header('X-Guest-Token');
+
+            if ($guestToken) {
+                UserProductInteraction::updateOrCreate(
+                    [
+                        'session_id' => $guestToken,
+                        'product_id' => $product->id
+                    ],
+                    [
+                        'category_id' => $product->category_id ?? null,
+                        'brand_id' => $product->brand_id ?? ($product->prod_brand->id ?? null),
+                        'weight' => \DB::raw('weight + 1')
+                    ]
+                );
+            }
+        }
+        // ------------------------------
+
         // --- RATING & REVIEWS CALCULATION ---
         $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
         $product->total_reviews = $product->reviews->count();
-
-        // Agar aap JSON response mein reviews ki poori list nahi dikhana chahte, to yeh line uncomment kar dein:
-        // unset($product->reviews);
         // ------------------------------------
 
         return response()->json([

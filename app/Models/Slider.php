@@ -10,6 +10,9 @@ class Slider extends Model
         'heading',
         'description',
         'image',
+        'is_title',
+        'is_image',
+        'is_description',
     ];
 
 }

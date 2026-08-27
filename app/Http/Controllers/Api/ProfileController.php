@@ -90,4 +90,36 @@ class ProfileController extends Controller
             ]
         ], 200);
     }
+
+    // 3. Update Password by user_id (With Sanctum Middleware)
+    public function updatePassword(Request $request, $user_id)
+    {
+        $user = User::find($user_id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found!'
+            ], 404);
+        }
+
+        // Validation (Yahan $value ke sath $ sign add kar diya hai)
+        $request->validate([
+            'current_password' => ['required', function ($attribute, $value, $fail) use ($user) {
+                if (!\Illuminate\Support\Facades\Hash::check($value, $user->password)) {
+                    $fail('The provided current password is incorrect.');
+                }
+            }],
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        // Password Update
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password updated successfully!'
+        ], 200);
+    }
 }

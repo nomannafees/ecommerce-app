@@ -123,13 +123,19 @@
                                 {{ $slider->heading ?? '-' }}
                             </td>
 
-                            <td class="px-4 py-3.5 border-r border-gray-200 text-xs text-gray-600 max-w-md">
+                            <td class="px-4 py-3.5 border-r border-gray-200 text-gray-600">
                                 {{ Str::limit($slider->description ?? '-', 60) }}
                             </td>
 
                             <td class="px-4 py-3.5">
                                 <div class="flex items-center justify-center gap-2">
 
+                                    <!-- Show/View Button -->
+                                    <a href="{{ route('sliders.show', $slider->id) }}"
+                                       class="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 border border-blue-100 rounded-xl hover:bg-blue-100 transition-all duration-200 shadow-xs cursor-pointer"
+                                       title="View Slider">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                    </a>
                                     <!-- Edit Button -->
                                     <a href="{{ route('sliders.edit', $slider->id) }}"
                                        class="w-9 h-9 flex items-center justify-center bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl hover:bg-emerald-100 transition-all duration-200 shadow-xs cursor-pointer"

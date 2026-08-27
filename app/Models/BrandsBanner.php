@@ -7,9 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class BrandsBanner extends Model
 {
     protected $fillable = [
-        'name',
-        'description',
-        'button_name',
-        'image',
+        'name', 'button_name', 'description', 'image', 'is_title', 'is_image', 'is_description', 'is_button'
     ];
 }

@@ -38,7 +38,19 @@
 
                     @php
                         $product = $item->variant->product ?? null;
-                        $itemPrice = $item->variant->price ?? ($product->base_price ?? 0);
+
+                        // Flash Sale Check & Calculation
+                        $hasFlashSale = $product && $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+                        $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+                        $originalPrice = $item->variant->cut_price ?? ($item->variant->price ?? ($product->base_price ?? 0));
+                        $basePrice = $item->variant->price ?? ($product->base_price ?? 0);
+
+                        if ($hasFlashSale && $discountPercent > 0) {
+                            $itemPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                        } else {
+                            $itemPrice = $basePrice;
+                        }
                     @endphp
 
                     @if($product)
@@ -75,24 +87,42 @@
                                             <span>Size: <strong class="text-gray-700 uppercase">{{ $item->variant->size ?? 'Free Size' }}</strong></span>
                                         </p>
 
-                                        <!-- PRICE & SUBTOTAL (Gap aur margin ko mazeed kam kiya hai) -->
-                                        <div class="flex items-center gap-3 mt-1 text-xs">
-                                            <span class="text-gray-500">Price: <span class="font-medium text-gray-800">Rs {{ number_format($itemPrice) }}</span></span>
-                                            <span class="text-emerald-600 font-bold">Subtotal: Rs {{ number_format($itemPrice * $item->quantity) }}</span>
+                                        <!-- PRICE & SUBTOTAL -->
+                                        <div class="flex items-center gap-2 mt-1 text-xs flex-wrap">
+                                            <span class="text-gray-500">Price:</span>
+                                            <span class="font-bold text-gray-800">Rs {{ number_format($itemPrice) }}</span>
+
+                                            @php
+                                                $displayCutPrice = $item->variant->cut_price ?? ($originalPrice > $itemPrice ? $originalPrice : 0);
+                                            @endphp
+
+                                            @if($hasFlashSale && $discountPercent > 0)
+                                                <span class="text-gray-400 line-through text-[11px]">Rs {{ number_format($originalPrice) }}</span>
+                                                <span class="bg-amber-100 text-amber-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                                    {{ number_format($discountPercent, 0) }}% OFF
+                                                </span>
+                                            @elseif($displayCutPrice > $itemPrice)
+                                                <span class="text-gray-400 line-through text-[11px]">Rs {{ number_format($displayCutPrice) }}</span>
+                                            @endif
+
+                                            <span class="text-gray-300">|</span>
+                                            <span class="text-emerald-600 font-bold item-subtotal">Subtotal: Rs {{ number_format($itemPrice * $item->quantity) }}</span>
                                         </div>
 
                                     </div>
 
                                 </div>
 
-                                <!-- RIGHT SIDE (Quantity aur Delete button ki extra spacing khatam ki hai) -->
+                                <!-- RIGHT SIDE (Quantity aur Delete button) -->
                                 <div class="flex items-center justify-between md:justify-end w-full md:w-auto gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
 
-                                    <!-- Quantity Controller -->
-                                    <div class="flex items-center border border-gray-200 rounded-xl overflow-hidden bg-gray-50">
-                                        <button type="button" class="qty-minus px-2.5 py-1 text-gray-600 hover:bg-gray-200 transition text-xs font-bold cursor-pointer" data-id="{{ $item->id }}">-</button>
-                                        <span class="px-3 py-1 item-qty text-xs font-semibold text-gray-800 bg-white">{{ $item->quantity }}</span>
-                                        <button type="button" class="qty-plus px-2.5 py-1 text-gray-600 hover:bg-gray-200 transition text-xs font-bold cursor-pointer" data-id="{{ $item->id }}">+</button>
+                                    <!-- Quantity Controller (Styled matching the reference image) -->
+                                    <div class="inline-flex items-center border border-gray-400 rounded-xl overflow-hidden bg-white">
+                                        <button type="button" class="qty-minus px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition text-xs font-semibold cursor-pointer">-</button>
+                                        <div class="w-[1px] h-4 bg-gray-400"></div>
+                                        <span class="px-4 py-1.5 item-qty text-xs font-bold text-gray-900 bg-white">{{ $item->quantity }}</span>
+                                        <div class="w-[1px] h-4 bg-gray-400"></div>
+                                        <button type="button" class="qty-plus px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition text-xs font-semibold cursor-pointer" data-id="{{ $item->id }}">+</button>
                                     </div>
 
                                     <!-- Delete Button -->
@@ -140,7 +170,16 @@
                             <span class="total-amount text-green-600 font-bold text-lg">
                                 Rs {{ number_format(
                                     $carts->sum(function($c) {
-                                        $price = $c->variant->price ?? ($c->variant->product->base_price ?? 0);
+                                        $p = $c->variant->product ?? null;
+                                        $isFlash = $p && $p->flashSale && \Carbon\Carbon::now()->between($p->flashSale->start_time, $p->flashSale->end_time);
+                                        $dPercent = $isFlash ? $p->flashSale->discount_percentage : 0;
+                                        $origPrice = $c->variant->cut_price ?? ($c->variant->price ?? ($p->base_price ?? 0));
+
+                                        if ($isFlash && $dPercent > 0) {
+                                            $price = $origPrice - ($origPrice * ($dPercent / 100));
+                                        } else {
+                                            $price = $c->variant->price ?? ($p->base_price ?? 0);
+                                        }
                                         return $c->quantity * $price;
                                     })
                                 ) }}
@@ -166,7 +205,7 @@
 
 
 @push('scripts')
-    <liink rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -284,7 +323,6 @@
                         }
                     },
 
-                    // IMPORTANT: comma yahan hona chahiye
                     error: function (xhr) {
 
                         console.log('Delete Error:', xhr.responseText);
@@ -308,10 +346,10 @@
                 e.preventDefault();
 
                 let button = $(this);
-                let cartId = button.data('id');
+                let cartRow = button.closest('.cart-item');
+                let cartId = cartRow.data('id');
                 let isPlus = button.hasClass('qty-plus');
 
-                let cartRow = button.closest('.cart-item');
                 let qtySpan = cartRow.find('.item-qty');
 
                 let currentQty = parseInt(qtySpan.text()) || 1;
@@ -348,7 +386,9 @@
 
                         quantity: newQty,
 
-                        cart_id: cartId
+                        id: cartId,      // Added for controllers expecting 'id'
+
+                        cart_id: cartId  // Maintained for controllers expecting 'cart_id'
                     },
 
 
@@ -372,7 +412,7 @@
                             // 2. UPDATE ITEM SUBTOTAL
                             // =================================================
                             cartRow.find('.item-subtotal').text(
-                                'Rs ' + response.item_subtotal
+                                'Subtotal: Rs ' + response.item_subtotal
                             );
 
 

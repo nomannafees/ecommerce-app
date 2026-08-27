@@ -7,12 +7,10 @@
 
     <!-- Tailwind Custom Adjustments for Select2 -->
     <style>
-        /* Select2 box padding taake icon ke liye space ban jaye */
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            padding-left: 2.75rem !important; /* Icon ki jagah chhorne ke liye */
+            padding-left: 2.75rem !important;
         }
 
-        /* Baki purani styles wese hi rahengi */
         .select2-container {
             width: 100% !important;
         }
@@ -93,8 +91,7 @@
                         <!-- Part 1: Personal Information -->
                         <div>
                             <div class="flex items-center gap-3 mb-6">
-                                <div
-                                    class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                                     <i class="fa-solid fa-user-pen text-lg"></i>
                                 </div>
                                 <div>
@@ -104,13 +101,12 @@
                             </div>
 
                             <div class="space-y-5">
-                                <!-- Name & Phone Grid -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <!-- NAME -->
                                     <div class="relative">
-                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                        <i class="fa-regular fa-user"></i>
-                                    </span>
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                            <i class="fa-regular fa-user"></i>
+                                        </span>
                                         <input type="text" name="name" id="name" placeholder=" " required
                                                value="{{\Illuminate\Support\Facades\Auth::user()->name}}"
                                                class="peer w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
@@ -124,9 +120,9 @@
 
                                     <!-- EMAIL -->
                                     <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    <i class="fa-regular fa-envelope"></i>
-                                </span>
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                            <i class="fa-regular fa-envelope"></i>
+                                        </span>
                                         <input type="email" name="email" id="email" placeholder=" " required
                                                value="{{\Illuminate\Support\Facades\Auth::user()->email}}"
                                                class="peer w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
@@ -137,8 +133,8 @@
                                             Email Address
                                         </label>
                                     </div>
-
                                 </div>
+
                                 <!-- PHONE -->
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -154,8 +150,6 @@
                                         Phone Number
                                     </label>
                                 </div>
-
-
                             </div>
                         </div>
 
@@ -164,11 +158,7 @@
 
                         <!-- Part 2: Shipping Information -->
                         <div class="space-y-5">
-                            <!-- Country & State Select Dropdowns -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <!-- Country (Fixed ID: 167 for Pakistan) -->
-
-
                                 <div class="relative">
                                     <label for="country_id" class="block text-xs font-semibold text-gray-700 mb-1">Country</label>
                                     <div class="relative">
@@ -177,29 +167,23 @@
                                                 class="w-full px-4 py-3.5 pr-10 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm appearance-none focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
                                             <option value="167" selected>{{ $country->name ?? 'Pakistan' }}</option>
                                         </select>
-                                        <span
-                                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs">
-                <i class="fa-solid fa-chevron-down"></i>
-            </span>
+                                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-xs">
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </span>
                                     </div>
                                 </div>
 
-                                <!-- State / Province Dropdown (Select2 Searchable with Icon) -->
+                                <!-- State / Province Dropdown -->
                                 <div class="relative">
-                                    <label for="state_id" class="block text-xs font-semibold text-gray-700 mb-1">State /
-                                        Province</label>
+                                    <label for="state_id" class="block text-xs font-semibold text-gray-700 mb-1">State / Province</label>
                                     <div class="relative">
-                                        <!-- Left Icon -->
-                                        <span
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
-                    <i class="fa-solid fa-map text-sm"></i>
-                </span>
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
+                                            <i class="fa-solid fa-map text-sm"></i>
+                                        </span>
                                         <select name="state_id" id="state_id" required class="w-full select-with-icon">
                                             <option value="">Select State</option>
                                             @foreach($states as $state)
-                                                <option
-                                                    @if(isset($customer_info->state_id) && $customer_info->state_id == $state->id) selected
-                                                    @endif value="{{ $state->id }}" {{ $loop->first ? 'selected' : '' }}>
+                                                <option @if(isset($customer_info->state_id) && $customer_info->state_id == $state->id) selected @endif value="{{ $state->id }}">
                                                     {{ $state->name }}
                                                 </option>
                                             @endforeach
@@ -210,35 +194,27 @@
 
                             <!-- City & Postal Code Grid -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <!-- City Dropdown (Select2 Searchable with Icon) -->
                                 <div class="relative">
-                                    <label for="city_id"
-                                           class="block text-xs font-semibold text-gray-700 mb-1">City </label>
+                                    <label for="city_id" class="block text-xs font-semibold text-gray-700 mb-1">City</label>
                                     <div class="relative">
-                                        <!-- Left Icon -->
-                                        <span
-                                            class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
-                    <i class="fa-solid fa-city text-sm"></i>
-                </span>
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none">
+                                            <i class="fa-solid fa-city text-sm"></i>
+                                        </span>
                                         <select name="city_id" id="city_id" required class="w-full select-with-icon">
                                             <option value="">Select City</option>
                                             @foreach($cities as $city)
-                                                <option
-                                                    @if(isset($customer_info->city_id) && $customer_info->city_id == $city->id) selected
-                                                    @endif value="{{ $city->id }}">{{ $city->name }}</option>
+                                                <option @if(isset($customer_info->city_id) && $customer_info->city_id == $city->id) selected @endif value="{{ $city->id }}">{{ $city->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
 
-                                <!-- Postal Code Input -->
                                 <div>
-                                    <label for="postal_code" class="block text-xs font-semibold text-gray-700 mb-1">Postal
-                                        / ZIP Code</label>
+                                    <label for="postal_code" class="block text-xs font-semibold text-gray-700 mb-1">Postal / ZIP Code</label>
                                     <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <i class="fa-solid fa-signs-post text-sm"></i>
-            </span>
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                            <i class="fa-solid fa-signs-post text-sm"></i>
+                                        </span>
                                         <input type="text" name="postal_code" id="postal_code"
                                                value="{{$customer_info->postal_code ?? ''}}"
                                                placeholder="Enter postal code" required
@@ -249,12 +225,12 @@
 
                             <!-- Complete Street Address Textarea -->
                             <div class="relative">
-                            <textarea name="shipping_address" id="address" rows="3" placeholder=" " required
-                                      class="peer w-full px-4 pt-5 pb-3 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 resize-none">{{$customer_info->shipping_address ?? ''}}</textarea>
+                                <textarea name="shipping_address" id="address" rows="3" placeholder=" " required
+                                          class="peer w-full px-4 pt-5 pb-3 border border-gray-200 rounded-xl bg-gray-50/30 text-gray-800 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200 resize-none">{{$customer_info->shipping_address ?? ''}}</textarea>
                                 <label for="address"
                                        class="absolute left-4 top-4 text-gray-400 text-sm pointer-events-none transition-all duration-200
-           peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-2.5 peer-focus:left-3 peer-focus:bg-white peer-focus:px-2
-           peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:text-xs">
+                                       peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-2.5 peer-focus:left-3 peer-focus:bg-white peer-focus:px-2
+                                       peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:text-xs">
                                     Street Address, House/Apartment No, Landmark
                                 </label>
                             </div>
@@ -265,8 +241,7 @@
                     <!-- SHIPPING METHOD SECTION -->
                     <div class="bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex items-center gap-3 mb-6">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                                 <i class="fa-solid fa-truck-ramp-box text-lg"></i>
                             </div>
                             <div>
@@ -276,8 +251,7 @@
                         </div>
 
                         <div class="space-y-3">
-                            <label
-                                class="flex items-center justify-between p-4 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition-all duration-200 bg-gray-50/40 has-[:checked]:bg-emerald-50/30 has-[:checked]:border-emerald-500 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
+                            <label class="flex items-center justify-between p-4 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition-all duration-200 bg-gray-50/40 has-[:checked]:bg-emerald-50/30 has-[:checked]:border-emerald-500 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
                                 <div class="flex items-center gap-3.5">
                                     <input type="radio" name="shipping_method" value="standard" checked
                                            data-cost="0"
@@ -291,8 +265,7 @@
                                 <span class="text-sm font-bold text-emerald-600">FREE</span>
                             </label>
 
-                            <label
-                                class="flex items-center justify-between p-4 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition-all duration-200 bg-gray-50/40 has-[:checked]:bg-emerald-50/30 has-[:checked]:border-emerald-500 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
+                            <label class="flex items-center justify-between p-4 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition-all duration-200 bg-gray-50/40 has-[:checked]:bg-emerald-50/30 has-[:checked]:border-emerald-500 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
                                 <div class="flex items-center gap-3.5">
                                     <input type="radio" name="shipping_method" value="express"
                                            data-cost="250"
@@ -306,8 +279,7 @@
                                 <span class="text-sm font-bold text-gray-900">Rs 250</span>
                             </label>
 
-                            <label
-                                class="flex items-center justify-between p-4 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition-all duration-200 bg-gray-50/40 has-[:checked]:bg-emerald-50/30 has-[:checked]:border-emerald-500 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
+                            <label class="flex items-center justify-between p-4 rounded-2xl border border-gray-200 cursor-pointer hover:border-emerald-500 transition-all duration-200 bg-gray-50/40 has-[:checked]:bg-emerald-50/30 has-[:checked]:border-emerald-500 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
                                 <div class="flex items-center gap-3.5">
                                     <input type="radio" name="shipping_method" value="sameday"
                                            data-cost="500"
@@ -326,8 +298,7 @@
                     <!-- PAYMENT METHOD SECTION -->
                     <div class="bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100">
                         <div class="flex items-center gap-3 mb-6">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                                 <i class="fa-solid fa-wallet text-lg"></i>
                             </div>
                             <div>
@@ -337,13 +308,11 @@
                         </div>
 
                         <!-- Tabs Buttons -->
-                        <div
-                            class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100 mb-6">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-gray-50 p-1.5 rounded-2xl border border-gray-100 mb-6">
                             <label class="cursor-pointer">
                                 <input type="radio" name="payment_method" value="cod" class="hidden peer" checked
                                        onchange="switchPaymentTab('cod')">
-                                <div
-                                    class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
+                                <div class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
                                     <i class="fa-solid fa-truck-fast text-sm"></i>
                                     <span>COD</span>
                                 </div>
@@ -352,8 +321,7 @@
                             <label class="cursor-pointer">
                                 <input type="radio" name="payment_method" value="jazzcash" class="hidden peer"
                                        onchange="switchPaymentTab('jazzcash')">
-                                <div
-                                    class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
+                                <div class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
                                     <i class="fa-solid fa-mobile-screen-button text-sm"></i>
                                     <span>JazzCash</span>
                                 </div>
@@ -362,8 +330,7 @@
                             <label class="cursor-pointer">
                                 <input type="radio" name="payment_method" value="easypaisa" class="hidden peer"
                                        onchange="switchPaymentTab('easypaisa')">
-                                <div
-                                    class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
+                                <div class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
                                     <i class="fa-solid fa-wallet text-sm"></i>
                                     <span>EasyPaisa</span>
                                 </div>
@@ -372,8 +339,7 @@
                             <label class="cursor-pointer">
                                 <input type="radio" name="payment_method" value="bank" class="hidden peer"
                                        onchange="switchPaymentTab('bank')">
-                                <div
-                                    class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
+                                <div class="payment-tab py-2.5 px-3 rounded-xl text-center text-xs font-semibold text-gray-600 flex items-center justify-center gap-2 border border-transparent transition-all duration-200 peer-checked:bg-white peer-checked:text-emerald-700 peer-checked:shadow-sm peer-checked:border-gray-200">
                                     <i class="fa-solid fa-building-columns text-sm"></i>
                                     <span>Bank</span>
                                 </div>
@@ -384,12 +350,10 @@
                         <div>
                             <!-- COD Details -->
                             <div id="content-cod" class="payment-panel">
-                                <div
-                                    class="flex items-start gap-3 text-emerald-800 text-xs leading-relaxed p-3 bg-emerald-50/80 rounded-xl border border-emerald-100">
+                                <div class="flex items-start gap-3 text-emerald-800 text-xs leading-relaxed p-3 bg-emerald-50/80 rounded-xl border border-emerald-100">
                                     <i class="fa-solid fa-circle-check text-base text-emerald-600 shrink-0 mt-0.5"></i>
                                     <div>
-                                        <strong class="block text-sm font-semibold text-gray-900 mb-0.5">Cash on
-                                            Delivery Selected</strong>
+                                        <strong class="block text-sm font-semibold text-gray-900 mb-0.5">Cash on Delivery Selected</strong>
                                         Pay with cash directly to the courier agent when your parcel arrives.
                                     </div>
                                 </div>
@@ -397,27 +361,23 @@
 
                             <!-- JazzCash Details -->
                             <div id="content-jazzcash" class="payment-panel hidden space-y-4">
-                                <div
-                                    class="p-3 bg-red-50/80 rounded-xl border border-red-100 text-xs text-red-800 leading-relaxed">
+                                <div class="p-3 bg-red-50/80 rounded-xl border border-red-100 text-xs text-red-800 leading-relaxed">
                                     <strong>JazzCash Account:</strong> 03001234567 <br>
                                     <strong>Account Title:</strong> Your Store Name
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Sender Mobile
-                                            Number</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Sender Mobile Number</label>
                                         <input type="text" name="jazzcash_mobile" placeholder="0300XXXXXXX"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account Title /
-                                            Sender Name</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account Title / Sender Name</label>
                                         <input type="text" name="jazzcash_title" placeholder="e.g. Ali Raza"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction ID
-                                            (TID)</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction ID (TID)</label>
                                         <input type="text" name="jazzcash_tid" placeholder="Enter 12-digit JazzCash TID"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
@@ -426,27 +386,23 @@
 
                             <!-- EasyPaisa Details -->
                             <div id="content-easypaisa" class="payment-panel hidden space-y-4">
-                                <div
-                                    class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-100 text-xs text-emerald-800 leading-relaxed">
+                                <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-100 text-xs text-emerald-800 leading-relaxed">
                                     <strong>EasyPaisa Account:</strong> 03451234567 <br>
                                     <strong>Account Title:</strong> Your Store Name
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Sender Mobile
-                                            Number</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Sender Mobile Number</label>
                                         <input type="text" name="easypaisa_mobile" placeholder="0345XXXXXXX"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account Title /
-                                            Sender Name</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account Title / Sender Name</label>
                                         <input type="text" name="easypaisa_title" placeholder="e.g. Muhammad Ahmed"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction ID
-                                            (TID)</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Transaction ID (TID)</label>
                                         <input type="text" name="easypaisa_tid" placeholder="Enter EasyPaisa TID"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
@@ -455,16 +411,14 @@
 
                             <!-- Bank Transfer Details -->
                             <div id="content-bank" class="payment-panel hidden space-y-4">
-                                <div
-                                    class="p-3 bg-blue-50/80 rounded-xl border border-blue-100 text-xs text-blue-900 leading-relaxed">
+                                <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-100 text-xs text-blue-900 leading-relaxed">
                                     <strong>Bank Name:</strong> Meezan Bank <br>
                                     <strong>Account Title:</strong> Your Business Name <br>
                                     <strong>IBAN:</strong> PK36MEZN00012345678901
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Select Your
-                                            Bank</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Select Your Bank</label>
                                         <select name="bank_name"
                                                 class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                             <option value="">Choose Bank</option>
@@ -477,37 +431,33 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account Title /
-                                            Depositor Name</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account Title / Depositor Name</label>
                                         <input type="text" name="bank_account_title" placeholder="Account Holder Name"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account No / IBAN
-                                            (Optional)</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Account No / IBAN (Optional)</label>
                                         <input type="text" name="bank_account_no" placeholder="Sender Account / IBAN"
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Reference /
-                                            Transaction Ref. No.</label>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Reference / Transaction Ref. No.</label>
                                         <input type="text" name="bank_ref_no" placeholder="Enter Ref / Receipt No."
                                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
                 </div>
 
                 <!-- RIGHT: STICKY ORDER SUMMARY / CART BOX -->
-                <div
-                    class="lg:col-span-2 bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100 h-fit lg:sticky lg:top-[110px] self-start z-10">
+                <div class="lg:col-span-2 bg-white p-6 md:p-5 rounded-2xl shadow-sm border border-gray-100 h-fit lg:sticky lg:top-[110px] self-start z-10">
 
                     <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-3">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                             <i class="fa-solid fa-clipboard-check text-lg"></i>
                         </div>
                         Order Summary
@@ -516,38 +466,47 @@
                     @php $subtotal = 0; @endphp
 
                     <div class="max-h-[380px] overflow-y-auto pr-2 space-y-1">
-                        @foreach($carts as $cart)
+                        @foreach($carts as $item)
                             @php
-                                $product = $cart->variant->product ?? null;
-                                $itemPrice = $cart->variant->sale_price ?? ($cart->variant->price ?? ($product->base_price ?? 0));
-                                $amount = $cart->quantity * $itemPrice;
+                                $product = $item->variant->product ?? null;
+
+                                // Flash Sale & Discount Calculation (Synced with Cart Page)
+                                $hasFlashSale = $product && $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+                                $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+                                $originalPrice = $item->variant->cut_price ?? ($item->variant->price ?? ($product->base_price ?? 0));
+                                $basePrice = $item->variant->price ?? ($product->base_price ?? 0);
+
+                                if ($hasFlashSale && $discountPercent > 0) {
+                                    $itemPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                                } else {
+                                    $itemPrice = $basePrice;
+                                }
+
+                                $amount = $item->quantity * $itemPrice;
                                 $subtotal += $amount;
                             @endphp
 
                             @if($product)
                                 <div class="flex gap-4 items-center py-4 border-b border-gray-100">
                                     @php
-                                        $imagePath = ($cart->variant->variantImage)
-                                            ? $cart->variant->variantImage->image_path
+                                        $imagePath = ($item->variant->variantImage)
+                                            ? $item->variant->variantImage->image_path
                                             : ($product->mainVariantImage->image_path ?? '');
                                     @endphp
-                                    <img
-                                        src="{{ $imagePath ? asset('storage/'.$imagePath) : asset('upload/no-image.jpg') }}"
-                                        class="w-14 h-14 object-cover rounded-lg border border-gray-100 shrink-0">
+                                    <img src="{{ $imagePath ? asset('storage/'.$imagePath) : asset('upload/no-image.jpg') }}"
+                                         class="w-14 h-14 object-cover rounded-lg border border-gray-100 shrink-0">
 
                                     <div class="flex-1 min-w-0">
                                         <h4 class="text-sm font-semibold text-gray-800 truncate">
                                             {{ $product->name }}
                                         </h4>
                                         <div class="flex flex-wrap gap-x-2 text-xs text-gray-500 mt-0.5">
-                                            <span>Color: <strong
-                                                    class="text-gray-700 uppercase text-[10px]">{{ $cart->variant->color_name ?? 'Default' }}</strong></span>
+                                            <span>Color: <strong class="text-gray-700 uppercase text-[10px]">{{ $item->variant->color_name ?? 'Default' }}</strong></span>
                                             <span class="text-gray-300">|</span>
-                                            <span>Size: <strong
-                                                    class="text-gray-700 uppercase text-[10px]">{{ $cart->variant->size ?? 'Free' }}</strong></span>
+                                            <span>Size: <strong class="text-gray-700 uppercase text-[10px]">{{ $item->variant->size ?? 'Free' }}</strong></span>
                                             <span class="text-gray-300">|</span>
-                                            <span>Qty: <strong
-                                                    class="text-gray-700">{{ $cart->quantity }}</strong></span>
+                                            <span>Qty: <strong class="text-gray-700">{{ $item->quantity }}</strong></span>
                                         </div>
                                     </div>
 
@@ -572,8 +531,7 @@
                             <span id="display_shipping" class="font-medium text-emerald-600">FREE</span>
                         </div>
 
-                        <div
-                            class="flex justify-between text-base font-bold text-gray-900 border-t border-gray-100 pt-3">
+                        <div class="flex justify-between text-base font-bold text-gray-900 border-t border-gray-100 pt-3">
                             <span>Total Amount</span>
                             <span id="display_total" class="text-emerald-700">Rs {{ number_format($subtotal) }}</span>
                         </div>
@@ -594,8 +552,10 @@
 
     </div>
 
-    <!-- jQuery & Select2 JS Scripts (Zaroori hai ke jQuery pehle load ho) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@endsection
+
+@push('scripts')
+    <!-- Select2 JS Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Custom Select2 Initialization & AJAX Logic -->
@@ -603,13 +563,12 @@
         const subtotal = {{ $subtotal }};
 
         $(document).ready(function () {
-            // State dropdown par Select2 search enable karna
+            // Initialize Select2 for State and City
             $('#state_id').select2({
                 placeholder: "Select State / Province",
                 allowClear: true
             });
 
-            // City dropdown par Select2 search enable karna
             $('#city_id').select2({
                 placeholder: "Select City",
                 allowClear: true
@@ -619,7 +578,6 @@
             $('#state_id').on('change', function () {
                 var stateId = $(this).val();
 
-                // Loading text set karke Select2 ko update karna
                 $('#city_id').html('<option value="">Loading cities...</option>').trigger('change');
 
                 if (stateId) {
@@ -632,7 +590,6 @@
                             $.each(data, function (key, city) {
                                 options += '<option value="' + city.id + '">' + city.name + '</option>';
                             });
-                            // Options set karke Select2 ko refresh karna taake search bar kaam kare
                             $('#city_id').html(options).trigger('change');
                         },
                         error: function () {
@@ -674,5 +631,4 @@
             document.getElementById('display_total').textContent = 'Rs ' + total.toLocaleString();
         }
     </script>
-
-@endsection
+@endpush

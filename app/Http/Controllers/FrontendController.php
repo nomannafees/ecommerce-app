@@ -826,7 +826,7 @@ class FrontendController extends Controller
         // Agar route se $id nahi aayi to request se utha lein
         $cartId = $id ?? $request->id;
 
-        $cart = Cart::with('variant.product')
+        $cart = Cart::with('variant.product.flashSale')
             ->where('id', $cartId)
             ->where('user_id', Auth::id())
             ->first();
@@ -864,12 +864,23 @@ class FrontendController extends Controller
 
         $cart->save();
 
-        // Variant price check with fallback
-        $price = $cart->variant->price ?? ($cart->variant->product->base_price ?? 0);
+        // --- FLASH SALE PRICE CALCULATION FOR SINGLE ITEM ---
+        $product = $cart->variant->product ?? null;
+        $hasFlashSale = $product && $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+        $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+        $originalPrice = $cart->variant->cut_price ?? ($cart->variant->price ?? ($product->base_price ?? 0));
+
+        if ($hasFlashSale && $discountPercent > 0) {
+            $price = $originalPrice - ($originalPrice * ($discountPercent / 100));
+        } else {
+            $price = $cart->variant->price ?? ($product->base_price ?? 0);
+        }
+
         $subtotal = $price * $cart->quantity;
 
         // CART totals (Filtering invalid/deleted variants or products to match AppServiceProvider)
-        $userCarts = Cart::with('variant.product')
+        $userCarts = Cart::with('variant.product.flashSale')
             ->where('user_id', Auth::id())
             ->has('variant.product') // Ensures active relation only
             ->get();
@@ -880,8 +891,18 @@ class FrontendController extends Controller
         // Sum of all items quantities (Matches summary sidebar)
         $totalQuantity = $userCarts->sum('quantity');
 
+        // --- FLASH SALE TOTAL AMOUNT CALCULATION FOR ALL CARTS ---
         $totalAmount = $userCarts->sum(function ($c) {
-            $itemPrice = $c->variant->price ?? ($c->variant->product->base_price ?? 0);
+            $p = $c->variant->product ?? null;
+            $isFlash = $p && $p->flashSale && \Carbon\Carbon::now()->between($p->flashSale->start_time, $p->flashSale->end_time);
+            $dPercent = $isFlash ? $p->flashSale->discount_percentage : 0;
+            $origPrice = $c->variant->cut_price ?? ($c->variant->price ?? ($p->base_price ?? 0));
+
+            if ($isFlash && $dPercent > 0) {
+                $itemPrice = $origPrice - ($origPrice * ($dPercent / 100));
+            } else {
+                $itemPrice = $c->variant->price ?? ($p->base_price ?? 0);
+            }
             return $c->quantity * $itemPrice;
         });
 
@@ -889,12 +910,12 @@ class FrontendController extends Controller
             'status' => 'success',
             'quantity' => $cart->quantity,
             'new_qty' => $cart->quantity,
-            'subtotal' => number_format($subtotal, 0),
-            'item_subtotal' => number_format($subtotal, 0),
+            'subtotal' => number_format($subtotal, 0, '.', ''),
+            'item_subtotal' => number_format($subtotal, 0, '.', ''),
             'total_items' => $totalItems,       // Unique items (e.g. 1)
             'total_quantity' => $totalQuantity,    // Summed quantities (e.g. 2)
             'total_qty' => $totalQuantity,
-            'total_amount' => number_format($totalAmount, 0),
+            'total_amount' => number_format($totalAmount, 0, '.', ''),
         ]);
     }
 
@@ -953,8 +974,8 @@ class FrontendController extends Controller
 
         $user_id = Auth::id();
 
-        // Sabhi cart items ko variant aur product ke sath load karein
-        $carts = Cart::with('variant.product')
+        // Sabhi cart items ko variant aur product (aur flashSale) ke sath load karein
+        $carts = Cart::with(['variant.product.flashSale', 'variant.variantImage'])
             ->where('user_id', $user_id)
             ->get();
 
@@ -962,9 +983,23 @@ class FrontendController extends Controller
             return back()->with('error', 'Cart is empty');
         }
 
-        // Subtotal calculation
+        // Subtotal calculation (Including Flash Sale Discount Logic)
         $subtotal = $carts->sum(function ($cart) {
-            $itemPrice = $cart->variant->price ?? ($cart->variant->product->base_price ?? 0);
+            $product = $cart->variant->product ?? null;
+
+            // Check Flash Sale active status
+            $hasFlashSale = $product && $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+            $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+            $originalPrice = $cart->variant->cut_price ?? ($cart->variant->price ?? ($product->base_price ?? 0));
+            $basePrice = $cart->variant->price ?? ($product->base_price ?? 0);
+
+            if ($hasFlashSale && $discountPercent > 0) {
+                $itemPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+            } else {
+                $itemPrice = $basePrice;
+            }
+
             return $cart->quantity * $itemPrice;
         });
 
@@ -979,7 +1014,7 @@ class FrontendController extends Controller
         $discount = 0;
         $total = $subtotal + $shipping - $discount;
 
-        // 3️⃣ CREATE ORDER (IDs aur Postal Code ko strictly integer mein cast kar diya hai)
+        // 3️⃣ CREATE ORDER
         $order = Order::create([
             'order_number' => 'ORD-' . time(),
             'user_id' => $user_id,
@@ -999,24 +1034,37 @@ class FrontendController extends Controller
             'payment_status' => 'pending',
         ]);
 
-        // 4️⃣ SAVE ORDER ITEMS & DEDUCT STOCK
+        // 4️⃣ SAVE ORDER ITEMS & DEDUCT STOCK (Using Discounted Price)
         foreach ($carts as $cart) {
-            $finalPrice = $cart->variant->price ?? ($cart->variant->product->base_price ?? 0);
+            $product = $cart->variant->product ?? null;
+
+            // Flash sale check for individual item price calculation
+            $hasFlashSale = $product && $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+            $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+            $originalPrice = $cart->variant->cut_price ?? ($cart->variant->price ?? ($product->base_price ?? 0));
+            $basePrice = $cart->variant->price ?? ($product->base_price ?? 0);
+
+            if ($hasFlashSale && $discountPercent > 0) {
+                $finalPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+            } else {
+                $finalPrice = $basePrice;
+            }
 
             $variant = ProductVariant::find($cart->variant_id);
             if ($variant) {
                 if ($variant->stock < $cart->quantity) {
-                    return back()->with('error', ($variant->product->name ?? 'Product') . ' stock not available');
+                    return back()->with('error', ($product->name ?? 'Product') . ' stock not available');
                 }
                 $variant->decrement('stock', $cart->quantity);
             }
 
             \App\Models\OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $cart->variant->product_id ?? $cart->variant->product->id,
+                'product_id' => $cart->variant->product_id ?? ($product->id ?? null),
                 'variant_id' => $cart->variant_id,
                 'quantity' => $cart->quantity,
-                'price' => $finalPrice,
+                'price' => $finalPrice, // Yeh ab discounted price save karega
             ]);
         }
 
@@ -1034,7 +1082,6 @@ class FrontendController extends Controller
                 'shipping_address' => $request->shipping_address,
             ]);
         }
-
 
         return redirect()->route('thankyou')->with('success', 'Order placed successfully!');
     }

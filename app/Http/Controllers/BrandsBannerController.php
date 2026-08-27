@@ -31,13 +31,22 @@ class BrandsBannerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'button_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'image'       => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'name'           => 'required|string|max:255',
+            'button_name'    => 'nullable|string|max:255',
+            'description'    => 'nullable|string',
+            'image'          => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'is_title'       => 'nullable|boolean',
+            'is_image'       => 'nullable|boolean',
+            'is_description' => 'nullable|boolean',
+            'is_button'      => 'nullable|boolean',
         ]);
 
         $data = $request->except('image');
+
+        $data['is_title']       = $request->input('is_title', 0);
+        $data['is_image']       = $request->input('is_image', 0);
+        $data['is_description'] = $request->input('is_description', 0);
+        $data['is_button']      = $request->input('is_button', 0);
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('brands_banners', 'public');
@@ -51,7 +60,7 @@ class BrandsBannerController extends Controller
 
     public function show(BrandsBanner $brandsBanner)
     {
-        //
+        return view('brandbanner.show', compact('brandsBanner'));
     }
 
     public function edit(BrandsBanner $brandsBanner)
@@ -62,13 +71,22 @@ class BrandsBannerController extends Controller
     public function update(Request $request, BrandsBanner $brandsBanner)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'button_name' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'name'           => 'required|string|max:255',
+            'button_name'    => 'nullable|string|max:255',
+            'description'    => 'nullable|string',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'is_title'       => 'nullable|boolean',
+            'is_image'       => 'nullable|boolean',
+            'is_description' => 'nullable|boolean',
+            'is_button'      => 'nullable|boolean',
         ]);
 
         $data = $request->except('image');
+
+        $data['is_title']       = $request->input('is_title', 0);
+        $data['is_image']       = $request->input('is_image', 0);
+        $data['is_description'] = $request->input('is_description', 0);
+        $data['is_button']      = $request->input('is_button', 0);
 
         if ($request->hasFile('image')) {
             if ($brandsBanner->image && Storage::disk('public')->exists($brandsBanner->image)) {

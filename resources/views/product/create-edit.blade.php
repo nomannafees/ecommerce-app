@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@extends('layouts.app')
 @section('content')
     <div class=" mx-auto p-6 space-y-6">
         <form action="{{ !empty($product) ? route('products.update', $product->id) : route('products.store') }}"
@@ -16,7 +17,7 @@
                         {{ !empty($product) ? 'Edit Product' : 'Create Product' }}
                     </h2>
                     <a href="{{ route('products.index') }}"
-                       class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition duration-300 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                       class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition duration-300 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
                         <i class="fa-solid fa-list-check text-xs"></i>
                         <span>List Products</span>
                     </a>
@@ -368,7 +369,7 @@
                             charts</p>
                     </div>
                     <button type="button" onclick="addNewVariantGroup()"
-                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition shadow-xs cursor-pointer">
+                            class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition shadow-xs cursor-pointer">
                         + Add More Color Variant
                     </button>
                 </div>

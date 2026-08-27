@@ -59,6 +59,7 @@ Route::post('/contact-us', [\App\Http\Controllers\ContactUsController::class, 's
 Route::get('/load-more-products', [\App\Http\Controllers\HomeController::class, 'loadMoreProducts'])->name('load.more.products');
 
 Route::get('/live-search', [FrontendController::class, 'liveSearch'])->name('live.search');
+Route::get('/products/{type}', [FrontendController::class, 'moreProducts'])->name('products.more');
 
 // Admin Login Routes
 Route::get('/admin/login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');

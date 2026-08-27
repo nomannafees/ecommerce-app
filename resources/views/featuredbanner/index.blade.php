@@ -4,7 +4,7 @@
 
     <div class="rounded-4 mx-auto p-6">
 
-        <div class="bg-white rounded shadow-md">
+        <div class="bg-white rounded-2xl shadow-md">
 
             <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50/50">
                 <h2 class="text-2xl font-bold text-gray-800">
@@ -131,6 +131,13 @@
                                 <!-- Action Buttons -->
                                 <td class="px-4 py-3.5">
                                     <div class="flex items-center justify-center gap-2">
+
+                                        <!-- View / Display Settings (Eye Button) -->
+                                        <a href="{{ route('featuredbanners.show', $banner) }}"
+                                           class="w-9 h-9 flex items-center justify-center bg-sky-50 text-sky-600 border border-sky-100 rounded-xl hover:bg-sky-100 transition-all duration-200 shadow-xs cursor-pointer"
+                                           title="View Display Settings">
+                                            <i class="fa-solid fa-eye text-xs"></i>
+                                        </a>
 
                                         <!-- Edit -->
                                         <a href="{{ route('featuredbanners.edit', $banner) }}"

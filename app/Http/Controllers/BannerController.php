@@ -33,8 +33,11 @@ class BannerController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'sort_order' => 'required|integer|in:1,2,3', // Sort order validation
+            'sort_order' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'is_title' => 'nullable|boolean',
+            'is_image' => 'nullable|boolean',
+            'is_description' => 'nullable|boolean',
         ]);
 
         $imagePath = null;
@@ -55,8 +58,11 @@ class BannerController extends Controller
         Banner::create([
             'name' => $request->name,
             'description' => $request->description,
-            'sort_order' => $request->sort_order, // Save sort order
+            'sort_order' => $request->sort_order ?? 1,
             'image' => $imagePath,
+            'is_title' => $request->has('is_title') ? $request->is_title : 1,
+            'is_image' => $request->has('is_image') ? $request->is_image : 1,
+            'is_description' => $request->has('is_description') ? $request->is_description : 1,
         ]);
 
         return redirect()
@@ -76,11 +82,15 @@ class BannerController extends Controller
 
     public function update(Request $request, Banner $banner)
     {
+//        dd($request);
         $request->validate([
-            'name'  => 'required|string|max:255',
+            'name'  => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'sort_order' => 'required|integer|in:1,2,3', // Sort order validation
+            'sort_order' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'is_title' => 'nullable|boolean',
+            'is_image' => 'nullable|boolean',
+            'is_description' => 'nullable|boolean',
         ]);
 
         $imagePath = $banner->image;
@@ -108,16 +118,26 @@ class BannerController extends Controller
             $imagePath = 'banners/' . $filename;
         }
 
-        $banner->update([
-            'name'  => $request->name,
-            'description' => $request->description,
-            'sort_order' => $request->sort_order, // Update sort order
+        // Prepare update data array (Include name and description so they don't get lost)
+        $updateData = [
+            'name'  => $request->input('name', $banner->name),
+            'description' => $request->input('description', $banner->description),
             'image' => $imagePath,
-        ]);
+            'is_title' => $request->input('is_title', 0),
+            'is_image' => $request->input('is_image', 0),
+            'is_description' => $request->input('is_description', 0),
+        ];
+
+        // Agar form mein sort_order aa raha hai toh update karein warna purana rakhein
+        if ($request->filled('sort_order')) {
+            $updateData['sort_order'] = $request->sort_order;
+        }
+
+        $banner->update($updateData);
 
         return redirect()
             ->route('banners.index')
-            ->with('success', 'Banner updated successfully!');
+            ->with('success', 'Banner display settings updated successfully!');
     }
 
     public function destroy(Banner $banner)

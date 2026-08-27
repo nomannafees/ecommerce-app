@@ -37,4 +37,5 @@ class Review extends Model
     {
         return $this->hasMany(ReviewImage::class);
     }
+
 }

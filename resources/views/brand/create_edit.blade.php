@@ -16,8 +16,8 @@
                 </div>
 
                 <a href="{{ route('brands.index') }}"
-                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl transition duration-300 shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
-                    <i class="fa-solid fa-list-check text-sm"></i>
+                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                    <i class="fa-solid fa-list-check text-xs"></i>
                     <span>List Brands</span>
                 </a>
             </div>

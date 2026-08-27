@@ -5,7 +5,7 @@
     <div class="rounded-2 mx-auto p-6">
 
         <!-- Card Wrapper -->
-        <div class="bg-white rounded shadow-lg">
+        <div class="bg-white rounded-2xl shadow-md">
 
             <!-- Card Header -->
             <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50/50">
@@ -13,8 +13,8 @@
                     Categories
                 </h2>
                 <a href="{{ route('categorie.create') }}"
-                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-folder-plus text-sm"></i>
+                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition duration-300 shadow-sm">
+                    <i class="fa-solid fa-folder-plus text-xs"></i>
                     <span>Add Category</span>
                 </a>
             </div>

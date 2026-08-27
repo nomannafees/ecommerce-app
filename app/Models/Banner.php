@@ -11,5 +11,8 @@ class Banner extends Model
         'description',
         'image',
         'sort_order',
+        'is_title',
+        'is_image',
+        'is_description',
     ];
 }

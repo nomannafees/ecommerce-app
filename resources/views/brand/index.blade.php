@@ -4,15 +4,15 @@
 
     <div class=" rounded-4 mx-auto p-6">
 
-        <div class="bg-white rounded shadow-lg">
+        <div class="bg-white rounded-2xl shadow-md">
 
             <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50/50">
                 <h2 class="text-2xl font-bold text-gray-800">
                     Brands
                 </h2>
                 <a href="{{ route('brands.create') }}"
-                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
-                    <i class="fa-solid fa-folder-plus text-sm"></i>
+                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50">
+                    <i class="fa-solid fa-folder-plus text-xs"></i>
                     <span>Add Brand</span>
                 </a>
             </div>

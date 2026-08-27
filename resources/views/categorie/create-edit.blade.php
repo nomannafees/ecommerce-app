@@ -65,8 +65,8 @@
                 </div>
 
                 <a href="{{ route('categorie.index') }}"
-                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl transition duration-300 shadow-sm">
-                    <i class="fa-solid fa-list-check text-sm"></i>
+                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition duration-300 shadow-sm">
+                    <i class="fa-solid fa-list-check text-xs"></i>
                     <span>List Category</span>
                 </a>
             </div>

@@ -82,7 +82,7 @@
 
                 <p class="mt-1 text-xs text-gray-500">
                     Brand: <span
-                        class="font-medium text-black">{{ ucfirst($product->prod_brand->name ?? 'Generic') }}</span>
+                            class="font-medium text-black">{{ ucfirst($product->prod_brand->name ?? 'Generic') }}</span>
                 </p>
 
                 <!-- DYNAMIC TOP RATING STARS -->
@@ -99,31 +99,53 @@
                         @endfor
                     </div>
                     <span
-                        class="text-gray-500 text-xs">({{ number_format($avgRating, 1) }} - {{ $totalReviews }} {{ Str::plural('Review', $totalReviews) }})</span>
+                            class="text-gray-500 text-xs">({{ number_format($avgRating, 1) }} - {{ $totalReviews }} {{ Str::plural('Review', $totalReviews) }})</span>
                 </div>
 
                 @php
                     $defaultVariant = $product->mainVariant ?? $product->variants->first();
-                    $initialPrice = $defaultVariant ? $defaultVariant->price : ($product->base_price ?? 0);
-                    $initialCutPrice = $defaultVariant ? $defaultVariant->cut_price : null;
+
+                    // Flash Sale Check & Calculation (Card section ki tarah)
+                    $hasFlashSale = $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+                    $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+                    $originalPrice = $defaultVariant ? ($defaultVariant->cut_price ?? $defaultVariant->price) : ($product->base_price ?? 0);
+
+                    if ($hasFlashSale && $discountPercent > 0) {
+                        $initialPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                        $initialCutPrice = $originalPrice;
+                    } else {
+                        $initialPrice = $defaultVariant ? $defaultVariant->price : ($product->base_price ?? 0);
+                        $initialCutPrice = $defaultVariant ? $defaultVariant->cut_price : null;
+                    }
+
                     $initialStock = $defaultVariant ? $defaultVariant->stock : 0;
                 @endphp
 
-                <div class="mt-3 flex items-end gap-3">
-                <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-green-600">
-                    Rs {{ number_format($initialPrice) }}
-                </span>
+                <div class="mt-3 flex items-center gap-3">
+    <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-green-600">
+        Rs {{ number_format($initialPrice) }}
+    </span>
+
                     <span id="displayCutPrice"
-                          class="text-xs sm:text-base text-gray-400 line-through {{ $initialCutPrice ? '' : 'hidden' }}">
-                    Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
-                </span>
+                          class="text-xs sm:text-base text-gray-400 line-through {{ $initialCutPrice && $initialCutPrice > $initialPrice ? '' : 'hidden' }}">
+        Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
+    </span>
+
+                    @if($hasFlashSale && $discountPercent > 0)
+                        <span id="discountBadge" class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            {{ number_format($discountPercent, 0) }}% OFF
+        </span>
+                    @else
+                        <span id="discountBadge" class="hidden bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"></span>
+                    @endif
                 </div>
 
                 <div class="mt-2">
-                <span id="stockBadge"
-                      class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                    {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
-                </span>
+            <span id="stockBadge"
+                  class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
+            </span>
                 </div>
 
                 <div class="mt-4">
@@ -251,7 +273,7 @@
                                         <div class="flex items-center gap-2.5">
                                             <!-- Dynamic Avatar -->
                                             <div
-                                                class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
+                                                    class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
                                                 {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
                                             </div>
                                             <div>
@@ -263,15 +285,15 @@
                                                         @endfor
                                                     </div>
                                                     <span
-                                                        class="text-[9px] text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
+                                                            class="text-[9px] text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <span
-                                            class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
-                                        <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
-                                    </span>
+                                                class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
+                                    <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
+                                </span>
                                     </div>
 
                                     <!-- Comment Content -->
@@ -286,8 +308,8 @@
                                         <div class="flex flex-wrap gap-1.5 mt-2">
                                             @foreach($review->images as $imgIndex => $img)
                                                 <div
-                                                    onclick="openReviewModal({{ json_encode($review->images->pluck('image_path')->map(fn($p) => asset('storage/' . $p))) }}, {{ $imgIndex }})"
-                                                    class="cursor-pointer group overflow-hidden rounded-md border border-gray-200">
+                                                        onclick="openReviewModal({{ json_encode($review->images->pluck('image_path')->map(fn($p) => asset('storage/' . $p))) }}, {{ $imgIndex }})"
+                                                        class="cursor-pointer group overflow-hidden rounded-md border border-gray-200">
                                                     <img src="{{ asset('storage/' . $img->image_path) }}"
                                                          class="w-12 h-12 object-cover group-hover:scale-105 transition duration-200"
                                                          alt="Review Image">
@@ -330,14 +352,13 @@
                 </div>
                 <!-- Navigation -->
                 <div
-                    class="swiper-button-next !text-white bg-black/40 hover:bg-black/70 w-10 h-10 sm:w-12 sm:h-12 rounded-full !after:text-base sm:after:!text-lg transition"></div>
+                        class="swiper-button-next !text-white bg-black/40 hover:bg-black/70 w-10 h-10 sm:w-12 sm:h-12 rounded-full !after:text-base sm:after:!text-lg transition"></div>
                 <div
-                    class="swiper-button-prev !text-white bg-black/40 hover:bg-black/70 w-10 h-10 sm:w-12 sm:h-12 rounded-full !after:text-base sm:after:!text-lg transition"></div>
+                        class="swiper-button-prev !text-white bg-black/40 hover:bg-black/70 w-10 h-10 sm:w-12 sm:h-12 rounded-full !after:text-base sm:after:!text-lg transition"></div>
                 <div class="swiper-pagination"></div>
             </div>
         </div>
     </div>
-
 
 
     <!-- SweetAlert2 aur Swiper CDN -->
@@ -347,6 +368,9 @@
     <script>
         const allVariants = @json($product->variants);
         let selectedColor = "{{ $defaultVariant->color_name ?? '' }}";
+        // --- Flash Sale Variables ---
+        const hasActiveFlashSale = {{ $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time) ? 'true' : 'false' }};
+        const flashSalePercent = {{ $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time) ? $product->flashSale->discount_percentage : 0 }};
         let mainSwiper;
         let reviewSwiperInstance = null;
 
@@ -632,7 +656,11 @@
                 sizeButton.type = "button";
                 sizeButton.innerText = variant.size ? variant.size.toUpperCase() : 'FREE SIZE';
                 sizeButton.className = "size-btn border cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition duration-200 hover:border-gray-400 border-gray-200";
-                sizeButton.setAttribute('onclick', `selectSize(this, '${variant.id}', ${variant.stock}, ${variant.price}, '${variant.cut_price || ""}')`);
+
+                // Base original price determine karna (agar cut_price hai toh wo, warna variant.price)
+                let baseOriginalPrice = variant.cut_price && parseFloat(variant.cut_price) > 0 ? variant.cut_price : variant.price;
+                sizeButton.setAttribute('onclick', `selectSize(this, '${variant.id}', ${variant.stock}, ${variant.price}, '${baseOriginalPrice}')`);
+
                 sizeContainer.appendChild(sizeButton);
                 if ((preselectedVariantId && variant.id == preselectedVariantId) || (!preselectedVariantId && index === 0)) {
                     sizeButton.click();
@@ -641,24 +669,56 @@
         }
 
         // 3. Size Select
-        function selectSize(element, variantId, stock, price, cutPrice) {
+        function selectSize(element, variantId, stock, variantPrice, baseOriginalPrice) {
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.classList.remove('border-gray-300', 'bg-black/5', 'ring-1', 'ring-black/10');
                 btn.classList.add('border-gray-200');
             });
             element.classList.remove('border-gray-200');
             element.classList.add('border-gray-300', 'bg-black/5', 'ring-1', 'ring-black/10');
+
             document.getElementById('selectedVariantId').value = variantId;
             document.getElementById('selectedVariantStock').value = stock;
             document.getElementById('qtyInput').value = 1;
-            document.getElementById('displayPrice').innerText = "Rs " + price.toLocaleString();
+
+            let finalPrice = variantPrice;
+            let originalPriceToDisplay = parseFloat(baseOriginalPrice) > 0 ? parseFloat(baseOriginalPrice) : variantPrice;
+
             let cutPriceElement = document.getElementById('displayCutPrice');
-            if (cutPrice && parseFloat(cutPrice) > price) {
-                cutPriceElement.innerText = "Rs " + parseFloat(cutPrice).toLocaleString();
-                cutPriceElement.classList.remove('hidden');
+            let discountBadge = document.getElementById('discountBadge');
+
+            // Flash sale calculation sync
+            if (hasActiveFlashSale && flashSalePercent > 0) {
+                let discountAmount = (originalPriceToDisplay * flashSalePercent) / 100;
+                finalPrice = originalPriceToDisplay - discountAmount;
+
+                if (cutPriceElement) {
+                    cutPriceElement.innerText = "Rs " + originalPriceToDisplay.toLocaleString();
+                    cutPriceElement.classList.remove('hidden');
+                }
+
+                if (discountBadge) {
+                    discountBadge.innerText = Math.round(flashSalePercent) + '% OFF';
+                    discountBadge.classList.remove('hidden');
+                }
             } else {
-                cutPriceElement.classList.add('hidden');
+                if (originalPriceToDisplay > finalPrice) {
+                    if (cutPriceElement) {
+                        cutPriceElement.innerText = "Rs " + originalPriceToDisplay.toLocaleString();
+                        cutPriceElement.classList.remove('hidden');
+                    }
+                } else {
+                    if (cutPriceElement) {
+                        cutPriceElement.classList.add('hidden');
+                    }
+                }
+                if (discountBadge) {
+                    discountBadge.classList.add('hidden');
+                }
             }
+
+            document.getElementById('displayPrice').innerText = "Rs " + finalPrice.toLocaleString();
+
             let stockBadge = document.getElementById('stockBadge');
             if (stock > 0) {
                 stockBadge.innerHTML = stock + ' Items In Stock';
