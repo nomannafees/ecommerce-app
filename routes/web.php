@@ -29,6 +29,7 @@ Route::get('/clear-cache', function () {
     Artisan::call('view:clear');
     Artisan::call('cache:clear');
     Artisan::call('migrate');
+    return "Cache cleared and storage link created successfully!";
 });
 
 Route::get('/', [FrontendController::class, 'index'])->name('index');
