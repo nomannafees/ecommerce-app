@@ -23,8 +23,9 @@ use App\Http\Controllers\FlashSaleController;
 
 
 Route::get('/clear-cache', function () {
-    Artisan::call('optimize:clear');
     Artisan::call('config:cache');
+    Artisan::call('optimize:clear');
+    Artisan::call('storage:link');
     Artisan::call('view:clear');
     Artisan::call('cache:clear');
     Artisan::call('migrate');
