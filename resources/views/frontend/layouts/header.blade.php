@@ -11,17 +11,17 @@
     <header
             class="container mx-auto flex flex-col justify-between h-13 md:h-20 text-white px-3 sm:px-4 relative">
 
-        <div class="flex justify-between items-center ms-4 h-full w-full">
+        <div class="flex justify-between items-center h-full w-full">
 
             <!-- Dynamic Store Logo & Title Section -->
             <a href="{{ route('index') }}"
-               class="flex items-center gap-1.5 hover:opacity-90 transition-opacity shrink-0">
+               class="flex items-center gap-1.5 hover:opacity-90 transition-opacity lg:ms-5 md:ms-5 xl:ms-5 2xl:ms-5  shrink-0">
                 @if($store)
                     {{-- Show Logo if enabled --}}
                     @if($store->is_logo && $store->logo)
                         <img src="{{ asset('storage/' . $store->logo) }}"
                              alt="{{ $store->title ?? 'ShopNest' }}"
-                             class="h-6 sm:h-9 w-auto max-w-[110px] sm:max-w-[150px] object-contain rounded-md">
+                             class="h-6 sm:h-9  w-auto max-w-[110px] sm:max-w-[150px] object-contain rounded-md">
                     @endif
 
                     {{-- Show Title if enabled --}}
