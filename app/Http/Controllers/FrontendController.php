@@ -1334,4 +1334,47 @@ class FrontendController extends Controller
         ]);
     }
 
+    public function moreProducts(Request $request, $type = null)
+    {
+        // Agar route segment se type na mile toh request query se utha lein
+        $type = $type ?? $request->get('type');
+
+        $title = "Products";
+        $query = Product::with(['variants', 'mainVariantImage', 'reviews']);
+
+        if ($type == 'flash-sale') {
+            $title = "Flash Sales Products";
+            $query->whereHas('flashSale', function($q) {
+                $q->whereDate('start_time', '<=', now())
+                    ->whereDate('end_time', '>=', now());
+            });
+        } elseif ($type == 'bestselling') {
+            $title = "Bestselling Products";
+            $query->withCount('orderItems')->orderBy('order_items_count', 'desc');
+        } elseif ($type == 'featured') {
+            $title = "Featured Products";
+            $query->where('product_type', 'featured')->latest();
+        }
+
+        $products = $query->paginate(12);
+
+        // AJAX ya JSON request ko handle karne ke liye strict check
+        if ($request->ajax() || $request->wantsJson() || $request->has('page')) {
+            return response()->json([
+                'html' => view('frontend.partials.product-list-cart', compact('products'))->render(),
+                'next_page_url' => $products->nextPageUrl()
+            ]);
+        }
+
+        return view('frontend.product-list', compact('products', 'title'));
+    }
+
+    public function shopCategories()
+    {
+        $categories = Categorie::all();
+        $cartCount = Cart::where('user_id', auth()->id())->count();
+
+        return view('frontend.shop-categories', compact('categories', 'cartCount'));
+    }
+
 }

@@ -127,7 +127,7 @@
             </h2>
             <p class="text-xs sm:text-sm text-gray-500">Hurry up! Limited time offers on top products</p>
         </div>
-        <a href="#" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+        <a href="{{ route('products.more', ['type' => 'flash-sale']) }}" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
             <span>More Products</span>
             <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </a>
@@ -268,14 +268,20 @@
     </div>
 
     <!-- 2. TOP 8 MOST ORDERED PRODUCTS (BESTSELLERS) -->
-    <div
-        class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 mx-auto  flex justify-between items-center">
+    <!-- BESTSELLING PRODUCTS SECTION -->
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-2 mb-2 sm:mb-2 lg:mb-1 flex justify-between items-center">
         <div>
-            <h2 class="text-xl  font-bold text-gray-900 flex items-center gap-2">
-                <i class="fa-solid fa-fire text-rose-500"></i> Bestselling Products
+            <h2 class="text-xl sm:text-2xl mt-1 sm:mt-2 font-bold text-gray-900 flex items-center gap-2">
+                <i class="fa-solid fa-fire text-rose-500 animate-pulse"></i> Bestselling Products
             </h2>
             <p class="text-xs sm:text-sm text-gray-500">Our top 8 most popular and ordered items</p>
         </div>
+
+        <!-- Yeh raha Bestselling ke liye More Products ka link -->
+        <a href="{{ route('products.more', ['type' => 'bestselling']) }}" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+            <span>More Products</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+        </a>
     </div>
 
     <div
@@ -541,18 +547,24 @@
 
     <!-- 4. FEATURED PRODUCTS -->
     @if($featuredProducts->isNotEmpty())
-        <div
-            class="container mx-auto px-3 sm:px-6 md:px-7 sm:py-1 mt-2 sm:mt-4 lg:mt-3 mx-auto  flex justify-between items-center">
+        <!-- FEATURED PRODUCTS SECTION -->
+        <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:py-1 mt-2 sm:mt-4 lg:mt-3 mx-auto flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center mt-1 gap-2">
-                    <i class="fa-solid fa-star text-amber-500"></i> Featured Products
+                    <i class="fa-solid fa-star text-amber-500 animate-spin-slow"></i> Featured Products
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500 ">Handpicked top quality items selected just for you</p>
+                <p class="text-xs sm:text-sm text-gray-500">Handpicked top quality items selected just for you</p>
             </div>
+
+            <!-- Yeh raha Featured ke liye More Products ka link -->
+            <a href="{{ route('products.more', ['type' => 'featured']) }}" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+                <span>More Products</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
         </div>
 
         <div
-            class="container mx-auto px-6 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-2 sm:mb-8">
+            class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);

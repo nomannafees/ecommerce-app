@@ -40,7 +40,7 @@
         </a>
 
         <!-- Products / Shop -->
-        <a href="{{ url('/product') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->is('product*') ? 'text-black font-bold' : '' }}">
+        <a href="{{ route('shop.categories') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('shop.categories') ? 'text-black font-bold' : '' }}">
             <i class="fa-solid fa-bag-shopping text-base"></i>
             <span class="text-[10px] mt-0.5">Shop</span>
         </a>
