@@ -22,6 +22,16 @@ use App\Http\Controllers\BrandsBannerController;
 use App\Http\Controllers\FlashSaleController;
 
 
+Route::get('/clear-cache', function () {
+    Artisan::call('config:cache');
+    Artisan::call('optimize:clear');
+    Artisan::call('storage:link');
+    Artisan::call('view:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('migrate');
+    return "Cache cleared and storage link created successfully!";
+});
+
 Route::get('/', [FrontendController::class, 'index'])->name('index');
 Route::get('/product/{slug}', [FrontendController::class, 'productDetail'])->name('product.detail');
 Route::get('/all-product', [FrontendController::class, 'frontendProduct'])->name('frontendProduct');
