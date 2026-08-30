@@ -565,7 +565,7 @@
                         if (email) email.classList.add('border-red-500');
                         if (password) password.classList.add('border-red-500');
                         if (generalError) {
-                            generalError.innerText = data.message || 'Email ya password ghalat hai. Dobara koshish karein.';
+                            generalError.innerText = data.message || 'The email or password is incorrect. Please try again.\n';
                             generalError.classList.remove('hidden');
                         }
                     }
@@ -575,7 +575,7 @@
                 btn.disabled = false;
                 btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg><span>Login</span>`;
                 if (generalError) {
-                    generalError.innerText = 'Kuch ghalat ho gaya hai. Dobara koshish karein.';
+                    generalError.innerText = 'Something went wrong. Please try again.';
                     generalError.classList.remove('hidden');
                 }
             });
