@@ -81,7 +81,7 @@
             <input type="hidden" name="shipping_cost" id="shipping_cost_input" value="0">
 
             <!-- MAIN GRID -->
-            <div class="grid lg:grid-cols-5 gap-5 mb-8 items-start relative">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-5 mb-8 items-start relative">
 
                 <!-- LEFT: FORM SECTION -->
                 <div class="lg:col-span-3 space-y-6">
