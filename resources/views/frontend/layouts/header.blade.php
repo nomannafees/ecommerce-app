@@ -66,7 +66,7 @@
                      class="search-suggestions absolute left-0 right-0 top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-30 hidden mt-1 max-h-96 overflow-y-auto"></div>
             </div>
 
-            <!-- Right Side Icons & Sign In Hover Dropdown -->
+            <!-- Right Side Icons & Sign In Dropdown -->
             <div class="flex items-center gap-2 sm:gap-5 shrink-0">
 
                 <!-- Mobile Search Button Icon -->
@@ -94,14 +94,15 @@
                 <!-- Divider -->
                 <div class="hidden sm:block h-8 border-l border-gray-700"></div>
 
-                <!-- AliExpress Style Sign in / Register Hover / Click Dropdown Container -->
-                <div class="relative group/userdropdown me-1 sm:me-5 py-1" x-data="{ mobileDropdownOpen: false }" @click.away="mobileDropdownOpen = false">
+                <!-- User Profile Click Dropdown Container -->
+                <div class="relative me-1 sm:me-5 py-1" x-data="{ mobileDropdownOpen: false }" @click.outside="mobileDropdownOpen = false">
 
                     <!-- Trigger Header Element -->
-                    <a
-                            @click="mobileDropdownOpen = !mobileDropdownOpen"
+                    <button
+                            type="button"
+                            @click.stop="mobileDropdownOpen = !mobileDropdownOpen"
                             id="navAuthLink"
-                            class="flex items-center gap-1.5 sm:gap-2 text-white hover:text-emerald-400 transition text-sm font-medium cursor-pointer select-none">
+                            class="flex items-center gap-1.5 sm:gap-2 text-white hover:text-emerald-400 transition text-sm font-medium cursor-pointer select-none bg-transparent border-none">
                         <i class="fa-regular fa-user text-sm sm:text-lg"></i>
                         <div class="leading-tight text-left hidden sm:block">
                             <span class="block text-[10px] text-gray-400">Welcome</span>
@@ -113,13 +114,20 @@
                                 @endauth
                             </span>
                         </div>
-                    </a>
+                    </button>
 
-                    <!-- Dropdown Box -->
+                    <!-- Dropdown Box (Alpine x-show controlled) -->
                     <div
+                            x-show="mobileDropdownOpen"
                             x-cloak
-                            :class="mobileDropdownOpen ? 'block' : 'hidden md:group-hover/userdropdown:block'"
-                            class="absolute right-0 top-full w-55 overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-800 shadow-xl z-50">
+                            style="display: none;"
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-100"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-95"
+                            class="absolute right-0 top-full w-55 overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-800 shadow-xl z-50 mt-1">
 
                         <div class="border-b border-gray-200 px-4 py-3 bg-gray-50">
                             <p class="truncate font-semibold text-gray-800 capitalize">
@@ -185,7 +193,7 @@
     </header>
 
     <!-- ================= MOBILE EXPANDABLE SEARCH BAR ================= -->
-    <div x-show="mobileSearchOpen" x-cloak x-transition class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
+    <div x-show="mobileSearchOpen" x-cloak style="display: none;" x-transition class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
         <form action="{{ route('categories') }}" method="GET"
               class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-0.5 shadow-sm relative h-10 z-20">
 
@@ -279,6 +287,7 @@
                                 <!-- LEVEL 2: Sub Categories Box -->
                                     <div x-show="activeMain === {{ $mainCat->id }}"
                                          x-cloak
+                                         style="display: none;"
                                          @mouseenter="activeMain = {{ $mainCat->id }}"
                                          class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
 
@@ -322,6 +331,7 @@
                                             <div
                                                     x-show="activeMain === {{ $mainCat->id }} && activeSub === {{ $subCat->id }}"
                                                     x-cloak
+                                                    style="display: none;"
                                                     @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
                                                     class="absolute left-64 top-0 bg-white w-[16rem] h-[27.7rem] p-2 z-50 overflow-y-auto custom-scrollbar">
 
@@ -393,6 +403,8 @@
     /* Prevent Alpine-controlled elements from flashing visible before Alpine initializes */
     [x-cloak] {
         display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
     }
 </style>
 <!-- ================= END SUB-HEADER ================= -->
