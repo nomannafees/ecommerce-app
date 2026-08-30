@@ -36,7 +36,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $parent_data = Categorie::with('children')->where('parent_id',0)->get();
+        $parent_data = Categorie::with('children.children')
+            ->where('parent_id', 0)
+            ->get();
+
         $brands = Brand::all();
 
         return view('product.create-edit', compact('parent_data', 'brands'));
@@ -155,11 +158,18 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $parent_data = Categorie::with('children')->where('parent_id', 0)->get();
+        $parent_data = Categorie::with('children.children')
+            ->where('parent_id', 0)
+            ->get();
+
         $brands = Brand::all();
+
         $product->load('variants.variantImage');
 
-        return view('product.create-edit', compact('parent_data', 'product', 'brands'));
+        return view(
+            'product.create-edit',
+            compact('parent_data', 'product', 'brands')
+        );
     }
 
     /**
@@ -208,111 +218,328 @@ class ProductController extends Controller
         ]);
 
         if ($request->has('variants_group')) {
+
             $keepVariantIds = [];
-            $selectedMainImageId = $request->input('is_main');
+
+            // Selected main image ki value
+            $mainVariantValue = $request->input('is_main');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Sab purani images ko pehle non-main karo
+            |--------------------------------------------------------------------------
+            */
+
+            VariantImage::where('product_id', $product->id)
+                ->update([
+                    'is_main' => 0
+                ]);
+
 
             foreach ($request->variants_group as $index => $group) {
-                $variantImageId = !empty($group['old_variant_image_id']) ? $group['old_variant_image_id'] : null;
 
-                if (!$variantImageId && !empty($group['color'])) {
-                    $existingVariant = ProductVariant::where('product_id', $product->id)
-                        ->where('color_name', $group['color'])
+                /*
+                |--------------------------------------------------------------------------
+                | OLD VARIANT IMAGE ID
+                |--------------------------------------------------------------------------
+                */
+
+                $variantImageId = !empty($group['old_variant_image_id'])
+                    ? $group['old_variant_image_id']
+                    : null;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Agar hidden input se image ID nahi mili
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !$variantImageId &&
+                    !empty($group['color'])
+                ) {
+
+                    $existingVariant = ProductVariant::where(
+                        'product_id',
+                        $product->id
+                    )
+                        ->where(
+                            'color_name',
+                            $group['color']
+                        )
                         ->whereNotNull('variant_image_id')
                         ->first();
 
+
                     if ($existingVariant) {
-                        $variantImageId = $existingVariant->variant_image_id;
+
+                        $variantImageId =
+                            $existingVariant->variant_image_id;
+
                     }
                 }
 
-                // Variants color images upload
-                if ($request->hasFile("variants_group.{$index}.color_image")) {
-                    if ($variantImageId) {
-                        $oldImgRecord = VariantImage::find($variantImageId);
-                        if ($oldImgRecord) {
-                            $oldVariantPath = storage_path('app/public/' . $oldImgRecord->image_path);
-                            if (file_exists($oldVariantPath)) {
-                                @unlink($oldVariantPath);
-                            }
-                            $oldImgRecord->delete();
-                        }
-                    }
 
-                    $vImage = $request->file('variants_group')[$index]['color_image'];
-                    $vImageName = time() . '_variant_' . $index . '_' . preg_replace('/[^A-Za-z0-9\-.]/', '_', $vImage->getClientOriginalName());
+                /*
+                |--------------------------------------------------------------------------
+                | NEW IMAGE UPLOAD
+                |--------------------------------------------------------------------------
+                */
 
-                    $folder = storage_path('app/public/products/variants');
+                if (
+                $request->hasFile(
+                    "variants_group.{$index}.color_image"
+                )
+                ) {
+
+                    $vImage = $request->file(
+                        "variants_group.{$index}.color_image"
+                    );
+
+
+                    $vImageName =
+                        time()
+                        . '_variant_'
+                        . $index
+                        . '_'
+                        . preg_replace(
+                            '/[^A-Za-z0-9\-.]/',
+                            '_',
+                            $vImage->getClientOriginalName()
+                        );
+
+
+                    $folder = storage_path(
+                        'app/public/products/variants'
+                    );
+
+
                     if (!file_exists($folder)) {
+
                         mkdir($folder, 0777, true);
+
                     }
-                    $vImage->move($folder, $vImageName);
+
+
+                    $vImage->move(
+                        $folder,
+                        $vImageName
+                    );
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Create New Variant Image
+                    |--------------------------------------------------------------------------
+                    */
 
                     $variantImageRecord = VariantImage::create([
+
                         'product_id' => $product->id,
-                        'image_path' => 'products/variants/' . $vImageName,
-                        'is_main'    => 0,
+
+                        'image_path' =>
+                            'products/variants/' . $vImageName,
+
+                        'is_main' => 0,
+
                     ]);
 
-                    $variantImageId = $variantImageRecord->id;
 
-                    if ($selectedMainImageId !== null && (int)$selectedMainImageId === (int)($group['old_variant_image_id'] ?? 0)) {
-                        $selectedMainImageId = $variantImageId;
-                    }
+                    $variantImageId =
+                        $variantImageRecord->id;
+
                 }
 
-                // Variants items loop
-                if (isset($group['items']) && is_array($group['items'])) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | MAIN IMAGE SET
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $variantImageId &&
+                    (string)$mainVariantValue === (string)$variantImageId
+                ) {
+
+                    VariantImage::where(
+                        'id',
+                        $variantImageId
+                    )->update([
+
+                        'is_main' => 1
+
+                    ]);
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | VARIANT ITEMS UPDATE / CREATE
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    isset($group['items']) &&
+                    is_array($group['items'])
+                ) {
+
                     foreach ($group['items'] as $item) {
-                        $sku = !empty($item['sku']) ? $item['sku'] : 'SKU-' . strtoupper(Str::random(8));
 
-                        $variant = ProductVariant::updateOrCreate(
-                            [
-                                'product_id' => $product->id,
-                                'color_name' => $group['color'] ?? 'Default',
-                                'size'       => $item['size'],
-                            ],
-                            [
-                                'variant_image_id' => $variantImageId,
-                                'size_system'      => $group['size_system'] ?? null,
-                                'cut_price'        => $item['cut_price'],
-                                'price'            => $item['price'],
-                                'stock'            => $item['quantity'],
-                                'sku'              => $sku,
-                            ]
-                        );
-                        $keepVariantIds[] = $variant->id;
+                        if (empty($item['size'])) {
+                            continue;
+                        }
+
+
+                        $sku = !empty($item['sku'])
+                            ? $item['sku']
+                            : 'SKU-' . strtoupper(
+                                Str::random(8)
+                            );
+
+
+                        $variant =
+                            ProductVariant::updateOrCreate(
+
+                                [
+
+                                    'product_id' =>
+                                        $product->id,
+
+                                    'color_name' =>
+                                        $group['color']
+                                        ?? 'Default',
+
+                                    'size' =>
+                                        $item['size'],
+
+                                ],
+
+                                [
+
+                                    'variant_image_id' =>
+                                        $variantImageId,
+
+                                    'size_system' =>
+                                        $group['size_system']
+                                        ?? null,
+
+                                    'cut_price' =>
+                                        $item['cut_price']
+                                        ?? 0,
+
+                                    'price' =>
+                                        $item['price']
+                                        ?? 0,
+
+                                    'stock' =>
+                                        $item['quantity']
+                                        ?? 0,
+
+                                    'sku' =>
+                                        $sku,
+
+                                ]
+
+                            );
+
+
+                        $keepVariantIds[] =
+                            $variant->id;
+
                     }
+
                 }
+
             }
 
-            // Remove unselected variants
-            ProductVariant::where('product_id', $product->id)
-                ->whereNotIn('id', $keepVariantIds)
+
+            /*
+            |--------------------------------------------------------------------------
+            | DELETE REMOVED VARIANTS
+            |--------------------------------------------------------------------------
+            */
+
+            ProductVariant::where(
+                'product_id',
+                $product->id
+            )
+                ->when(
+                    !empty($keepVariantIds),
+                    function ($query) use ($keepVariantIds) {
+
+                        $query->whereNotIn(
+                            'id',
+                            $keepVariantIds
+                        );
+
+                    }
+                )
                 ->delete();
 
-            // Global Selection Update
-            if ($selectedMainImageId) {
-                VariantImage::where('product_id', $product->id)->update(['is_main' => 0]);
-                VariantImage::where('id', $selectedMainImageId)->update(['is_main' => 1]);
-            }
 
-            // Unused images cleanup
-            $usedImageIds = ProductVariant::where('product_id', $product->id)
-                ->whereNotNull('variant_image_id')
-                ->pluck('variant_image_id')
-                ->toArray();
+            /*
+            |--------------------------------------------------------------------------
+            | FIND USED IMAGE IDS
+            |--------------------------------------------------------------------------
+            */
 
-            $unusedImages = VariantImage::where('product_id', $product->id)
-                ->whereNotIn('id', $usedImageIds)
-                ->get();
+            $usedImageIds =
+                ProductVariant::where(
+                    'product_id',
+                    $product->id
+                )
+                    ->whereNotNull(
+                        'variant_image_id'
+                    )
+                    ->pluck(
+                        'variant_image_id'
+                    )
+                    ->unique()
+                    ->toArray();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | DELETE UNUSED IMAGES
+            |--------------------------------------------------------------------------
+            */
+
+            $unusedImages =
+                VariantImage::where(
+                    'product_id',
+                    $product->id
+                )
+                    ->whereNotIn(
+                        'id',
+                        $usedImageIds
+                    )
+                    ->get();
+
 
             foreach ($unusedImages as $oldImg) {
-                $unusedImgPath = storage_path('app/public/' . $oldImg->image_path);
+
+                $unusedImgPath =
+                    storage_path(
+                        'app/public/' .
+                        $oldImg->image_path
+                    );
+
+
                 if (file_exists($unusedImgPath)) {
+
                     @unlink($unusedImgPath);
+
                 }
+
+
                 $oldImg->delete();
+
             }
+
         }
 
         return redirect()->route('products.index')->with('success', 'Product and Variants updated successfully!');

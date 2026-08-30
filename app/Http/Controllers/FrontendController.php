@@ -610,8 +610,9 @@ class FrontendController extends Controller
 
         return response()->json([
             'status' => true,
-            'action' => 'added',
-            'message' => 'Added to wishlist'
+            'action' => 'added', // ya 'removed'
+            'message' => 'Added to wishlist!',
+            'wishlistCount' => Wishlist::where('user_id', auth()->id())->count(),
         ]);
     }
 

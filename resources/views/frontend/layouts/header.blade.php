@@ -43,7 +43,8 @@
             <!-- Center Search Bar (Desktop) - FIXED ALIGNMENT -->
             <div class="search-wrapper hidden md:flex flex-1 max-w-xl mx-auto justify-center relative px-4">
                 <form action="{{ route('categories') }}" method="GET"
-                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20" style="margin-left: 15px">
+                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20"
+                      style="margin-left: 15px">
 
                     <input type="text"
                            name="search"
@@ -52,7 +53,8 @@
                            autocomplete="off"
                            class="w-180 search-input pl-3  pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
-                    <button type="button" class="px-2.5 text-gray-500 hover:text-black transition" title="Search by Image">
+                    <button type="button" class="px-2.5 text-gray-500 hover:text-black transition"
+                            title="Search by Image">
                         <i class="fa-solid fa-qrcode text-base"></i>
                     </button>
 
@@ -75,10 +77,12 @@
                 </button>
 
                 <!-- Wishlist: Desktop Only -->
-                <a href="{{route('wishlist')}}">
-                    <button class="text-lg hover:text-red-500 hidden sm:block">
-                        <i class="fa-regular fa-heart fa-sm"></i>
-                    </button>
+                <a href="{{ route('wishlist') }}" class="relative text-xl hover:text-red-500 hidden sm:block">
+                    <i class="fa-regular fa-heart fa-sm mb-4"></i>
+                    <span id="header-wishlist-count"
+                          class="wishlist-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($wishlistCount ?? 0) > 0 ? '' : 'hidden' }}">
+        {{ $wishlistCount ?? 0 }}
+    </span>
                 </a>
 
                 <!-- Cart: Desktop Only -->
@@ -86,7 +90,7 @@
                     <i class="fa-solid fa-cart-shopping fa-sm"></i>
 
                     <span id="header-cart-count"
-                          class="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5">
+                          class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5">
                         {{ $cartCount ?? 0 }}
                     </span>
                 </a>
@@ -95,7 +99,8 @@
                 <div class="hidden sm:block h-8 border-l border-gray-700"></div>
 
                 <!-- User Profile Click Dropdown Container -->
-                <div class="relative me-1 sm:me-5 py-1" x-data="{ mobileDropdownOpen: false }" @click.outside="mobileDropdownOpen = false">
+                <div class="relative me-1 sm:me-5 py-1" x-data="{ mobileDropdownOpen: false }"
+                     @click.outside="mobileDropdownOpen = false">
 
                     <!-- Trigger Header Element -->
                     <button
@@ -193,7 +198,8 @@
     </header>
 
     <!-- ================= MOBILE EXPANDABLE SEARCH BAR ================= -->
-    <div x-show="mobileSearchOpen" x-cloak style="display: none;" x-transition class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
+    <div x-show="mobileSearchOpen" x-cloak style="display: none;" x-transition
+         class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
         <form action="{{ route('categories') }}" method="GET"
               class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-0.5 shadow-sm relative h-10 z-20">
 
@@ -363,7 +369,8 @@
 
             <!-- Center: Navigation Links -->
             <div class="flex items-center gap-8 text-sm font-semibold text-gray-800">
-                <a href="{{ url('/all-product') }}" class="hover:text-emerald-600 transition whitespace-nowrap ms-6">All Products</a>
+                <a href="{{ url('/all-product') }}" class="hover:text-emerald-600 transition whitespace-nowrap ms-6">All
+                    Products</a>
                 <a href="{{ url('/product') }}" class="hover:text-emerald-600 transition">Categories</a>
                 @foreach($categories->whereIn('slug', ['men-s-fashion', 'womens-fashion', 'mother-baby', 'home-lifestyle'])->values() as $mainCat)
                     <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug]) }}"

@@ -499,8 +499,10 @@
                     addToCartBtn.innerHTML = 'Add To Cart';
 
                     if (data.status) {
-                        let headeCartCount = document.getElementById('header-cart-count');
-                        headeCartCount.innerText=data.cartCount
+                        document.querySelectorAll('.cart-count').forEach(function (el) {
+                            el.innerText = data.cartCount;
+                            el.classList.remove('hidden');
+                        });
                         Swal.fire({
                             toast: true,
                             position: 'top-end',

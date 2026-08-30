@@ -24,7 +24,6 @@
                 </div>
 
 
-
                 <div class="grid gap-6 md:grid-cols-2">
 
                     <style>
@@ -84,8 +83,8 @@
                         <div class="relative w-full">
                             <!-- Left Icon -->
                             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
-            <i class="fa-solid fa-layer-group text-sm"></i>
-        </span>
+                                <i class="fa-solid fa-layer-group text-sm"></i>
+                            </span>
 
                             <!-- Select Dropdown -->
                             <select name="category_id" id="category_id" required class="w-full">
@@ -137,9 +136,9 @@
                         <div class="relative w-full">
                             <!-- Icon -->
                             <span
-                                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 pointer-events-none z-10">
-                    <i class="fa-solid fa-box"></i>
-                </span>
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 pointer-events-none z-10">
+                                <i class="fa-solid fa-box"></i>
+                            </span>
 
                             <!-- Input Field -->
                             <input type="text"
@@ -153,8 +152,8 @@
                             <!-- Floating Label -->
                             <label for="product_name"
                                    class="absolute left-11 top-3.5 text-gray-400 text-sm pointer-events-none transition-all duration-200
-  peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-6 peer-focus:left-3 peer-focus:bg-white peer-focus:px-2 peer-focus:z-20
-  peer-[:not(:placeholder-shown)]:-translate-y-6 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:z-20">
+                                      peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-6 peer-focus:left-3 peer-focus:bg-white peer-focus:px-2 peer-focus:z-20
+                                      peer-[:not(:placeholder-shown)]:-translate-y-6 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:z-20">
                                 Product Name
                             </label>
 
@@ -171,8 +170,8 @@
                         <div class="relative w-full">
                             <!-- Left Icon -->
                             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
-            <i class="fa-solid fa-briefcase text-sm"></i>
-        </span>
+                                    <i class="fa-solid fa-briefcase text-sm"></i>
+                            </span>
 
                             <!-- Select Dropdown -->
                             <select name="brand_id"
@@ -184,7 +183,7 @@
 
                                 @foreach($brands as $brand)
                                     <option value="{{ $brand->id }}"
-                                        {{ old('brand_id', $product->brand_id ?? '') == $brand->id ? 'selected' : '' }}>
+                                            {{ old('brand_id', $product->brand_id ?? '') == $brand->id ? 'selected' : '' }}>
                                         {{ $brand->name }}
                                     </option>
                                 @endforeach
@@ -210,9 +209,9 @@
                         <div class="relative w-full">
                             <!-- Status Icon -->
                             <span
-                                class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 pointer-events-none z-10">
-                    <i class="fa-solid fa-toggle-on text-sm"></i>
-                </span>
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 pointer-events-none z-10">
+                                        <i class="fa-solid fa-toggle-on text-sm"></i>
+                                    </span>
 
                             <!-- Select Dropdown -->
                             <select name="status"
@@ -222,26 +221,26 @@
                                 <option value="" disabled
                                         {{ old('status', $product->status ?? '') == '' ? 'selected' : '' }} hidden></option>
                                 <option
-                                    value="active" {{ old('status', $product->status ?? 'active') == 'active' ? 'selected' : '' }}>
+                                        value="active" {{ old('status', $product->status ?? 'active') == 'active' ? 'selected' : '' }}>
                                     Active
                                 </option>
                                 <option
-                                    value="inactive" {{ old('status', $product->status ?? '') == 'inactive' ? 'selected' : '' }}>
+                                        value="inactive" {{ old('status', $product->status ?? '') == 'inactive' ? 'selected' : '' }}>
                                     Inactive
                                 </option>
                             </select>
 
                             <!-- Dropdown Arrow Icon -->
                             <div
-                                class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 z-10">
+                                    class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400 peer-focus:text-emerald-600 transition-colors duration-200 z-10">
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </div>
 
                             <!-- Floating Label -->
                             <label for="status"
                                    class="absolute left-11 top-3.5 text-gray-400 text-sm pointer-events-none transition-all duration-200
-  peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-6 peer-focus:left-3 peer-focus:bg-white peer-focus:px-2 peer-focus:z-20
-  peer-valid:-translate-y-6 peer-valid:left-3 peer-valid:bg-white peer-valid:px-2 peer-valid:text-xs peer-valid:z-20">
+                                      peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-6 peer-focus:left-3 peer-focus:bg-white peer-focus:px-2 peer-focus:z-20
+                                      peer-valid:-translate-y-6 peer-valid:left-3 peer-valid:bg-white peer-valid:px-2 peer-valid:text-xs peer-valid:z-20">
                                 Status
                             </label>
 
@@ -258,8 +257,8 @@
                         <div class="relative w-full">
                             <!-- Left Icon -->
                             <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none z-10">
-            <i class="fa-solid fa-tags text-sm"></i>
-        </span>
+                                <i class="fa-solid fa-tags text-sm"></i>
+                            </span>
 
                             <!-- Select Dropdown -->
                             <select name="product_type"
@@ -412,26 +411,26 @@
                                     <div class="relative w-full">
                                         <!-- Color Icon -->
                                         <span
-                                            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-500 transition-colors duration-200 pointer-events-none">
-        <i class="fa-solid fa-palette"></i>
-    </span>
+                                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 peer-focus:text-emerald-500 transition-colors duration-200 pointer-events-none">
+                                            <i class="fa-solid fa-palette"></i>
+                                        </span>
 
                                         <!-- Input Field -->
                                         <input
-                                            type="text"
-                                            name="variants_group[{{ $groupIndex }}][color]"
-                                            id="color_input_{{ $groupIndex }}"
-                                            value="{{ $colorName ? $colorName : '' }}"
-                                            placeholder=" "
-                                            class="variant-color-input peer w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg  text-gray-700 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
-                                            oninput="generateVariantTableRows({{ $groupIndex }})">
+                                                type="text"
+                                                name="variants_group[{{ $groupIndex }}][color]"
+                                                id="color_input_{{ $groupIndex }}"
+                                                value="{{ $colorName ? $colorName : '' }}"
+                                                placeholder=" "
+                                                class="variant-color-input peer w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg  text-gray-700 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200"
+                                                oninput="generateVariantTableRows({{ $groupIndex }})">
 
                                         <!-- Floating Label -->
                                         <label
-                                            for="color_input_{{ $groupIndex }}"
-                                            class="absolute left-10 top-2 text-gray-400 text-sm pointer-events-none transition-all duration-200
-        peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-4 peer-focus:left-3 peer-focus:bg-white peer-focus:px-1
-        peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-xs">
+                                                for="color_input_{{ $groupIndex }}"
+                                                class="absolute left-10 top-2 text-gray-400 text-sm pointer-events-none transition-all duration-200
+                                                    peer-focus:text-xs peer-focus:text-emerald-600 peer-focus:-translate-y-4 peer-focus:left-3 peer-focus:bg-white peer-focus:px-1
+                                                    peer-[:not(:placeholder-shown)]:-translate-y-4 peer-[:not(:placeholder-shown)]:left-3 peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:text-xs">
                                             Color Name (e.g. Royal Blue)
                                         </label>
                                     </div>
@@ -452,7 +451,7 @@
 
                                                 <!-- Hover Icon Box & Text Changed to Emerald -->
                                                 <div
-                                                    class="w-10 h-10 bg-gray-100 text-gray-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 rounded-lg flex items-center justify-center transition-all duration-300">
+                                                        class="w-10 h-10 bg-gray-100 text-gray-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 rounded-lg flex items-center justify-center transition-all duration-300">
                                                     <i class="fa-regular fa-image text-lg"></i>
                                                 </div>
                                                 <div class="text-left">
@@ -476,6 +475,10 @@
                                                    name="variants_group[{{ $groupIndex }}][color_image]"
                                                    class="hidden variant-image-input" accept="image/*"
                                                    onchange="updateVariantImagePreview(this, {{ $groupIndex }})">
+
+                                            <input type="hidden"
+                                                   name="variants_group[{{ $groupIndex }}][old_variant_image_id]"
+                                                   value="{{ $variantImage ? $variantImage->id : '' }}">
                                         </label>
 
                                         <button type="button" id="variant-remove-btn-{{ $groupIndex }}"
@@ -489,16 +492,15 @@
                                 <div class="mt-3">
                                     <label class="flex items-center gap-2 cursor-pointer">
                                         <input
-                                            type="radio"
-                                            name="is_main"
-                                            {{-- 🔥 FIX: Index index ke bajaye Image ki ID ko value banayein --}}
-                                            value="{{ isset($variantImage) && $variantImage ? $variantImage->id : 'new_' . $groupIndex }}"
-                                            class="main-variant-radio w-4 h-4 text-emerald-600 accent-emerald-600 focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
-                                            {{ (isset($variantImage) && $variantImage && $variantImage->is_main) ? 'checked' : '' }}
+                                                type="radio"
+                                                name="is_main"
+                                                value="{{ isset($product) && $variantImage ? $variantImage->id : $groupIndex }}"
+                                                class="main-variant-radio w-4 h-4 text-emerald-600 accent-emerald-600 focus:ring-offset-0 cursor-pointer"
+                                                {{ $variantImage && $variantImage->is_main ? 'checked' : '' }}
                                         >
                                         <span class="text-sm font-medium text-gray-700">
-            Main Product Image
-        </span>
+                                            Main Product Image
+                                        </span>
                                     </label>
                                 </div>
 
@@ -514,23 +516,23 @@
 
                                             <option value="" hidden>Choose System</option>
                                             <option
-                                                value="uk" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'uk') ? 'selected' : '' }}>
+                                                    value="uk" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'uk') ? 'selected' : '' }}>
                                                 UK System
                                             </option>
                                             <option
-                                                value="height_suit" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'height_suit') ? 'selected' : '' }}>
+                                                    value="height_suit" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'height_suit') ? 'selected' : '' }}>
                                                 Height Suit Only System
                                             </option>
                                             <option
-                                                value="int" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'int') ? 'selected' : '' }}>
+                                                    value="int" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'int') ? 'selected' : '' }}>
                                                 INT (Universal Standard)
                                             </option>
                                             <option
-                                                value="eu" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'eu') ? 'selected' : '' }}>
+                                                    value="eu" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'eu') ? 'selected' : '' }}>
                                                 EU Standard Chart
                                             </option>
                                             <option
-                                                value="other" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'other') ? 'selected' : '' }}>
+                                                    value="other" {{ (old("variants_group.{$groupIndex}.size_system", $firstVariant->size_system ?? '') == 'other') ? 'selected' : '' }}>
                                                 Other Fulllook Options
                                             </option>
                                         </select>
@@ -550,19 +552,19 @@
                                     <label class="block mb-2 text-sm font-medium text-gray-700">Select Sizes (Multiple
                                         Options)</label>
                                     <div
-                                        class="sizes-checkbox-container grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 bg-white p-4 border border-gray-200 rounded-xl min-h-14 shadow-2xs"
-                                        data-saved="{{ json_encode($savedSizes) }}">
+                                            class="sizes-checkbox-container grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 bg-white p-4 border border-gray-200 rounded-xl min-h-14 shadow-2xs"
+                                            data-saved="{{ json_encode($savedSizes) }}">
                                         <span
-                                            class="text-gray-400 text-xs col-span-full flex items-center justify-center">Please choose a system first to load checkboxes...</span>
+                                                class="text-gray-400 text-xs col-span-full flex items-center justify-center">Please choose a system first to load checkboxes...</span>
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Variants Matrix Table --}}
                             <div
-                                class="variants-table-wrapper mt-8 overflow-x-auto {{ isset($product) ? '' : 'hidden' }}">
+                                    class="variants-table-wrapper mt-8 overflow-x-auto {{ isset($product) ? '' : 'hidden' }}">
                                 <table
-                                    class="w-full text-sm text-left text-gray-500 border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                                        class="w-full text-sm text-left text-gray-500 border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
                                     <thead class="text-xs text-gray-700 uppercase bg-gray-100/80">
                                     <tr>
                                         <th class="px-4 py-3.5">Color</th>
@@ -736,43 +738,79 @@
 
         // 🔥 FIX 1: Render Sizes method now retains saved database inputs state inside Edit Mode
         function renderSizes(index) {
-            const group = document.querySelector(`.variant-group[data-index="${index}"]`);
-            const system = group.querySelector('.country-size-select').value;
-            const container = group.querySelector('.sizes-checkbox-container');
 
-            // Database se purane saved sizes read karne ka element
+            const group = document.querySelector(
+                `.variant-group[data-index="${index}"]`
+            );
+
+            const system = group.querySelector(
+                '.country-size-select'
+            ).value;
+
+            const container = group.querySelector(
+                '.sizes-checkbox-container'
+            );
+
             let savedSizes = [];
+
             try {
-                savedSizes = JSON.parse(container.getAttribute('data-saved')) || [];
+
+                savedSizes = JSON.parse(
+                    container.getAttribute('data-saved')
+                ) || [];
+
             } catch (e) {
+
                 savedSizes = [];
+
             }
 
             container.innerHTML = '';
 
             if (!system || !sizeSystems[system]) {
-                container.innerHTML = '<span class="text-gray-400 text-xs col-span-full flex items-center justify-center">Please choose a system first to load checkboxes...</span>';
+
+                container.innerHTML =
+                    '<span class="text-gray-400 text-xs col-span-full flex items-center justify-center">Please choose a system first to load checkboxes...</span>';
+
                 return;
             }
 
             sizeSystems[system].forEach((size, idx) => {
-                const isChecked = savedSizes.includes(size) ? 'checked' : '';
+
+                const isChecked = savedSizes.includes(size)
+                    ? 'checked'
+                    : '';
+
                 const div = document.createElement('div');
-                div.className = "flex items-center gap-2 bg-gray-50 hover:bg-gray-100/70 p-2.5 border border-gray-200 rounded-xl transition duration-150 cursor-pointer select-none";
+
+                div.className =
+                    "flex items-center gap-2 bg-gray-50 hover:bg-gray-100/70 p-2.5 border border-gray-200 rounded-xl transition duration-150 cursor-pointer select-none";
+
                 div.innerHTML = `
-                <input type="checkbox" id="size-${index}-${idx}" value="${size}" ${isChecked} class="size-checkbox rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500" onchange="generateVariantTableRows(${index})">
-                <label for="size-${index}-${idx}" class="text-xs font-semibold text-gray-700 cursor-pointer w-full">${size}</label>
-            `;
+
+            <input
+                type="checkbox"
+                id="size-${index}-${idx}"
+                value="${size}"
+                ${isChecked}
+                class="size-checkbox rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                onchange="generateVariantTableRows(${index})"
+            >
+
+            <label
+                for="size-${index}-${idx}"
+                class="text-xs font-semibold text-gray-700 cursor-pointer w-full"
+            >
+                ${size}
+            </label>
+        `;
+
                 container.appendChild(div);
+
             });
 
-            // Agar database se table pehle se load hui hai, to generate rows tabhi bulayein jab checkbox dasti change ho
-            if (savedSizes.length === 0) {
-                generateVariantTableRows(index);
-            } else {
-                // Data attribute clear kar dein taake dobara toggles par refresh ho sake matrix rows
-                container.setAttribute('data-saved', '[]');
-            }
+            // Edit mode mein existing table ko touch nahi karna
+            container.setAttribute('data-saved', '[]');
         }
 
         // 🔥 FIX 2: Generate Matrix rows handles old inputs gracefully without erasing values
@@ -791,15 +829,25 @@
 
             // Maujooda inputs ke numbers/values save rakhein taake change par clear na hon
             let existingData = {};
+
             tableBody.querySelectorAll('tr').forEach(row => {
+
                 const rowSize = row.getAttribute('data-size');
+
                 if (rowSize) {
+
                     existingData[rowSize] = {
+
+                        cut_price: row.querySelector('input[name*="[cut_price]"]')?.value || '',
+
                         price: row.querySelector('input[name*="[price]"]')?.value || '',
+
                         quantity: row.querySelector('input[name*="[quantity]"]')?.value || '',
+
                         sku: row.querySelector('input[name*="[sku]"]')?.value || ''
                     };
                 }
+
             });
 
             tableWrapper.classList.remove('hidden');
@@ -808,6 +856,7 @@
             selectedCheckboxes.forEach((cb, sizeIndex) => {
                 const size = cb.value;
                 const savedRow = existingData[size] || {
+                    cut_price: '',
                     price: '',
                     quantity: '',
                     sku: `${color.toUpperCase()}-${size.replace(/\s+/g, '')}`

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Categorie;
+use App\Models\Wishlist;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
@@ -35,6 +36,13 @@ class AppServiceProvider extends ServiceProvider
                     ->count();      // <-- sum('quantity') ki jagah count() kar diya hai
             }
 
+            // 1b. Wishlist Count Logic (same pattern as Cart)
+            $wishlistCount = 0;
+
+            if (Auth::check()) {
+                $wishlistCount = Wishlist::where('user_id', Auth::id())->count();
+            }
+
             // 2. Store Data Logic
             $store = AdminStore::first();
 
@@ -44,9 +52,10 @@ class AppServiceProvider extends ServiceProvider
 
             // All variables passed to all Blade views
             $view->with([
-                'cartCount'  => $cartCount,
-                'store'      => $store,
-                'categories' => $categories,
+                'cartCount'      => $cartCount,
+                'wishlistCount'  => $wishlistCount,
+                'store'          => $store,
+                'categories'     => $categories,
             ]);
         });
     }

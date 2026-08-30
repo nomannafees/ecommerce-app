@@ -46,20 +46,28 @@
         </a>
 
         <!-- Cart with Dynamic Badge -->
-        <a href="{{ route('cart') }}" class="relative flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('cart') ? 'text-black font-bold' : '' }}">
+        <a href="{{ route('cart') }}"
+           class="relative flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('cart') ? 'text-black font-bold' : '' }}">
+
             <div class="relative">
                 <i class="fa-solid fa-cart-shopping text-base"></i>
-                <!-- Cart Count Badge -->
-                <span class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full {{ ($cartCount ?? 0) > 0 ? '' : 'hidden' }}">
-                    {{ $cartCount ?? 0 }}
-                </span>
+
+                <span class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full {{ ($cartCount ?? 0) > 0 ? '' : 'hidden' }}">
+            {{ $cartCount ?? 0 }}
+        </span>
             </div>
+
             <span class="text-[10px] mt-0.5">Cart</span>
         </a>
 
         <!-- Wishlist -->
-        <a href="{{ route('wishlist') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('wishlist') ? 'text-black font-bold' : '' }}">
-            <i class="fa-solid fa-heart text-base"></i>
+        <a href="{{ route('wishlist') }}" class="relative flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('wishlist') ? 'text-black font-bold' : '' }}">
+            <div class="relative">
+                <i class="fa-solid fa-heart text-base"></i>
+                <span class="wishlist-count absolute -top-2 -right-2 bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full {{ ($wishlistCount ?? 0) > 0 ? '' : 'hidden' }}">
+            {{ $wishlistCount ?? 0 }}
+        </span>
+            </div>
             <span class="text-[10px] mt-0.5">Wishlist</span>
         </a>
 
@@ -280,6 +288,16 @@
                     if (res.action === 'removed') {
                         icon.removeClass('fa-solid text-red-500')
                             .addClass('fa-regular text-gray-500');
+                    }
+
+                    // Badge update (agar response mein wishlistCount aaya ho)
+                    if (typeof res.wishlistCount !== 'undefined') {
+                        $('.wishlist-count').text(res.wishlistCount);
+                        if (res.wishlistCount > 0) {
+                            $('.wishlist-count').removeClass('hidden');
+                        } else {
+                            $('.wishlist-count').addClass('hidden');
+                        }
                     }
                 }
 
