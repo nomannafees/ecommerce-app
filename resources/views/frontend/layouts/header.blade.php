@@ -43,7 +43,7 @@
             <!-- Center Search Bar (Desktop) - FIXED ALIGNMENT -->
             <div class="search-wrapper hidden md:flex flex-1 max-w-xl mx-auto justify-center relative px-4">
                 <form action="{{ route('categories') }}" method="GET"
-                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20">
+                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20" style="margin-left: 15px">
 
                     <input type="text"
                            name="search"
@@ -117,8 +117,9 @@
 
                     <!-- Dropdown Box -->
                     <div
-                            :class="mobileDropdownOpen ? 'block' : 'hidden'"
-                            class="md:group-hover/userdropdown:block absolute right-0 top-full w-55 overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-800 shadow-xl z-50">
+                            x-cloak
+                            :class="mobileDropdownOpen ? 'block' : 'hidden md:group-hover/userdropdown:block'"
+                            class="absolute right-0 top-full w-55 overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-800 shadow-xl z-50">
 
                         <div class="border-b border-gray-200 px-4 py-3 bg-gray-50">
                             <p class="truncate font-semibold text-gray-800 capitalize">
@@ -184,7 +185,7 @@
     </header>
 
     <!-- ================= MOBILE EXPANDABLE SEARCH BAR ================= -->
-    <div x-show="mobileSearchOpen" x-transition class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
+    <div x-show="mobileSearchOpen" x-cloak x-transition class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
         <form action="{{ route('categories') }}" method="GET"
               class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-0.5 shadow-sm relative h-10 z-20">
 
@@ -387,6 +388,11 @@
 
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #999;
+    }
+
+    /* Prevent Alpine-controlled elements from flashing visible before Alpine initializes */
+    [x-cloak] {
+        display: none !important;
     }
 </style>
 <!-- ================= END SUB-HEADER ================= -->
