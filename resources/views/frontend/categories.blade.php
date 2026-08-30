@@ -8,14 +8,14 @@
 
     <div class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:pt-4 sm:pb-2">
 
-            <div class="text-center mt-2 px-3">
-                <h1 class="text-2xl font-bold text-gray-900">
-                    🛍️ Explore Our Products
-                </h1>
-                <p class="text-[16px] text-gray-500 mt-0.5 max-w-md mx-auto">
-                    Shop top products by category, price, color, and size.
-                </p>
-            </div>
+        <div class="text-center mt-2 px-3">
+            <h1 class="text-2xl font-bold text-gray-900">
+                🛍️ Explore Our Products
+            </h1>
+            <p class="text-[16px] text-gray-500 mt-0.5 max-w-md mx-auto">
+                Shop top products by category, price, color, and size.
+            </p>
+        </div>
 
         <div class="flex flex-col lg:flex-row gap-6 pb-6 pt-3 lg:mt-0">
 
@@ -25,13 +25,11 @@
             <div class="w-full  lg:w-4/5 container mx-auto ">
 
                 <!-- DESKTOP SORT BAR -->
-                <!-- DESKTOP SORT BAR -->
                 <div
-                    class="mb-3 hidden bg-white lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl py-2 px-4">
+                        class="mb-3 hidden bg-white lg:flex flex-row gap-4 items-center justify-between bg-gray-50 border border-gray-200 rounded-xl py-2 px-4">
                     <h2 class="text-base sm:text-lg font-semibold text-gray-700">Products</h2>
 
                     <div class="flex items-center gap-3">
-                        <!-- Yahan width 'w-48' se kam kar ke 'w-40' aur height 'h-[40px]' se 'h-[34px]' kar di hai -->
                         <div class="w-40 relative h-[34px]" x-data="{
     open: false,
     currentSort: '{{ request('sort', 'latest') }}',
@@ -54,7 +52,6 @@
         }
     }
 }">
-                            <!-- Trigger Button (Compact Padding & Text Size) -->
                             <button type="button"
                                     @click="open = !open"
                                     @click.away="open = false"
@@ -62,13 +59,12 @@
                 <span class="truncate leading-none"
                       x-text="sortLabels[currentSort] || 'Latest Products'"></span>
                                 <span
-                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
+                                        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400">
                     <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"
                        :class="open ? 'rotate-180' : ''"></i>
                 </span>
                             </button>
 
-                            <!-- Custom Dropdown Options -->
                             <div x-show="open"
                                  style="display: none;"
                                  class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden z-50 py-1">
@@ -101,7 +97,7 @@
 
                 <!-- MOBILE HORIZONTAL SCROLLING FILTER BUTTONS -->
                 <div
-                    class="mb-3 block lg:hidden bg-gray-50 border border-gray-200 rounded-xl p-3 shadow-sm space-y-2 relative">
+                        class="mb-3 block lg:hidden bg-gray-50 border border-gray-200 rounded-xl p-3 shadow-sm space-y-2 relative">
                     <div class="flex justify-between items-center px-1">
                         <h2 class="text-sm font-semibold text-gray-700">Filters & Sort</h2>
                         @if(request()->hasAny(['min_price', 'max_price', 'color', 'size', 'brand', 'search', 'sort', 'category']))
@@ -126,10 +122,20 @@
                             $brandLabel = 'Brands';
                         }
                         $currentSelectedBrands = array_filter((array) request('brand', []));
+
+                        $currentSelectedColors = array_filter((array) request('color', []));
+                        $colorLabel = count($currentSelectedColors) > 0
+                            ? 'Color: ' . implode(', ', array_map('ucfirst', $currentSelectedColors))
+                            : 'Colors';
+
+                        $currentSelectedSizes = array_filter((array) request('size', []));
+                        $sizeLabel = count($currentSelectedSizes) > 0
+                            ? 'Size: ' . implode(', ', array_map('strtoupper', $currentSelectedSizes))
+                            : 'Sizes';
                     @endphp
 
                     <div
-                        class="flex items-center gap-2 overflow-x-auto -mb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                            class="flex items-center gap-2 overflow-x-auto -mb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                         <button type="button" onclick="toggleMobDropdown('mobSortDropdown')"
                                 class="flex-shrink-0 h-[30px] bg-white border border-gray-200 rounded-full px-3 text-xs font-medium text-gray-700 flex items-center gap-2">
                             <span>Sort</span>
@@ -142,17 +148,17 @@
                         </button>
                         <button type="button" onclick="toggleMobDropdown('mobBrandDropdown')"
                                 class="flex-shrink-0 h-[30px] bg-white border border-gray-200 rounded-full px-3 text-xs font-medium text-gray-700 flex items-center gap-2">
-                            <span class="truncate max-w-[120px]">{{ $brandLabel }}</span>
+                            <span id="mobBrandLabelSpan" class="truncate max-w-[120px]">{{ $brandLabel }}</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                         </button>
                         <button type="button" onclick="toggleMobDropdown('mobColorDropdown')"
                                 class="flex-shrink-0 h-[30px] bg-white border border-gray-200 rounded-full px-3 text-xs font-medium text-gray-700 flex items-center gap-2">
-                            <span>{{ request('color') ? 'Color: '.ucfirst(request('color')) : 'Colors' }}</span>
+                            <span id="mobColorLabelSpan" class="truncate max-w-[120px]">{{ $colorLabel }}</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                         </button>
                         <button type="button" onclick="toggleMobDropdown('mobSizeDropdown')"
                                 class="flex-shrink-0 h-[30px] bg-white border border-gray-200 rounded-full px-3 text-xs font-medium text-gray-700 flex items-center gap-2">
-                            <span>{{ request('size') ? 'Size: '.strtoupper(request('size')) : 'Sizes' }}</span>
+                            <span id="mobSizeLabelSpan" class="truncate max-w-[120px]">{{ $sizeLabel }}</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                         </button>
                     </div>
@@ -227,6 +233,7 @@
                         </div>
                         <div class="space-y-1">
                             <button type="button" onclick="selectBrand('')"
+                                    data-brand-option=""
                                     class="w-full text-left block px-2.5 py-1.5 rounded border {{ empty($currentSelectedBrands) ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
                                 All Brands
                             </button>
@@ -235,6 +242,8 @@
                                     $isBrandActive = in_array($brand->slug, $currentSelectedBrands);
                                 @endphp
                                 <button type="button" onclick="selectBrand('{{ $brand->slug }}')"
+                                        data-brand-option="{{ $brand->slug }}"
+                                        data-brand-name="{{ ucfirst($brand->name) }}"
                                         class="w-full text-left block px-2.5 py-1.5 rounded border {{ $isBrandActive ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
                                     {{ ucfirst($brand->name) }}
                                 </button>
@@ -251,22 +260,24 @@
                         </div>
                         <div class="space-y-1.5">
                             <button type="button" onclick="selectColorSwatch('')"
-                                    class="w-full text-left block px-2.5 py-1.5 rounded border {{ !request('color') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
+                                    data-color-option=""
+                                    class="w-full text-left block px-2.5 py-1.5 rounded border {{ empty($currentSelectedColors) ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
                                 All Colors
                             </button>
                             <div class="flex flex-wrap gap-2 py-1">
                                 @foreach($availableColors as $colorName)
                                     @php
                                         $cleanColor = strtolower(trim($colorName));
-                                        $isSelected = request('color') == $cleanColor;
+                                        $isSelected = in_array($cleanColor, $currentSelectedColors);
                                         $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
                                     @endphp
                                     <button type="button" onclick="selectColorSwatch('{{ $cleanColor }}')"
                                             title="{{ ucfirst($colorName) }}"
-                                            class="w-7 h-7 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-1 ring-black scale-110' : 'opacity-90 hover:opacity-100' }}"
+                                            data-color-option="{{ $cleanColor }}"
+                                            data-color-name="{{ ucfirst($colorName) }}"
+                                            class="mob-color-swatch w-7 h-7 rounded-full cursor-pointer transition-all duration-200 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-1 ring-black scale-110' : 'opacity-90 hover:opacity-100' }}"
                                             style="{{ $inlineBg }}">
-                                        @if($isSelected) <i
-                                            class="fa-solid fa-check text-[10px] {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i> @endif
+                                        <i class="mob-color-check fa-solid fa-check text-[10px] {{ $isSelected ? '' : 'hidden' }} {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
                                     </button>
                                 @endforeach
                             </div>
@@ -282,17 +293,19 @@
                         </div>
                         <div class="space-y-1.5">
                             <button type="button" onclick="selectSizeBox('')"
-                                    class="w-full text-left block px-2.5 py-1.5 rounded border {{ !request('size') ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
+                                    data-size-option=""
+                                    class="w-full text-left block px-2.5 py-1.5 rounded border {{ empty($currentSelectedSizes) ? 'border-gray-400 font-semibold bg-gray-50' : 'border-gray-100' }} text-xs text-gray-700 hover:bg-gray-100 transition">
                                 All Sizes
                             </button>
                             <div class="flex flex-wrap gap-1.5 py-1">
                                 @foreach($availableSizes as $sizeName)
                                     @php
                                         $cleanSize = trim($sizeName);
-                                        $isSizeSelected = request('size') == $cleanSize;
+                                        $isSizeSelected = in_array($cleanSize, $currentSelectedSizes);
                                     @endphp
                                     <button type="button" onclick="selectSizeBox('{{ $cleanSize }}')"
-                                            class="px-2.5 py-1 text-xs rounded border transition font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow-sm' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100' }}">
+                                            data-size-option="{{ $cleanSize }}"
+                                            class="mob-size-box px-2.5 py-1 text-xs rounded border transition font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow-sm' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100' }}">
                                         {{ strtoupper($cleanSize) }}
                                     </button>
                                 @endforeach
@@ -322,13 +335,6 @@
                     </div>
                 @endif
 
-                <!-- NO MORE PRODUCTS BUTTON -->
-{{--                <div id="no-more-products" class="text-center my-6 hidden">--}}
-{{--                    <span--}}
-{{--                        class="inline-flex items-center gap-2 bg-gray-700 text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-md shadow-md cursor-default">--}}
-{{--                        <i class="fa-solid fa-circle-check text-emerald-400"></i> No More Products--}}
-{{--                    </span>--}}
-{{--                </div>--}}
             </div>
 
         </div>
@@ -358,20 +364,13 @@
             for (let i = 0; i < count; i++) {
                 skeletons += `
             <div class="bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
-
                 <div class="bg-gray-200 h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55 animate-shimmer"></div>
-
-
                 <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2.5">
                 <div class="space-y-2">
-
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-3/4"></div>
-
                 <div class="h-3 bg-gray-200 rounded animate-shimmer w-full"></div>
                 </div>
-
                 <div class="h-3 bg-gray-200 rounded animate-shimmer w-1/3"></div>
-
                 <div class="flex items-center justify-between gap-2 mt-auto pt-2">
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-1/3"></div>
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-1/4"></div>
@@ -411,6 +410,95 @@
         // --- 1. PRICE & FILTER FUNCTIONS ---
         function updatePriceLabel(value) {
             document.getElementById('priceLabel').innerText = Number(value).toLocaleString();
+        }
+
+        // ====================================================================
+        // NEW: Sync mobile pill labels + active highlight states after AJAX
+        // (Blade only renders these once on page load; since we no longer
+        // reload the page, we must update them manually in JS every time
+        // the filters change.)
+        // ====================================================================
+        function updateMobileFilterUI() {
+            // ---- BRANDS ----
+            let selectedBrandSlugs = $('#filterForm input[name="brand[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $('[data-brand-option]').each(function () {
+                let val = $(this).attr('data-brand-option');
+                let isActive = val === '' ? selectedBrandSlugs.length === 0 : selectedBrandSlugs.includes(val);
+                $(this).toggleClass('border-gray-400 font-semibold bg-gray-50', isActive);
+                $(this).toggleClass('border-gray-100', !isActive);
+            });
+
+            if (selectedBrandSlugs.length > 0) {
+                let names = selectedBrandSlugs.map(function (slug) {
+                    let btn = $('[data-brand-option="' + slug + '"]');
+                    return btn.attr('data-brand-name') || slug;
+                });
+                $('#mobBrandLabelSpan').text('Brand: ' + names.join(', '));
+            } else {
+                $('#mobBrandLabelSpan').text('Brands');
+            }
+
+            // ---- COLORS ----
+            let selectedColors = $('#filterForm input[name="color[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $('[data-color-option]').each(function () {
+                let val = $(this).attr('data-color-option');
+                if (val === '') {
+                    let isActive = selectedColors.length === 0;
+                    $(this).toggleClass('border-gray-400 font-semibold bg-gray-50', isActive);
+                    $(this).toggleClass('border-gray-100', !isActive);
+                }
+            });
+
+            $('.mob-color-swatch').each(function () {
+                let val = $(this).attr('data-color-option');
+                let isActive = selectedColors.includes(val);
+                $(this).toggleClass('ring-2 ring-offset-1 ring-black scale-110', isActive);
+                $(this).toggleClass('opacity-90 hover:opacity-100', !isActive);
+                $(this).find('.mob-color-check').toggleClass('hidden', !isActive);
+            });
+
+            if (selectedColors.length > 0) {
+                let names = selectedColors.map(function (c) {
+                    let btn = $('.mob-color-swatch[data-color-option="' + c + '"]');
+                    return btn.attr('data-color-name') || c;
+                });
+                $('#mobColorLabelSpan').text('Color: ' + names.join(', '));
+            } else {
+                $('#mobColorLabelSpan').text('Colors');
+            }
+
+            // ---- SIZES ----
+            let selectedSizes = $('#filterForm input[name="size[]"]:checked').map(function () {
+                return $(this).val();
+            }).get();
+
+            $('[data-size-option]').each(function () {
+                let val = $(this).attr('data-size-option');
+                if (val === '') {
+                    let isActive = selectedSizes.length === 0;
+                    $(this).toggleClass('border-gray-400 font-semibold bg-gray-50', isActive);
+                    $(this).toggleClass('border-gray-100', !isActive);
+                }
+            });
+
+            $('.mob-size-box').each(function () {
+                let val = $(this).attr('data-size-option');
+                let isActive = selectedSizes.includes(val);
+                $(this).toggleClass('bg-black text-white border-black shadow-sm', isActive);
+                $(this).toggleClass('bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100', !isActive);
+            });
+
+            if (selectedSizes.length > 0) {
+                $('#mobSizeLabelSpan').text('Size: ' + selectedSizes.map(s => s.toUpperCase()).join(', '));
+            } else {
+                $('#mobSizeLabelSpan').text('Sizes');
+            }
         }
 
         function fetchFilteredProducts(resetPage = true) {
@@ -472,16 +560,22 @@
                         hasMorePages = true;
                         isLoading = false;
                         $('#no-more-products').addClass('hidden');
-
                     }
 
                     window.history.pushState({path: fullQueryUrl}, '', fullQueryUrl);
+                    updateMobileFilterUI();
                 },
                 error: function (xhr, textStatus) {
                     if (textStatus !== 'abort') {
                         console.log(xhr.responseText);
+                        $('#productGrid').html(
+                            '<div class="col-span-full text-center py-10 text-red-500 text-sm font-medium">' +
+                            'Something went wrong while loading products. Please check console for details.' +
+                            '</div>'
+                        );
                     }
                     $('#loading-spinner').addClass('hidden');
+                    isLoading = false;
                 }
             });
         }
@@ -533,16 +627,35 @@
             fetchFilteredProducts(true);
         }
 
-        // Color & Size Selection Handlers
+        // --- Color / Size / Brand Selection Handlers (Multi-select, checkboxes ko toggle karte hain) ---
         function selectColorSwatch(color) {
-            const input = document.getElementById('selectedColorInput');
-            if (input) input.value = (input.value === color) ? '' : color;
+            if (!color) {
+                $('#filterForm input[name="color[]"]').prop('checked', false);
+            } else {
+                const checkbox = $('#filterForm input[name="color[]"][value="' + color + '"]');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
             fetchFilteredProducts(true);
         }
 
         function selectSizeBox(size) {
-            const input = document.getElementById('selectedSizeInput');
-            if (input) input.value = (input.value === size) ? '' : size;
+            if (!size) {
+                $('#filterForm input[name="size[]"]').prop('checked', false);
+            } else {
+                const checkbox = $('#filterForm input[name="size[]"][value="' + size + '"]');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
+            fetchFilteredProducts(true);
+        }
+
+        // FIX: yeh function pehle missing tha, isi wajah se mobile "Brands" filter kaam nahi kar raha tha
+        function selectBrand(brandSlug) {
+            if (!brandSlug) {
+                $('#filterForm input[name="brand[]"]').prop('checked', false);
+            } else {
+                const checkbox = $('#filterForm input[name="brand[]"][value="' + brandSlug + '"]');
+                checkbox.prop('checked', !checkbox.prop('checked'));
+            }
             fetchFilteredProducts(true);
         }
 
@@ -600,6 +713,7 @@
                     }
 
                     window.history.pushState({path: targetUrl}, '', targetUrl);
+                    updateMobileFilterUI();
                 },
                 error: function (xhr, textStatus) {
                     if (textStatus !== 'abort') {
@@ -621,7 +735,7 @@
             }, 300);
         });
 
-        // Brand Checkboxes Change Event
+        // Brand Checkboxes Change Event (desktop sidebar checkboxes)
         $(document).on('change', '#filterForm input[type="checkbox"]', function () {
             fetchFilteredProducts(true);
         });
@@ -803,8 +917,6 @@
                 currentAjaxReq.abort();
             }
 
-            $('#selectedColorInput').val('');
-            $('#selectedSizeInput').val('');
             $('#priceSlider').val(100000);
             $('#priceLabel').text('100,000');
             $('#filterForm input[name="min_price"]').val(0);
@@ -836,6 +948,7 @@
                     }
 
                     window.history.pushState({path: baseUrl}, '', baseUrl);
+                    updateMobileFilterUI();
                 },
                 error: function (xhr, textStatus) {
                     if (textStatus !== 'abort') {

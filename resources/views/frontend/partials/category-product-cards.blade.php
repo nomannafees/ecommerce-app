@@ -20,7 +20,10 @@
             </button>
         </form>
 
-        <a href="{{ route('product.detail', $product->slug) }}{{ request('color') ? '?color='.request('color') : '' }}"
+        @php
+            $selectedColorForLink = is_array(request('color')) ? (request('color')[0] ?? null) : request('color');
+        @endphp
+        <a href="{{ route('product.detail', $product->slug) }}{{ $selectedColorForLink ? '?color='.$selectedColorForLink : '' }}"
            class="block z-10 flex flex-col h-full">
             <div class="bg-gray-100 overflow-hidden relative h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55">
                 @if(!empty($imagePath))

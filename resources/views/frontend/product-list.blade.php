@@ -17,11 +17,11 @@
     @endphp
 
     <!-- Banner -->
-        <div class="relative w-full overflow-hidden rounded-2xl mb-8 shadow-sm bg-white">
+        <div class="relative w-full overflow-hidden rounded-lg mb-4 -mt-2 shadow-sm bg-white">
             <img
                     src="{{ $bannerImage }}"
                     alt="Banner"
-                    class="w-full  h-65 object-cover"
+                    class="w-full h-auto object-contain sm:h-52 sm:object-cover md:h-60 lg:h-65 object-center"
             >
         </div>
 

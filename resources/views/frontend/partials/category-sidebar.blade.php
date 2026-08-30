@@ -22,8 +22,10 @@
             $displayCategories = collect();
         }
 
-        // Safe Multi-brand Array Handler
+        // Safe Multi-select Array Handlers (Brand, Color, Size)
         $selectedBrands = array_filter((array) request('brand', []));
+        $selectedColors = array_map(fn($c) => strtolower(trim($c)), array_filter((array) request('color', [])));
+        $selectedSizes  = array_map(fn($s) => trim($s), array_filter((array) request('size', [])));
     @endphp
 
     <form method="GET" action="{{ request()->url() }}" id="filterForm" class="space-y-4">
@@ -34,9 +36,6 @@
 
         @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
         @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
-
-        <input type="hidden" name="color" id="selectedColorInput" value="{{ request('color') }}">
-        <input type="hidden" name="size" id="selectedSizeInput" value="{{ request('size') }}">
 
         {{-- CATEGORIES HEADER WITH CLEAR FILTERS --}}
         <div class="flex items-center justify-between mb-2">
@@ -134,7 +133,7 @@
             </div>
         </div>
 
-        <!-- Color Filter -->
+        <!-- Color Filter (Multi-Select, same pattern as Brand) -->
         @if(isset($availableColors) && count($availableColors) > 0)
             <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
                 <span>Color</span>
@@ -143,22 +142,32 @@
                 @foreach($availableColors as $colorName)
                     @php
                         $cleanColor = strtolower(trim($colorName));
-                        $isSelected = request('color') == $cleanColor;
+                        $isSelected = in_array($cleanColor, $selectedColors);
                         $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
+                        $checkboxId = 'color-' . \Illuminate\Support\Str::slug($cleanColor);
                     @endphp
-                    <button type="button" onclick="selectColorSwatch('{{ $cleanColor }}')"
-                            title="{{ ucfirst($colorName) }}"
-                            class="w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 relative flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-2 ring-black scale-110' : 'opacity-80 hover:opacity-100' }}"
-                            style="{{ $inlineBg }}">
+
+                    <label for="{{ $checkboxId }}"
+                           title="{{ ucfirst($colorName) }}"
+                           class="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-2 ring-black scale-110' : 'opacity-80 hover:opacity-100' }}"
+                           style="{{ $inlineBg }}">
+
+                        <input type="checkbox"
+                               id="{{ $checkboxId }}"
+                               name="color[]"
+                               value="{{ $cleanColor }}"
+                               {{ $isSelected ? 'checked' : '' }}
+                               class="filter-input absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+
                         @if($isSelected)
-                            <i class="fa-solid fa-check text-[10px] sm:text-xs {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
+                            <i class="fa-solid fa-check text-[10px] sm:text-xs pointer-events-none {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
                         @endif
-                    </button>
+                    </label>
                 @endforeach
             </div>
         @endif
 
-    <!-- Size Filter -->
+    <!-- Size Filter (Multi-Select, same pattern as Brand) -->
         @if(isset($availableSizes) && count($availableSizes) > 0)
             <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
                 <span>Size</span>
@@ -167,12 +176,20 @@
                 @foreach($availableSizes as $sizeName)
                     @php
                         $cleanSize = trim($sizeName);
-                        $isSizeSelected = request('size') == $cleanSize;
+                        $isSizeSelected = in_array($cleanSize, $selectedSizes);
+                        $checkboxId = 'size-' . \Illuminate\Support\Str::slug($cleanSize);
                     @endphp
-                    <button type="button" onclick="selectSizeBox('{{ $cleanSize }}')"
-                            class="px-2.5 py-1 cursor-pointer text-xs sm:text-sm rounded border transition-all duration-200 font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-black' }}">
+
+                    <label for="{{ $checkboxId }}"
+                           class="px-2.5 py-1 cursor-pointer text-xs sm:text-sm rounded border transition-all duration-200 font-medium {{ $isSizeSelected ? 'bg-black text-white border-black shadow' : 'bg-gray-50 text-gray-700 border-gray-300 hover:border-black' }}">
+                        <input type="checkbox"
+                               id="{{ $checkboxId }}"
+                               name="size[]"
+                               value="{{ $cleanSize }}"
+                               {{ $isSizeSelected ? 'checked' : '' }}
+                               class="filter-input hidden">
                         {{ strtoupper($cleanSize) }}
-                    </button>
+                    </label>
                 @endforeach
             </div>
         @endif
@@ -195,7 +212,7 @@
                                    name="brand[]"
                                    value="{{ $brand->slug }}"
                                    {{ $isBrandSelected ? 'checked' : '' }}
-                                   class="w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
+                                   class="filter-input w-4 h-4 text-black border-gray-300 rounded focus:ring-black accent-black">
                             <span class="{{ $isBrandSelected ? 'font-semibold text-black' : '' }}">
                                 {{ ucfirst($brand->name) }}
                             </span>
@@ -216,3 +233,14 @@
 
     </form>
 </aside>
+
+<script>
+    // Color/Size checkboxes ab Brand ki tarah multi-select hain.
+    // Jaise hi koi color ya size checkbox toggle ho, filter form ko submit/fetch karo
+    // (agar aapke pass pehle se koi global 'filterForm change' listener hai jo Brand ke liye
+    // kaam kar raha hai, to yeh alag se add karne ki zarurat nahi — is listener ko sirf
+    // tab use karo agar filter change par koi automatic fetch/submit nahi ho raha).
+    $(document).on('change', '#filterForm input[type="checkbox"]', function () {
+        fetchFilteredProducts(true);
+    });
+</script>

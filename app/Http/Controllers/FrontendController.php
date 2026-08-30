@@ -451,11 +451,16 @@ class FrontendController extends Controller
         if ($request->filled('max_price')) {
             $query->whereHas('variants', fn($q) => $q->where('price', '<=', $request->max_price));
         }
+        // MULTIPLE COLORS FILTER LOGIC
         if ($request->filled('color')) {
-            $query->whereHas('variants', fn($q) => $q->where('color_name', $request->color));
+            $colors = is_array($request->color) ? $request->color : [$request->color];
+            $query->whereHas('variants', fn($q) => $q->whereIn('color_name', $colors));
         }
+
+// MULTIPLE SIZES FILTER LOGIC
         if ($request->filled('size')) {
-            $query->whereHas('variants', fn($q) => $q->where('size', $request->size));
+            $sizes = is_array($request->size) ? $request->size : [$request->size];
+            $query->whereHas('variants', fn($q) => $q->whereIn('size', $sizes));
         }
 
 // MULTIPLE BRANDS FILTER LOGIC (Updated)
@@ -501,12 +506,14 @@ class FrontendController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
+        $selectedColors = $request->filled('color')
+            ? array_map(fn($c) => strtolower(trim($c)), (array) $request->color)
+            : [];
 
-        $records->getCollection()->transform(function ($product) use ($selectedColor) {
+        $records->getCollection()->transform(function ($product) use ($selectedColors) {
             $variant = null;
-            if ($selectedColor) {
-                $variant = $product->variants->first(fn($v) => strtolower(trim($v->color_name)) === $selectedColor);
+            if (!empty($selectedColors)) {
+                $variant = $product->variants->first(fn($v) => in_array(strtolower(trim($v->color_name)), $selectedColors));
             }
 
             $product->active_variant = $variant ?? ($product->mainVariant ?? $product->variants->first());

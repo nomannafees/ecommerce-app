@@ -105,84 +105,73 @@
 
 @push('scripts')
     <script>
-        let page = 1;
-        let hasMorePages = {{ $products->hasMorePages() ? 'true' : 'false' }};
-        let isLoading = false;
-
-        function checkScrollAndLoad($scrollContainer, isWindow) {
-            let scrollTop = isWindow ? $(window).scrollTop() : $scrollContainer.scrollTop();
-            let innerHeight = isWindow ? $(window).height() : $scrollContainer.innerHeight();
-            let scrollHeight = isWindow ? $(document).height() : $scrollContainer[0].scrollHeight;
-
-            if (scrollTop + innerHeight >= scrollHeight - 300) {
-
-                if (!hasMorePages) {
-                    $('#no-more-products').removeClass('hidden');
-                    return;
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Handle form input changes (Checkbox, Range Slider)
+            document.addEventListener('change', function (e) {
+                if (e.target.closest('#filterForm') && e.target.classList.contains('filter-input')) {
+                    e.preventDefault();
+                    submitFilterForm();
                 }
+            });
 
-                if (isLoading) return;
+            // 2. Handle Price Slider release (mouseup / touchend)
+            window.applyPriceFilter = function (value) {
+                document.getElementById('priceLabel').innerText = Number(value).toLocaleString();
+                submitFilterForm();
+            };
 
-                isLoading = true;
-                page++;
+            // 3. Handle Category & Pagination Link Clicks via AJAX
+            window.fetchCategoryProducts = function (event, url, categorySlug) {
+                event.preventDefault();
 
-                // Shimmer Effect HTML
-                let shimmerHtml = `
-                    @for($i = 0; $i < 6; $i++)
-                <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
-                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
-                    <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
-                        <div>
-                            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                            <div class="h-3 bg-gray-200 rounded w-full"></div>
-                        </div>
-                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
-                        <div class="flex items-center justify-between mt-2">
-                            <div class="h-5 bg-gray-200 rounded w-1/3"></div>
-                            <div class="h-5 bg-gray-200 rounded w-1/4"></div>
-                        </div>
-                    </div>
-                </div>
-@endfor
-                `;
-                $('#product-grid').append(shimmerHtml);
+                // Optional: Update browser URL without reloading
+                window.history.pushState({}, '', url);
 
-                let url = new URL(window.location.href);
-                url.searchParams.set('page', page);
+                fetchProducts(url);
+            };
 
-                // 🟢 Yeh raha naya AJAX block jo aapne pucha hai
-                $.ajax({
-                    url: url.toString(),
-                    type: "GET",
-                    success: function (response) {
-                        $('.product-shimmer').remove();
+            // 4. Reset Filters Handler
+            window.fetchResetFilters = function (event, url) {
+                event.preventDefault();
+                window.history.pushState({}, '', url);
+                fetchProducts(url);
+            };
 
-                        // Agar response mein products ki HTML khali hai ya koi products nahi aaye
-                        if (!response || $.trim(response).length === 0) {
-                            hasMorePages = false;
-                            $('#no-more-products').removeClass('hidden');
-                        } else {
-                            $('#product-grid').append(response);
-                            isLoading = false;
-                        }
-                    },
-                    error: function (xhr) {
-                        console.log("AJAX Error: ", xhr.responseText);
-                        $('.product-shimmer').remove();
-                        isLoading = false;
-                    }
-                });
+            // Core AJAX Fetch Function
+            function submitFilterForm() {
+                const form = document.getElementById('filterForm');
+                const formData = new FormData(form);
+                const url = form.getAttribute('action') + '?' + new URLSearchParams(formData).toString();
+
+                window.history.pushState({}, '', url);
+                fetchProducts(url);
             }
-        }
 
-        // Window scroll listener
-        $(window).scroll(function () {
-            checkScrollAndLoad(null, true);
-        });
+            function fetchProducts(url) {
+                // Optional: Add a loading state / opacity mask to your product grid here
 
-        // Main container scroll listener
-        $('main').scroll(function () {
-            checkScrollAndLoad($(this), false);
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update Product Grid container (Make sure your main container has id="product-grid-container")
+                        const productContainer = document.getElementById('product-grid-container');
+                        if (productContainer && data.products !== undefined) {
+                            productContainer.innerHTML = data.products;
+                        }
+
+                        // Update Sidebar container (Make sure your sidebar wrapper has id="sidebar-container")
+                        const sidebarContainer = document.getElementById('sidebar-container');
+                        if (sidebarContainer && data.sidebar !== undefined) {
+                            sidebarContainer.innerHTML = data.sidebar;
+                        }
+                    })
+                    .catch(error => console.error('Error fetching filtered products:', error));
+            }
         });
     </script>
+
 @endpush
