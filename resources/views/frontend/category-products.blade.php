@@ -37,7 +37,7 @@
                                 </span>
                             </div>
 
-                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-3 sm:gap-4">
+                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-4">
                                 @foreach($currentCategory->children as $subCat)
                                     @php
                                         $currentRequestCategory = request('category');

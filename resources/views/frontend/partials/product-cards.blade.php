@@ -8,7 +8,7 @@
         <div class="bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 flex flex-col h-full w-full">
 
             <!-- IMAGE -->
-            <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55">
+            <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
                 <!-- WISHLIST -->
                 <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                     @csrf
@@ -26,10 +26,10 @@
             </div>
 
             <!-- CONTENT -->
-            <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-1">
+            <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
                 <div>
                     <!-- NAME -->
-                    <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                    <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
                         {{ $product->name }}
                     </h4>
 
@@ -42,7 +42,7 @@
                 @php $avgRating = $product->avgRating ?? 0; @endphp
 
                 {{-- Rating Section --}}
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-1 -mt-1">
                     <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
                         @for($i = 1; $i <= 5; $i++)
                             @if($i <= floor($avgRating))
@@ -58,7 +58,7 @@
                 </div>
 
                 <!-- PRICE + STOCK -->
-                <div class="flex items-center justify-between mt-auto gap-2">
+                <div class="flex items-center justify-between -mt-1 gap-2">
                 @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
 
                 <!-- PRICE -->

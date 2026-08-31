@@ -25,7 +25,7 @@
         @endphp
         <a href="{{ route('product.detail', $product->slug) }}{{ $selectedColorForLink ? '?color='.$selectedColorForLink : '' }}"
            class="block z-10 flex flex-col h-full">
-            <div class="bg-gray-100 overflow-hidden relative h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55">
+            <div class="bg-gray-100 overflow-hidden relative h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
                 @if(!empty($imagePath))
                     <img src="{{ asset('storage/'.$imagePath) }}"
                          class="w-full h-full object-cover group-hover:scale-104 transition duration-300"
@@ -36,9 +36,9 @@
                     </div>
                 @endif
             </div>
-            <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
+            <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
                 <div>
-                    <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                    <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
                         {{ $product->name }}
                     </h4>
                     <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 mt-0.5">
@@ -48,7 +48,7 @@
                 @php
                     $avgRating = $product->avgRating ?? 0;
                 @endphp
-                <div class="flex items-center gap-1 sm:mt-1.5">
+                <div class="flex items-center gap-1 -mt-1">
                     <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
                         @for($i = 1; $i <= 5; $i++)
                             @if($i <= floor($avgRating))
@@ -63,7 +63,7 @@
                     <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
                 </div>
 
-                <div class="flex items-center justify-between gap-2 mt-auto">
+                <div class="flex items-center justify-between gap-2 -mt-1">
                     <div class="flex flex-col">
                         @if($variant)
                             <span class="text-xs sm:text-base font-bold text-green-600 whitespace-nowrap">

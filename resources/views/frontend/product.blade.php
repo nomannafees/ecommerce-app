@@ -16,7 +16,7 @@
         </div>
 
         <!-- GRID CONTAINER WITH ID -->
-        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-8 gap-3">
+        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-8 gap-2">
             @include('frontend.partials.product-cards', ['products' => $products])
         </div>
 
