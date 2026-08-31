@@ -285,7 +285,7 @@
     </div>
 
     <div
-        class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-3">
+        class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -322,7 +322,7 @@
             </span>
 
                     {{-- IMAGE CONTAINER --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
+                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
                         <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -346,10 +346,10 @@
                     </div>
 
                     {{-- CARD CONTENT --}}
-                    <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
+                    <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
                         <div>
                             {{-- Product Name --}}
-                            <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                            <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
                                 {{ $product->name }}
                             </h4>
 
@@ -376,7 +376,7 @@
                         </div>
 
                         {{-- Price & Stock Section --}}
-                        <div class="flex items-center justify-between gap-2 mt-auto">
+                        <div class="flex items-center justify-between gap-2 -mt-1">
                             @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
                             <div class="flex flex-col">
                         <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
@@ -564,7 +564,7 @@
         </div>
 
         <div
-            class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-2 sm:mb-8">
+            class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -600,7 +600,7 @@
     </span>
 
                         {{-- IMAGE CONTAINER --}}
-                        <div class="relative bg-gray-100 overflow-hidden h-50 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
+                        <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
                             <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -622,10 +622,10 @@
                         </div>
 
                         {{-- CARD CONTENT --}}
-                        <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2">
+                        <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
                             <div>
                                 {{-- Product Name --}}
-                                <h4 class="font-medium xs:text-[14px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                                <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
                                     {{ $product->name }}
                                 </h4>
 
@@ -652,7 +652,7 @@
                             </div>
 
                             {{-- Price & Stock Section --}}
-                            <div class="flex items-center justify-between gap-2 mt-auto">
+                            <div class="flex items-center justify-between gap-2 -mt-2">
                                 @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
                                 <div class="flex flex-col">
                 <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
@@ -889,7 +889,7 @@
         </div>
 
         <!-- GRID CONTAINER WITH ID -->
-        <div id="for-you-grid" class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-4">
+        <div id="for-you-grid" class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-3">
             @include('frontend.partials.for-you-cards', ['products' => $products])
         </div>
 
