@@ -322,7 +322,7 @@
             </span>
 
                     {{-- IMAGE CONTAINER --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 test">
+                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 testing">
                         <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
