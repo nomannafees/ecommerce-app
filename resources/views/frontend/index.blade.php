@@ -163,7 +163,7 @@
                     @endif
 
                     {{-- IMAGE CONTAINER --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
+                    <div class="relative bg-gray-100 overflow-hidden h-48 xs:h-52 sm:h-56 2xl:h-56 md:h-56 lg:h-56">
                         <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -178,11 +178,11 @@
                         @if($product->mainVariantImage)
                             <img src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
                                  alt="{{ $product->name }}"
-                                 class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
+                                 class="w-full h-full object-cover object-top group-hover:scale-104 transition-transform duration-300">
                         @else
                             <img src="{{ asset('upload/no-image.jpg') }}"
                                  alt="No Image Available"
-                                 class="w-full h-full object-cover">
+                                 class="w-full h-full object-cover object-top">
                         @endif
                     </div>
 
