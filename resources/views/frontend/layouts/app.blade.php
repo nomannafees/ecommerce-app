@@ -290,7 +290,7 @@
                             .addClass('fa-regular text-gray-500');
                     }
 
-                    // Badge update (agar response mein wishlistCount aaya ho)
+                    // Badge update (header + mobile bottom-nav dono)
                     if (typeof res.wishlistCount !== 'undefined') {
                         $('.wishlist-count').text(res.wishlistCount);
                         if (res.wishlistCount > 0) {
@@ -335,6 +335,16 @@
                     btn.closest('.wishlist-item').fadeOut(300, function () {
                         $(this).remove();
                     });
+
+                    // Badge update (header + mobile bottom-nav dono)
+                    if (typeof res.wishlistCount !== 'undefined') {
+                        $('.wishlist-count').text(res.wishlistCount);
+                        if (res.wishlistCount > 0) {
+                            $('.wishlist-count').removeClass('hidden');
+                        } else {
+                            $('.wishlist-count').addClass('hidden');
+                        }
+                    }
 
                 } else {
                     alert(res.message);

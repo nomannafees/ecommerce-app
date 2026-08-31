@@ -78,7 +78,7 @@
 
                 <!-- Wishlist: Desktop Only -->
                 <a href="{{ route('wishlist') }}" class="relative text-xl hover:text-red-500 hidden sm:block">
-                    <i class="fa-regular fa-heart fa-sm mb-4"></i>
+                    <i class="fa-regular fa-heart fa-sm mb-3"></i>
                     <span id="header-wishlist-count"
                           class="wishlist-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($wishlistCount ?? 0) > 0 ? '' : 'hidden' }}">
         {{ $wishlistCount ?? 0 }}

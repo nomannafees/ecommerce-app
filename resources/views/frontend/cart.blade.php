@@ -143,7 +143,7 @@
                 </div>
 
                 <!-- Right Column: Cart Summary -->
-                <div class="lg:col-span-1 lg:sticky lg:top-24 mb-8">
+                <div class="lg:col-span-1 lg:sticky lg:top-24 mb-6">
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
                         <h2 class="text-base font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
@@ -469,14 +469,12 @@
                         }
                     },
 
-
                     error: function (xhr) {
 
                         console.log(
                             'Quantity Error:',
                             xhr.responseText
                         );
-
 
                         if (
                             xhr.status === 422 &&
@@ -490,7 +488,6 @@
 
                         }
                     },
-
 
                     complete: function () {
 

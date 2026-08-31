@@ -3,7 +3,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 pb-16 sm:py-6">
 
         <div class="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500 truncate">
             Home / Products / <span class="text-black font-medium">{{ $product->name }}</span>
@@ -202,15 +202,19 @@
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3 mt-5">
+                <div class="flex flex-row gap-2 sm:gap-3 mt-5">
+
                     <button type="button" id="addToCartBtn"
-                            class="bg-black text-white px-5 sm:px-7 py-2.5 cursor-pointer rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800 transition shadow-sm">
+                            class="flex-1 sm:flex-none bg-black text-white px-2 sm:px-7 py-2.5 cursor-pointer rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800 transition shadow-sm whitespace-nowrap">
                         Add To Cart
                     </button>
+
                     <button type="button" id="buyNowBtn"
-                            class="bg-[#ff4d2d] text-white px-5 sm:px-7 py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-[#e63e20] transition w-full sm:w-auto cursor-pointer shadow-sm">
-                        <i class="fa-solid fa-bolt mr-1.5"></i> Buy Now
+                            class="flex-1 sm:flex-none bg-[#ff4d2d] text-white px-2 sm:px-7 py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-[#e63e20] transition cursor-pointer shadow-sm whitespace-nowrap">
+                        <i class="fa-solid fa-bolt mr-1"></i>
+                        Buy Now
                     </button>
+
                 </div>
 
             </div>
@@ -337,26 +341,55 @@
 
     <!-- REVIEW IMAGE POPUP / LIGHTBOX MODAL -->
     <div id="reviewImageModal"
-         class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
-        <!-- Close Button (Cut Icon) -->
+         class="fixed inset-0 z-[9999] hidden bg-black/90 backdrop-blur-sm">
+
+        <!-- Close Button -->
         <button onclick="closeReviewModal()" type="button"
-                class="absolute top-4 right-4 text-white/80 hover:text-white bg-black/40 hover:bg-black/80 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xl transition z-50 cursor-pointer">
+                class="absolute top-4 right-4 sm:top-6 sm:right-6 z-[10000]
+                   w-10 h-10 sm:w-12 sm:h-12
+                   flex items-center justify-center
+                   rounded-full bg-black/50 hover:bg-black/80
+                   text-white text-xl transition cursor-pointer">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
-        <!-- Modal Swiper Container -->
-        <div class="w-full max-w-4xl max-h-[85vh] relative">
-            <div class="swiper reviewModalSwiper w-full h-[70vh] sm:h-[75vh] rounded-2xl overflow-hidden">
-                <div class="swiper-wrapper flex items-center" id="reviewModalSwiperWrapper">
-                    <!-- Slides JS se render hongi -->
+        <!-- Modal Content -->
+        <div class="w-full h-full flex items-center justify-center px-4 sm:px-16">
+
+            <div class="relative w-full max-w-5xl h-[85vh]">
+
+                <!-- Swiper -->
+                <div class="swiper reviewModalSwiper w-full h-full">
+
+                    <div class="swiper-wrapper" id="reviewModalSwiperWrapper">
+                        <!-- Images JS se render hongi -->
+                    </div>
+
+                    <!-- Previous -->
+                    <div class="swiper-button-prev
+                            !text-white
+                            !w-10 !h-10 sm:!w-12 sm:!h-12
+                            !bg-black/50 hover:!bg-black/80
+                            rounded-full
+                            transition">
+                    </div>
+
+                    <!-- Next -->
+                    <div class="swiper-button-next
+                            !text-white
+                            !w-10 !h-10 sm:!w-12 sm:!h-12
+                            !bg-black/50 hover:!bg-black/80
+                            rounded-full
+                            transition">
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="swiper-pagination"></div>
+
                 </div>
-                <!-- Navigation -->
-                <div
-                        class="swiper-button-next !text-white bg-black/40 hover:bg-black/70 w-10 h-10 sm:w-12 sm:h-12 rounded-full !after:text-base sm:after:!text-lg transition"></div>
-                <div
-                        class="swiper-button-prev !text-white bg-black/40 hover:bg-black/70 w-10 h-10 sm:w-12 sm:h-12 rounded-full !after:text-base sm:after:!text-lg transition"></div>
-                <div class="swiper-pagination"></div>
+
             </div>
+
         </div>
     </div>
 
@@ -776,9 +809,79 @@
             }
             input.value = value;
         }
+
+        // Review Image Modal ke liye functions (Swiper ke sath)
+        function openReviewModal(images, startIndex = 0) {
+
+            const modal = document.getElementById('reviewImageModal');
+            const wrapper = document.getElementById('reviewModalSwiperWrapper');
+
+            // Purani slides remove
+            wrapper.innerHTML = '';
+
+            // New images add
+            images.forEach(function (imgUrl) {
+
+                wrapper.insertAdjacentHTML('beforeend', `
+            <div class="swiper-slide review-modal-slide">
+                <img src="${imgUrl}"
+                     class="review-modal-image"
+                     alt="Review Image">
+            </div>
+        `);
+
+            });
+
+            // Modal open
+            modal.classList.remove('hidden');
+            modal.style.display = 'block';
+
+            document.body.style.overflow = 'hidden';
+
+            // Purana swiper destroy
+            if (reviewSwiperInstance) {
+                reviewSwiperInstance.destroy(true, true);
+                reviewSwiperInstance = null;
+            }
+
+            // New Swiper
+            reviewSwiperInstance = new Swiper('.reviewModalSwiper', {
+                initialSlide: startIndex,
+                loop: images.length > 1,
+
+                navigation: {
+                    nextEl: '#reviewImageModal .swiper-button-next',
+                    prevEl: '#reviewImageModal .swiper-button-prev',
+                },
+
+                pagination: {
+                    el: '#reviewImageModal .swiper-pagination',
+                    clickable: true
+                },
+
+                observer: true,
+                observeParents: true,
+            });
+        }
+
+        function closeReviewModal() {
+
+            const modal = document.getElementById('reviewImageModal');
+
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+
+            document.body.style.overflow = '';
+
+            if (reviewSwiperInstance) {
+                reviewSwiperInstance.destroy(true, true);
+                reviewSwiperInstance = null;
+            }
+        }
     </script>
 
     <style>
+
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
@@ -795,5 +898,36 @@
         .reviewModalSwiper .swiper-pagination-bullet-active {
             background: #fff !important;
         }
+
+
+        /* Review Modal */
+        .reviewModalSwiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .reviewModalSwiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .review-modal-slide {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .review-modal-image {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin: auto;
+        }
+
     </style>
 @endsection

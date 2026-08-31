@@ -598,7 +598,8 @@ class FrontendController extends Controller
             return response()->json([
                 'status' => true,
                 'action' => 'removed',
-                'message' => 'Removed from wishlist'
+                'message' => 'Removed from wishlist',
+                'wishlistCount' => Wishlist::where('user_id', Auth::id())->count(),
             ]);
         }
 
@@ -649,7 +650,8 @@ class FrontendController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Removed from wishlist'
+            'message' => 'Removed from wishlist',
+            'wishlistCount' => Wishlist::where('user_id', Auth::id())->count(),
         ]);
     }
 
