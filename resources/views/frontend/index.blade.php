@@ -187,7 +187,7 @@
                     </div>
 
                     {{-- CARD CONTENT --}}
-                    <div class="p-1.5 sm:p-2 xs:p-2 md-p-2 lg-p-2 xl-p-2 2xl-p-2 flex-grow flex flex-col justify-between gap-2">
+                    <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
                         <div>
                             {{-- Product Name --}}
                             <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
