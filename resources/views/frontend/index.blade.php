@@ -311,7 +311,7 @@
                 </span>
 
                     {{-- IMAGE CONTAINER (Fixed Uniform Height Fix) --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-44 sm:h-52 w-full flex-shrink-0">
+                    <div class="relative bg-gray-100 overflow-hidden h-40 sm:h-50 w-full flex-shrink-0">
                         <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
