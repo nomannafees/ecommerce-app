@@ -37,7 +37,7 @@
         <div id="shimmer-grid" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
             @for($i = 0; $i < 6; $i++)
                 <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full">
-                    <div class="shimmer h-50 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 bg-gray-200"></div>
+                    <div class="shimmer h-50 xs:h-44 sm:h-40 2xl:h-50 md:h-50 lg:h-50 bg-gray-200"></div>
                     <div class="p-2.5 sm:p-2.5 flex flex-col gap-2">
                         <div class="shimmer h-3.5 w-3/4 bg-gray-200 rounded"></div>
                         <div class="shimmer h-2.5 w-full bg-gray-200 rounded"></div>

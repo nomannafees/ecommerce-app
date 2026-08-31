@@ -364,7 +364,7 @@
             for (let i = 0; i < count; i++) {
                 skeletons += `
             <div class="bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
-                <div class="bg-gray-200 h-46 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55 animate-shimmer"></div>
+                <div class="bg-gray-200 h-40 xs:h-44 sm:h-50 2xl:h-47 md:h-45 lg:h-55 animate-shimmer"></div>
                 <div class="p-2.5 sm:p-2.5 flex-grow flex flex-col justify-between gap-2.5">
                 <div class="space-y-2">
                 <div class="h-4 bg-gray-200 rounded animate-shimmer w-3/4"></div>

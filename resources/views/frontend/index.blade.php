@@ -924,7 +924,7 @@
                 let shimmerHtml = `
                     @for($i = 0; $i < 6; $i++)
                 <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
-                    <div class="bg-gray-200 h-50 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
+                    <div class="bg-gray-200 h-40 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
                     <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
                         <div>
                             <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
