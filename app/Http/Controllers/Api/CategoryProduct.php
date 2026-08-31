@@ -18,22 +18,6 @@ class CategoryProduct extends Controller
      */
     public function getSidebarData(Request $request, $slug = null)
     {
-        $availableColors = ProductVariant::whereNotNull('color_name')
-            ->where('color_name', '!=', '')
-            ->distinct()
-            ->pluck('color_name')
-            ->toArray();
-
-        $availableSizes = ProductVariant::whereNotNull('size')
-            ->where('size', '!=', '')
-            ->distinct()
-            ->pluck('size')
-            ->toArray();
-
-        $availableBrands = Brand::whereNotNull('name')
-            ->where('name', '!=', '')
-            ->get();
-
         $currentCategory = null;
         $categorySlug = $request->get('category', $slug);
 
@@ -65,6 +49,79 @@ class CategoryProduct extends Controller
             // Agar koi category URL mein nahi hai (All Products page), toh sirf root main categories (`parent_id = 0`) aayengi
             $categories = Categorie::where('parent_id', 0)->with('allChildren')->get();
         }
+
+        // 3. Category ke hisaab se product IDs nikalna (taake colors/sizes/brands sirf isi category ke hon)
+        $categoryIds = null;
+        if ($currentCategory) {
+            $currentCategory->load('children.children');
+
+            $getSubIds = function ($cat) use (&$getSubIds) {
+                $ids = [];
+                foreach ($cat->children as $child) {
+                    $ids[] = $child->id;
+                    if ($child->children->isNotEmpty()) {
+                        $ids = array_merge($ids, $getSubIds($child));
+                    }
+                }
+                return $ids;
+            };
+
+            $categoryIds = array_merge([$currentCategory->id], $getSubIds($currentCategory));
+        }
+
+        // 4. Base product query (category ke mutabiq scoped) — multi-select filters yahan apply honge
+        $productQuery = Product::query();
+
+        if ($categoryIds) {
+            $productQuery->whereIn('category_id', $categoryIds);
+        }
+
+        if ($request->filled('min_price')) {
+            $productQuery->whereHas('variants', fn($q) => $q->where('price', '>=', $request->min_price));
+        }
+        if ($request->filled('max_price')) {
+            $productQuery->whereHas('variants', fn($q) => $q->where('price', '<=', $request->max_price));
+        }
+
+        // MULTIPLE COLORS FILTER LOGIC
+        if ($request->filled('color')) {
+            $colors = is_array($request->color) ? $request->color : [$request->color];
+            $productQuery->whereHas('variants', fn($q) => $q->whereIn('color_name', $colors));
+        }
+
+        // MULTIPLE SIZES FILTER LOGIC
+        if ($request->filled('size')) {
+            $sizes = is_array($request->size) ? $request->size : [$request->size];
+            $productQuery->whereHas('variants', fn($q) => $q->whereIn('size', $sizes));
+        }
+
+        // MULTIPLE BRANDS FILTER LOGIC
+        if ($request->filled('brand')) {
+            $brands = is_array($request->brand) ? $request->brand : [$request->brand];
+            $productQuery->whereHas('prod_brand', fn($q) => $q->whereIn('slug', $brands));
+        }
+
+        $productIds = $productQuery->pluck('id');
+
+        // 5. Ab sirf inhi (filtered) products ke variants/brand se available options nikalein
+        $availableColors = ProductVariant::whereIn('product_id', $productIds)
+            ->whereNotNull('color_name')
+            ->where('color_name', '!=', '')
+            ->distinct()
+            ->pluck('color_name')
+            ->toArray();
+
+        $availableSizes = ProductVariant::whereIn('product_id', $productIds)
+            ->whereNotNull('size')
+            ->where('size', '!=', '')
+            ->distinct()
+            ->pluck('size')
+            ->toArray();
+
+        $availableBrands = Brand::whereNotNull('name')
+            ->where('name', '!=', '')
+            ->whereHas('products', fn($q) => $q->whereIn('id', $productIds))
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -139,14 +196,23 @@ class CategoryProduct extends Controller
         if ($request->filled('max_price')) {
             $query->whereHas('variants', fn($q) => $q->where('price', '<=', $request->max_price));
         }
+
+        // MULTIPLE COLORS FILTER LOGIC
         if ($request->filled('color')) {
-            $query->whereHas('variants', fn($q) => $q->where('color_name', $request->color));
+            $colors = is_array($request->color) ? $request->color : [$request->color];
+            $query->whereHas('variants', fn($q) => $q->whereIn('color_name', $colors));
         }
+
+        // MULTIPLE SIZES FILTER LOGIC
         if ($request->filled('size')) {
-            $query->whereHas('variants', fn($q) => $q->where('size', $request->size));
+            $sizes = is_array($request->size) ? $request->size : [$request->size];
+            $query->whereHas('variants', fn($q) => $q->whereIn('size', $sizes));
         }
+
+        // MULTIPLE BRANDS FILTER LOGIC
         if ($request->filled('brand')) {
-            $query->whereHas('prod_brand', fn($q) => $q->where('slug', $request->brand));
+            $brands = is_array($request->brand) ? $request->brand : [$request->brand];
+            $query->whereHas('prod_brand', fn($q) => $q->whereIn('slug', $brands));
         }
 
         // Sorting Logic
@@ -186,12 +252,15 @@ class CategoryProduct extends Controller
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        $selectedColor = $request->filled('color') ? strtolower(trim($request->color)) : null;
+        // MULTIPLE COLORS: ab selected colors ek array hain (single color nahi)
+        $selectedColors = $request->filled('color')
+            ? array_map(fn($c) => strtolower(trim($c)), (array) $request->color)
+            : [];
 
-        $records->getCollection()->transform(function ($product) use ($selectedColor) {
+        $records->getCollection()->transform(function ($product) use ($selectedColors) {
             $variant = null;
-            if ($selectedColor) {
-                $variant = $product->variants->first(fn($v) => strtolower(trim($v->color_name)) === $selectedColor);
+            if (!empty($selectedColors)) {
+                $variant = $product->variants->first(fn($v) => in_array(strtolower(trim($v->color_name)), $selectedColors));
             }
 
             $product->active_variant = $variant ?? ($product->mainVariant ?? $product->variants->first());
