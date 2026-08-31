@@ -285,33 +285,44 @@
     </div>
 
     <div
-            class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
+        class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
                 $avgRating = $product->reviews->avg('rating') ?? 0;
 
+                // CORRECTED ROW-BASED RESPONSIVE LOGIC:
+                // - Mobile (2 cols): 6 rows = 12 items (0 to 11)
+                // - SM (3 cols): 4 rows = 12 items (0 to 11)
+                // - MD (4 cols): 3 rows = 12 items (0 to 11) -> 4 columns x 3 rows = 12 items
+                // - LG (5 cols): 2 rows = 10 items (0 to 9) -> 5 columns x 2 rows = 10 items
+                // - XL (6 cols): 2 rows = 12 items (0 to 11) -> 6 columns x 2 rows = 12 items
+
                 if ($index < 10) {
+                    // Pehle 10 items sabhi screens par dikhenge (LG ki 2 rows pori - 5x2=10)
                     $displayClass = 'flex';
                 } elseif ($index >= 10 && $index < 12) {
+                    // 11th aur 12th items: LG screen par hidden rahenge (kyunki LG ko sirf 10 chahiye),
+                    // lekin Mobile, SM, MD aur XL par visible honge taake unki rows pori ho sakein.
                     $displayClass = 'flex sm:flex md:flex lg:hidden xl:flex';
                 } else {
+                    // 13th item aur uske baad sabhi hidden
                     $displayClass = 'hidden';
                 }
             @endphp
 
-            <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }} flex-col">
+            <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
                 {{-- Card Container --}}
                 <div
-                        class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-0.5 sm:w-full">
+                    class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
-                <span
-                        class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
-                    Top Seller
-                </span>
+            <span
+                class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+                Top Seller
+            </span>
 
-                    {{-- IMAGE CONTAINER (Fixed Uniform Height Fix) --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-40 sm:h-50 w-full flex-shrink-0">
+                    {{-- IMAGE CONTAINER --}}
+                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 test">
                         <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -326,25 +337,25 @@
                         @if($product->mainVariantImage)
                             <img src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
                                  alt="{{ $product->name }}"
-                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300">
+                                 class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
                         @else
                             <img src="{{ asset('upload/no-image.jpg') }}"
                                  alt="No Image Available"
-                                 class="w-full h-full object-cover object-center">
+                                 class="w-full h-full object-cover">
                         @endif
                     </div>
 
                     {{-- CARD CONTENT --}}
-                    <div class="p-2.5 flex-grow flex flex-col justify-between gap-2">
-                        <div class="min-w-0">
+                    <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
+                        <div>
                             {{-- Product Name --}}
-                            <h4 class="font-medium text-[12px] md:text-[15px] text-gray-800 truncate group-hover:text-black capitalize w-full">
+                            <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
                                 {{ $product->name }}
                             </h4>
 
                             {{-- Description --}}
-                            <div class="hidden sm:block text-[11px] sm:text-xs text-gray-500 xs:line-clamp-1 sm:line-clamp-1 md:line-clamp-1 lg:line-clamp-1 xl:line-clamp-1 2xl:line-clamp-1 mt-0.5 overflow-hidden text-ellipsis min-w-0">
-                                {!! strip_tags($product->description) ?? '' !!}
+                            <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
+                                {!! $product->description !!}
                             </div>
 
                             {{-- Rating Section --}}
@@ -365,28 +376,30 @@
                         </div>
 
                         {{-- Price & Stock Section --}}
-                        <div class="flex items-center justify-between gap-2 pt-1 border-t border-gray-100 mt-auto">
+                        <div class="flex items-center justify-between gap-2 -mt-1">
                             @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
                             <div class="flex flex-col">
-                            <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                                Rs {{ number_format($variant->price ?? 0) }}
-                            </span>
+                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                            Rs {{ number_format($variant->price ?? 0) }}
+                        </span>
                                 @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
                                     <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                    Rs {{ number_format($variant->cut_price) }}
-                                </span>
+                                Rs {{ number_format($variant->cut_price) }}
+                            </span>
                                 @endif
                             </div>
                             <div class="flex-shrink-0">
                                 @php $totalStock = $product->variants->sum('stock'); @endphp
                                 @if($totalStock <= 0)
-                                    <span class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    Out of Stock
-                                </span>
+                                    <span
+                                        class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                Out of Stock
+                            </span>
                                 @else
-                                    <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                                </span>
+                                    <span
+                                        class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
+                            </span>
                                 @endif
                             </div>
                         </div>
