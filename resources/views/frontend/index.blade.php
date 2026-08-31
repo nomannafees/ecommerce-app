@@ -354,7 +354,7 @@
                             </h4>
 
                             {{-- Description --}}
-                            <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
+                            <div class="text-[12px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
                                 {!! $product->description !!}
                             </div>
 
