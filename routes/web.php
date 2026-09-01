@@ -81,6 +81,8 @@ Route::get('/shop', [FrontendController::class, 'shopCategories'])->name('shop.c
 
 Route::middleware('auth')->group(function () {
 
+    Route::get('/account', [FrontendController::class, 'accountMenu'])->name('account.menu');
+
     Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout');
 
     Route::get('/my-orders', [FrontendController::class, 'orders'])

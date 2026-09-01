@@ -1387,4 +1387,9 @@ class FrontendController extends Controller
         return view('frontend.shop-categories', compact('categories', 'cartCount'));
     }
 
+    public function accountMenu()
+    {
+        return view('frontend.account-menu');
+    }
+
 }

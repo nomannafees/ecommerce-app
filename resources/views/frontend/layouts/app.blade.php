@@ -73,7 +73,7 @@
 
         <!-- Profile / Account -->
         @auth
-            <a href="{{ route('frontend.user_info.index') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('frontend.user_info.index') ? 'text-black font-bold' : '' }}">
+            <a href="{{ route('account.menu') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('account.menu') ? 'text-black font-bold' : '' }}">
                 <i class="fa-solid fa-user text-base"></i>
                 <span class="text-[10px] mt-0.5">Account</span>
             </a>
@@ -157,19 +157,26 @@
                 <div class="mb-5">
                     <label for="modalRegisterName" class="block mb-2 text-sm font-medium text-gray-700">Full Name</label>
                     <input id="modalRegisterName" type="text" name="name" required autocomplete="name" placeholder="Enter your full name" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                    <span id="modalRegisterNameError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
                 <div class="mb-5">
                     <label for="modalRegisterEmail" class="block mb-2 text-sm font-medium text-gray-700">Email Address</label>
                     <input id="modalRegisterEmail" type="email" name="email" required autocomplete="email" placeholder="name@company.com" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                    <span id="modalRegisterEmailError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
                 <div class="mb-5">
                     <label for="modalRegisterPassword" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
                     <input id="modalRegisterPassword" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                    <span id="modalRegisterPasswordError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
                 <div class="mb-6">
                     <label for="modalRegisterPasswordConfirm" class="block mb-2 text-sm font-medium text-gray-700">Confirm Password</label>
                     <input id="modalRegisterPasswordConfirm" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                    <span id="modalRegisterPasswordConfirmError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
+
+                <!-- General Error Box (agar kisi field se link na ho, jaise "email already taken" agar Laravel validation format alag ho) -->
+                <div id="modalRegisterGeneralError" class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs hidden text-center font-medium"></div>
 
                 <!-- Submit Button with Register Icon -->
                 <button type="submit" id="modalRegisterBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md transition duration-300 cursor-pointer flex items-center justify-center gap-2">
@@ -275,6 +282,14 @@
             data: form.serialize(),
 
             success: function (res) {
+
+                // Agar user login nahi hai, to toast ki jagah login modal kholo
+                if (!res.status && res.message === 'Please login first') {
+                    if (typeof openAuthModal === 'function') {
+                        openAuthModal();
+                    }
+                    return;
+                }
 
                 if (res.status) {
 
@@ -593,11 +608,25 @@
 
     function submitModalRegister(e) {
         e.preventDefault();
-        let name = document.getElementById('modalRegisterName').value;
-        let email = document.getElementById('modalRegisterEmail').value;
-        let password = document.getElementById('modalRegisterPassword').value;
-        let password_confirmation = document.getElementById('modalRegisterPasswordConfirm').value;
+        let name = document.getElementById('modalRegisterName');
+        let email = document.getElementById('modalRegisterEmail');
+        let password = document.getElementById('modalRegisterPassword');
+        let passwordConfirm = document.getElementById('modalRegisterPasswordConfirm');
         let btn = document.getElementById('modalRegisterBtn');
+
+        let nameError = document.getElementById('modalRegisterNameError');
+        let emailError = document.getElementById('modalRegisterEmailError');
+        let passwordError = document.getElementById('modalRegisterPasswordError');
+        let passwordConfirmError = document.getElementById('modalRegisterPasswordConfirmError');
+        let generalError = document.getElementById('modalRegisterGeneralError');
+
+        // Purane errors reset karein
+        [nameError, emailError, passwordError, passwordConfirmError, generalError].forEach(el => {
+            if (el) el.classList.add('hidden');
+        });
+        [name, email, password, passwordConfirm].forEach(el => {
+            if (el) el.classList.remove('border-red-500');
+        });
 
         btn.disabled = true;
         btn.innerHTML = 'Registering...';
@@ -609,7 +638,13 @@
                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
                 "Accept": "application/json"
             },
-            body: JSON.stringify({name, email, password, password_confirmation, role: 'customer'})
+            body: JSON.stringify({
+                name: name.value,
+                email: email.value,
+                password: password.value,
+                password_confirmation: passwordConfirm.value,
+                role: 'customer'
+            })
         })
             .then(async res => {
                 btn.disabled = false;
@@ -621,13 +656,42 @@
                     closeAuthModal();
                     location.reload();
                 } else {
-                    alert(data.message || 'Registration failed. Please check inputs.');
+                    // Field-specific validation errors (422 response)
+                    if (res.status === 422 && data.errors) {
+                        if (data.errors.name && nameError) {
+                            name.classList.add('border-red-500');
+                            nameError.innerText = data.errors.name[0];
+                            nameError.classList.remove('hidden');
+                        }
+                        if (data.errors.email && emailError) {
+                            email.classList.add('border-red-500');
+                            emailError.innerText = data.errors.email[0];
+                            emailError.classList.remove('hidden');
+                        }
+                        if (data.errors.password && passwordError) {
+                            password.classList.add('border-red-500');
+                            passwordError.innerText = data.errors.password[0];
+                            passwordError.classList.remove('hidden');
+                        }
+                        if (data.errors.password_confirmation && passwordConfirmError) {
+                            passwordConfirm.classList.add('border-red-500');
+                            passwordConfirmError.innerText = data.errors.password_confirmation[0];
+                            passwordConfirmError.classList.remove('hidden');
+                        }
+                    } else if (generalError) {
+                        // Koi aur error (validation se hat kar), general box mein dikhao
+                        generalError.innerText = data.message || 'Registration failed. Please check inputs.';
+                        generalError.classList.remove('hidden');
+                    }
                 }
             })
             .catch(err => {
                 btn.disabled = false;
                 btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.765Z"/></svg><span>Create Account</span>`;
-                alert('Registration failed. Please check inputs.');
+                if (generalError) {
+                    generalError.innerText = 'Something went wrong. Please try again.';
+                    generalError.classList.remove('hidden');
+                }
             });
     }
 

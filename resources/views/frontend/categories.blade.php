@@ -811,9 +811,16 @@
                             button.classList.remove('processing');
                             button.disabled = false;
 
-                            const isAdded = data.status === 'added' || data.status === true || (data.message && data.message.toLowerCase().includes('added'));
-                            const isRemoved = data.status === 'removed' || data.status === false || (data.message && data.message.toLowerCase().includes('remove'));
+                            // Agar user login nahi hai, to toast ki jagah login modal kholo
+                            if (!data.status && data.message === 'Please login first') {
+                                if (typeof openAuthModal === 'function') {
+                                    openAuthModal();
+                                }
+                                return;
+                            }
 
+                            const isAdded = data.status === 'const isAdded = data.action === 'added' || (data.message && data.message.toLowerCase().includes('added'));
+                            const isRemoved = data.action === 'removed' || (data.message && data.message.toLowerCase().includes('remove'));
                             if (isAdded) {
                                 icon.className = 'wishlistIcon fa-heart text-lg transition duration-200 fa-solid text-red-500';
                                 Toast.fire({icon: 'success', title: data.message || 'Added to wishlist!'});
