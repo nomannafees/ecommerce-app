@@ -2,10 +2,10 @@
 
 @section('content')
 
-    <div class="px-4 md:px-10 pb-10 pt-6 bg-gray-50 min-h-[49vh]">
+    <div class="px-4 md:px-10 pb-10 pt-6 min-h-[49vh]">
 
         <!-- HEADER -->
-        <div class="mb-4 text-center">
+        <div class="hidden md:block mb-4 text-center">
             <h2 class="text-3xl font-bold text-gray-800">My Wishlist</h2>
 
             <p class="text-sm text-gray-500 mt-1">
@@ -15,20 +15,23 @@
 
 
         <!-- EMPTY STATE -->
-        <div id="emptyWishlist"
-             class="text-center py-10 bg-white rounded-xl shadow-sm {{ $wishlists->isEmpty() ? '' : 'hidden' }}">
+        <div class="flex items-center justify-center min-h-[80vh] xs:h-30 sm:h-30 md:h-30 xl:h-30 2xl:h-30 lg:h-30 ">
+            <div id="emptyWishlist"
+                 class="text-center  {{ $wishlists->isEmpty() ? '' : 'hidden' }}">
 
-            <i class="fa-regular fa-heart text-5xl text-gray-300"></i>
+                <i class="fa-regular fa-heart text-5xl text-gray-300"></i>
 
-            <h2 class="text-xl font-semibold mt-4 text-gray-700">
-                Your wishlist is empty
-            </h2>
+                <h2 class="text-xl font-semibold mt-4 text-gray-700">
+                    Your wishlist is empty
+                </h2>
 
-            <p class="text-sm text-gray-500 mt-1">
-                Start adding products you love ❤️
-            </p>
+                <p class="text-sm text-gray-500">
+                    Start adding products you love ❤️
+                </p>
 
+            </div>
         </div>
+
 
 
         <!-- WISHLIST ITEMS -->
