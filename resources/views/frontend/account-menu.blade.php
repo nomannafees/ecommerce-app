@@ -163,7 +163,7 @@
                                 </span>
                                 <div>
                                     <span class="text-sm font-bold text-gray-800 block">Contact Us</span>
-                                    <span class="text-xs text-gray-400">Get assistance</span>
+                                    <span class="text-xs text-gray-400">We're here to help.</span>
                                 </div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-xs text-gray-300 group-hover:text-indigo-500 transition"></i>
@@ -182,7 +182,7 @@
                                 </span>
                                 <div>
                                     <span class="text-sm font-bold text-red-600 block">Logout</span>
-                                    <span class="text-xs text-red-400">End your session</span>
+                                    <span class="text-xs text-red-400">Sign out of your account</span>
                                 </div>
                             </div>
                             <i class="fa-solid fa-chevron-right text-xs text-red-300 group-hover:translate-x-1 transition"></i>
