@@ -346,14 +346,32 @@
 
                 if (res.status) {
 
-                    // 🔥 FORCE REMOVE CORRECT CARD
+                    // Deleted card remove
                     btn.closest('.wishlist-item').fadeOut(300, function () {
+
                         $(this).remove();
+
+                        // Agar koi wishlist item baki nahi hai
+                        if ($('.wishlist-item').length === 0) {
+
+                            // Wishlist container hide
+                            $('#wishlistContainer').addClass('hidden');
+
+                            // Empty wishlist show
+                            $('#emptyWishlist')
+                                .removeClass('hidden')
+                                .hide()
+                                .fadeIn(300);
+                        }
+
                     });
+
 
                     // Badge update (header + mobile bottom-nav dono)
                     if (typeof res.wishlistCount !== 'undefined') {
+
                         $('.wishlist-count').text(res.wishlistCount);
+
                         if (res.wishlistCount > 0) {
                             $('.wishlist-count').removeClass('hidden');
                         } else {
