@@ -619,6 +619,11 @@ class FrontendController extends Controller
 
     public function wishlist()
     {
+        if (!Auth::check()) {
+            $wishlists = collect(); // guest ko hamesha khali wishlist milegi
+            return view('frontend.wishlist', compact('wishlists'));
+        }
+
         $wishlists = Wishlist::with(['product.variants'])
             ->where('user_id', Auth::id())
             ->get();
