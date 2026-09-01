@@ -2,8 +2,7 @@
 
 @section('content')
 
-    <!-- Added extra bottom padding (pb-32) to prevent the mobile bottom navigation bar from overlapping content -->
-    <div class="min-h-screen bg-gray-50 pb-32 lg:pb-20">
+    <div class="min-h-screen bg-gray-50 pb-[calc(5.5rem+env(safe-area-inset-bottom))]">
 
         <!-- TOP HEADER -->
         <div class="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-30 border-b border-gray-100">
@@ -19,7 +18,7 @@
         <!-- MAIN CONTAINER -->
         <div class="max-w-4xl mx-auto px-4 pt-6 space-y-5">
 
-            <!-- USER PROFILE CARD -->
+            <!-- USER PROFILE CARD (Moved to top of the right content area) -->
             <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-500 p-5 shadow-md shadow-emerald-900/10">
                 <!-- Decorative background circles -->
                 <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-white/10"></div>
