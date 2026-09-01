@@ -52,7 +52,8 @@
                 @if($product)
 
                     <!-- CARD -->
-                        <div class="cart-item flex flex-col md:flex-row items-start md:items-center justify-between bg-white rounded-2xl p-4 md:p-5 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 gap-3 md:gap-0" data-id="{{ $item->id }}">
+                        <div class="cart-item flex flex-col md:flex-row items-start md:items-center justify-between bg-white rounded-2xl p-4 md:p-5 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 gap-3 md:gap-0"
+                             data-id="{{ $item->id }}">
 
                             <!-- LEFT SIDE -->
                             <div class="flex items-start gap-4 w-full md:w-2/3">
@@ -72,15 +73,17 @@
                                 <div class="flex-1 min-w-0">
 
                                     <a href="{{ route('product.detail', $product->slug) }}">
-                                        <h3 class="font-semibold text-gray-900 text-sm md:text-base hover:text-indigo-600 transition truncate">
+                                        <h3 class="font-semibold text-gray-900 text-sm md:text-base hover:text-emerald-600 transition truncate">
                                             {{ $product->name }}
                                         </h3>
                                     </a>
 
                                     <p class="text-xs text-gray-500 mt-0.5 flex flex-wrap items-center gap-1.5">
-                                        <span>Color: <strong class="text-gray-700 uppercase">{{ $item->variant->color_name ?? 'Default' }}</strong></span>
+                                        <span>Color: <strong
+                                                    class="text-gray-700 uppercase">{{ $item->variant->color_name ?? 'Default' }}</strong></span>
                                         <span>•</span>
-                                        <span>Size: <strong class="text-gray-700 uppercase">{{ $item->variant->size ?? 'Free Size' }}</strong></span>
+                                        <span>Size: <strong
+                                                    class="text-gray-700 uppercase">{{ $item->variant->size ?? 'Free Size' }}</strong></span>
                                     </p>
 
                                     <!-- PRICE & SUBTOTAL -->
@@ -102,7 +105,14 @@
                                         @endif
 
                                         <span class="text-gray-300">|</span>
-                                        <span class="text-emerald-600 font-bold item-subtotal">Subtotal: Rs {{ number_format($itemPrice * $item->quantity) }}</span>
+                                        <span class="text-emerald-600 font-bold whitespace-nowrap">
+    <span class="item-subtotal-label">
+        Subtotal:
+    </span>
+    <span class="item-subtotal">
+        Rs {{ number_format($itemPrice * $item->quantity) }}
+    </span>
+</span>
                                     </div>
 
                                 </div>
@@ -114,11 +124,17 @@
 
                                 <!-- Quantity Controller (Styled matching the reference image) -->
                                 <div class="inline-flex items-center border border-gray-400 rounded-xl overflow-hidden bg-white">
-                                    <button type="button" class="qty-minus px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition text-xs font-semibold cursor-pointer">-</button>
+                                    <button type="button"
+                                            class="qty-minus px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition text-xs font-semibold cursor-pointer">
+                                        -
+                                    </button>
                                     <div class="w-[1px] h-4 bg-gray-400"></div>
                                     <span class="px-4 py-1.5 item-qty text-xs font-bold text-gray-900 bg-white">{{ $item->quantity }}</span>
                                     <div class="w-[1px] h-4 bg-gray-400"></div>
-                                    <button type="button" class="qty-plus px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition text-xs font-semibold cursor-pointer" data-id="{{ $item->id }}">+</button>
+                                    <button type="button"
+                                            class="qty-plus px-3 py-1.5 text-gray-700 hover:bg-gray-100 transition text-xs font-semibold cursor-pointer"
+                                            data-id="{{ $item->id }}">+
+                                    </button>
                                 </div>
 
                                 <!-- Delete Button -->
@@ -313,19 +329,19 @@
                             // =================================================
                             // 6. SUCCESS MESSAGE
                             // =================================================
-                            Toast.fire({
-                                icon: 'success',
-                                title: response.message || 'Removed from cart'
-                            });
+                            // Toast.fire({
+                            //     icon: 'success',
+                            //     title: response.message || 'Removed from cart'
+                            // });
 
                         } else {
 
                             button.prop('disabled', false);
 
-                            Toast.fire({
-                                icon: 'error',
-                                title: response.message || 'Unable to remove item'
-                            });
+                            // Toast.fire({
+                            //     icon: 'error',
+                            //     title: response.message || 'Unable to remove item'
+                            // });
                         }
                     },
 
@@ -342,7 +358,6 @@
                     }
                 });
             });
-
 
 
             // =====================================================
@@ -420,7 +435,7 @@
                             // 2. UPDATE ITEM SUBTOTAL
                             // =================================================
                             cartRow.find('.item-subtotal').text(
-                                'Subtotal: Rs ' + response.item_subtotal
+                                'Rs ' + response.item_subtotal
                             );
 
 
@@ -490,10 +505,10 @@
                             xhr.responseJSON.message
                         ) {
 
-                            Toast.fire({
-                                icon: 'error',
-                                title: xhr.responseJSON.message
-                            });
+                            // Toast.fire({
+                            //     icon: 'error',
+                            //     title: xhr.responseJSON.message
+                            // });
 
                         }
                     },

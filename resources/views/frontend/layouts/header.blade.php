@@ -151,17 +151,35 @@
                             </p>
                         </div>
 
-                        <a href="{{ route('frontend.user_info.index') }}"
-                           class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
-                            <i class="fa-solid fa-user"></i>
-                            My Profile
-                        </a>
+                        @auth
+                            <a href="{{ route('frontend.user_info.index') }}"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                                <i class="fa-solid fa-user"></i>
+                                My Profile
+                            </a>
+                        @else
+                            <button type="button"
+                                    onclick="handleNavAuthClick(event)"
+                                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left">
+                                <i class="fa-solid fa-user"></i>
+                                My Profile
+                            </button>
+                        @endauth
 
-                        <a href="{{ route('frontend.orders.index') }}"
-                           class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
-                            <i class="fa-solid fa-bag-shopping"></i>
-                            My Orders
-                        </a>
+                        @auth
+                            <a href="{{ route('frontend.orders.index') }}"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                My Orders
+                            </a>
+                        @else
+                            <button type="button"
+                                    onclick="handleNavAuthClick(event)"
+                                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left">
+                                <i class="fa-solid fa-bag-shopping"></i>
+                                My Orders
+                            </button>
+                        @endauth
 
                         @auth
                             <a href="{{ route('logout') }}"

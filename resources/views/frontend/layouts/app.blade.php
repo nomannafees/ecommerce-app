@@ -24,7 +24,9 @@
         <main class="flex-1 h-screen overflow-y-scroll">
             @include('frontend.layouts.header')
             @yield('content')
-            @include('frontend.layouts.footer')
+            @if (!request()->is('thank-you'))
+                @include('frontend.layouts.footer')
+            @endif
         </main>
     </div>
 </div>
@@ -257,14 +259,14 @@
 @if(session('success'))
 
     <script>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: "{{ session('success') }}",
-            showConfirmButton: false,
-            timer: 2000
-        });
+        {{--Swal.fire({--}}
+        {{--    toast: true,--}}
+        {{--    position: 'top-end',--}}
+        {{--    icon: 'success',--}}
+        {{--    title: "{{ session('success') }}",--}}
+        {{--    showConfirmButton: false,--}}
+        {{--    timer: 2000--}}
+        {{--});--}}
     </script>
 
 @endif
@@ -316,14 +318,14 @@
                     }
                 }
 
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: res.status ? 'success' : 'error',
-                    title: res.message,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
+                // Swal.fire({
+                //     toast: true,
+                //     position: 'top-end',
+                //     icon: res.status ? 'success' : 'error',
+                //     title: res.message,
+                //     showConfirmButton: false,
+                //     timer: 2000
+                // });
             }
         });
     });
@@ -404,20 +406,20 @@
 
         if ($('.variant-btn').length > 0 && variant_id == '') {
             // SweetAlert2 Toast Configuration
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
+            // const Toast = Swal.mixin({
+            //     toast: true,
+            //     position: 'top-end',
+            //     showConfirmButton: false,
+            //     timer: 3000,
+            //     timerProgressBar: true,
+            //     didOpen: (toast) => {
+            //         toast.addEventListener('mouseenter', Swal.stopTimer)
+            //         toast.addEventListener('mouseleave', Swal.resumeTimer)
+            //     }
+            // });
 
             Toast.fire({
-                icon: 'error', // یہاں آپ 'warning' بھی لکھ سکتے ہیں
+                icon: 'error',
                 title: 'Please select a variant'
             });
 
@@ -440,14 +442,14 @@
                 $('.cart-count').removeClass('hidden');
                 $('.cart-count').text(res.cartCount);
 
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: res.message,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
+                // Swal.fire({
+                //     toast: true,
+                //     position: 'top-end',
+                //     icon: 'success',
+                //     title: res.message,
+                //     showConfirmButton: false,
+                //     timer: 2000
+                // });
 
             },
 

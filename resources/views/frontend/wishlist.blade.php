@@ -2,7 +2,6 @@
 
 @section('content')
 
-    ```
     <div class="px-4 md:px-10 pb-10 pt-6 bg-gray-50 min-h-[49vh]">
 
         <!-- HEADER -->
@@ -124,6 +123,5 @@
         </div>
 
     </div>
-    ```
 
 @endsection

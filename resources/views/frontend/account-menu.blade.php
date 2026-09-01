@@ -172,7 +172,7 @@
                 </div>
 
                 @auth
-                    <div class="pt-2">
+                    <div class="-mt-2">
                         <a href="{{ route('logout') }}"
                            onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"
                            class="flex items-center justify-between bg-white rounded-xl border border-red-100 px-4 py-4 shadow-xs hover:bg-red-50 hover:border-red-200 transition group">

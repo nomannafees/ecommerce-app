@@ -61,7 +61,7 @@
         }
     </style>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-6">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 sm:py-12">
 
         <div class="text-center mb-5 max-w-2xl mx-auto">
             <h1 class="text-2xl md:text-2xl font-semibold text-gray-900 tracking-tight">
