@@ -15,9 +15,9 @@
 
 
         <!-- EMPTY STATE -->
-        <div class="flex items-center justify-center min-h-[80vh] xs:h-30 sm:h-30 md:h-30 xl:h-30 2xl:h-30 lg:h-30 ">
-            <div id="emptyWishlist"
-                 class="text-center  {{ $wishlists->isEmpty() ? '' : 'hidden' }}">
+        <div id="emptyWishlist" class=" {{ $wishlists->isEmpty() ? '' : 'hidden' }} empty-wishlist flex items-center justify-center px-4 py-8">
+            <div
+                 class="text-center  ">
 
                 <i class="fa-regular fa-heart text-5xl text-gray-300"></i>
 
@@ -31,6 +31,18 @@
 
             </div>
         </div>
+
+        <style>
+            .empty-wishlist {
+                height: 37.5vh;
+            }
+
+            @media (max-width: 767px) {
+                .empty-wishlist {
+                    height: 80vh;
+                }
+            }
+        </style>
 
 
 

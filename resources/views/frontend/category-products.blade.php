@@ -75,16 +75,63 @@
 
             <!-- PRODUCTS GRID SECTION -->
                 <div class="mb-6">
+
+                    <!-- HEADING -->
                     <h3 class="text-base sm:text-lg font-bold text-gray-800 mb-4 tracking-tight flex items-center gap-2">
                         <span class="w-2 h-5 bg-emerald-600 rounded-full inline-block flex-shrink-0"></span>
-                        <span>{{ isset($currentCategory) ? 'Products in ' . $currentCategory->name : 'All Products' }}</span>
+
+                        <span>
+                    {{ isset($currentCategory) ? 'Products in ' . $currentCategory->name : 'All Products' }}
+                </span>
                     </h3>
 
-                    <!-- GRID WITH ID FOR INFINITE SCROLL -->
-                    <div id="product-grid"
-                         class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-                        @include('frontend.partials.category-products-loop', ['products' => $products, 'wishlistProductIds' => $wishlistProductIds])
-                    </div>
+                @if($products->count() > 0)
+
+                    <!-- PRODUCTS GRID -->
+                        <div id="product-grid"
+                             class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+
+                            @include('frontend.partials.category-products-loop', [
+                                'products' => $products,
+                                'wishlistProductIds' => $wishlistProductIds
+                            ])
+
+                        </div>
+
+                @else
+
+                    <!-- MATCHING THE CLEAN IMAGE INTERFACE -->
+                        <div class="w-full">
+                            <div class="container mx-auto py-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-10 text-center flex flex-col items-center justify-center">
+
+                                <!-- Simple Gray Icon Circle -->
+                                <div class="w-14 h-14 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-xl mb-4">
+                                    <i class="fa-solid fa-box-open"></i>
+                                </div>
+
+                                <!-- Heading -->
+                                <h3 class="text-base font-bold text-slate-900 mb-1 tracking-tight">
+                                    No Products Found
+                                </h3>
+
+                                <!-- Subtext -->
+                                <p class="text-xs sm:text-sm text-slate-500 mb-6">
+                                    There are currently no products available in this category.
+                                </p>
+
+                                <!-- Action Button -->
+                                <div class="flex items-center justify-center">
+                                    <a href="{{ route('index') }}"
+                                       class="inline-flex items-center justify-center px-6 py-2.5 text-xs sm:text-sm font-semibold text-white bg-slate-900 rounded-full hover:bg-slate-800 transition shadow-sm">
+                                        Back to Home
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    @endif
+
                 </div>
 
                 <!-- NO MORE PRODUCTS BUTTON -->

@@ -413,10 +413,7 @@
         }
 
         // ====================================================================
-        // NEW: Sync mobile pill labels + active highlight states after AJAX
-        // (Blade only renders these once on page load; since we no longer
-        // reload the page, we must update them manually in JS every time
-        // the filters change.)
+        // Sync mobile pill labels + active highlight states after AJAX
         // ====================================================================
         function updateMobileFilterUI() {
             // ---- BRANDS ----
@@ -648,7 +645,6 @@
             fetchFilteredProducts(true);
         }
 
-        // FIX: yeh function pehle missing tha, isi wajah se mobile "Brands" filter kaam nahi kar raha tha
         function selectBrand(brandSlug) {
             if (!brandSlug) {
                 $('#filterForm input[name="brand[]"]').prop('checked', false);
@@ -762,20 +758,8 @@
             }
         });
 
-        // --- 4. WISHLIST AJAX HANDLER ---
+        // --- 4. WISHLIST AJAX HANDLER (product-card-specific — layout ke global handler se alag hai) ---
         document.addEventListener("DOMContentLoaded", function () {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2500,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.stopTimer)
-                }
-            });
-
             const gridContainer = document.getElementById('productGrid');
             if (gridContainer) {
                 gridContainer.addEventListener('submit', function (e) {
@@ -819,27 +803,32 @@
                                 return;
                             }
 
-                            const isAdded = data.status === 'const isAdded = data.action === 'added' || (data.message && data.message.toLowerCase().includes('added'));
+                            // ✅ FIX: pehle yahan icon.className = '...text-lg...' likha hua tha,
+                            // jo poori class list overwrite kar deta tha aur original size
+                            // (text-xs sm:text-sm) ki jagah "text-lg" laga deta tha — isi wajah
+                            // se click karte hi icon bara ho jata tha. Ab sirf zaroori classes
+                            // (solid/regular, color) hi toggle karte hain, size classes ko chhuwa
+                            // nahi jata.
+                            const isAdded = data.action === 'added' || (data.message && data.message.toLowerCase().includes('added'));
                             const isRemoved = data.action === 'removed' || (data.message && data.message.toLowerCase().includes('remove'));
+
                             if (isAdded) {
-                                icon.className = 'wishlistIcon fa-heart text-lg transition duration-200 fa-solid text-red-500';
-                                Toast.fire({icon: 'success', title: data.message || 'Added to wishlist!'});
+                                icon.classList.remove('fa-regular', 'text-gray-600', 'text-gray-500');
+                                icon.classList.add('fa-solid', 'text-red-500');
                             } else if (isRemoved) {
-                                icon.className = 'wishlistIcon fa-heart text-lg transition duration-200 fa-regular text-gray-500';
-                                Toast.fire({icon: 'info', title: data.message || 'Removed from wishlist!'});
+                                icon.classList.remove('fa-solid', 'text-red-500');
+                                icon.classList.add('fa-regular', 'text-gray-600');
                             } else {
                                 icon.classList.toggle('fa-solid');
                                 icon.classList.toggle('text-red-500');
                                 icon.classList.toggle('fa-regular');
-                                icon.classList.toggle('text-gray-500');
-                                Toast.fire({icon: 'success', title: 'Wishlist updated!'});
+                                icon.classList.toggle('text-gray-600');
                             }
                         })
                         .catch(error => {
                             button.classList.remove('processing');
                             button.disabled = false;
                             console.error('Wishlist Error:', error);
-                            Toast.fire({icon: 'error', title: 'Could not update wishlist. Try again.'});
                         });
                 });
             }

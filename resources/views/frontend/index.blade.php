@@ -127,7 +127,8 @@
             </h2>
             <p class="text-xs sm:text-sm text-gray-500">Hurry up! Limited time offers on top products</p>
         </div>
-        <a href="{{ route('products.more', ['type' => 'flash-sale']) }}" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+        <a href="{{ route('products.more', ['type' => 'flash-sale']) }}"
+           class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
             <span>More Products</span>
             <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </a>
@@ -169,9 +170,10 @@
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                             <button type="submit"
-                                    class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
-                                    style="padding: 4px 9px 4px 9px !important;">
-                                <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
+                                    class="wishlistBtn  absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
+                                    style="padding: 4px 9px 4px 9px !important;
+                                    cursor: pointer;">
+                                <i class="wishlistIcon  fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
                             </button>
                         </form>
 
@@ -278,14 +280,15 @@
         </div>
 
         <!-- Yeh raha Bestselling ke liye More Products ka link -->
-        <a href="{{ route('products.more', ['type' => 'bestselling']) }}" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+        <a href="{{ route('products.more', ['type' => 'bestselling']) }}"
+           class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
             <span>More Products</span>
             <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </a>
     </div>
 
     <div
-        class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
+            class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -314,10 +317,10 @@
             <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
                 {{-- Card Container --}}
                 <div
-                    class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
+                        class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
             <span
-                class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+                    class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
                 Top Seller
             </span>
 
@@ -329,7 +332,8 @@
 
                             <button type="submit"
                                     class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
-                                    style="padding: 4px 9px 4px 9px !important;">
+                                    style="padding: 4px 9px 4px 9px !important;
+                                        cursor: pointer;">
                                 <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                             </button>
                         </form>
@@ -392,12 +396,12 @@
                                 @php $totalStock = $product->variants->sum('stock'); @endphp
                                 @if($totalStock <= 0)
                                     <span
-                                        class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
                                 Out of Stock
                             </span>
                                 @else
                                     <span
-                                        class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
                                 <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
                             </span>
                                 @endif
@@ -557,14 +561,15 @@
             </div>
 
             <!-- Yeh raha Featured ke liye More Products ka link -->
-            <a href="{{ route('products.more', ['type' => 'featured']) }}" class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
+            <a href="{{ route('products.more', ['type' => 'featured']) }}"
+               class="text-xs sm:text-sm font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition">
                 <span>More Products</span>
                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </a>
         </div>
 
         <div
-            class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
+                class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -592,10 +597,10 @@
                 <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
                     {{-- Border aur shadow ko mazeed prominent kar diya hai taaki border saaf nazar aaye --}}
                     <div
-                        class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
+                            class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
     <span
-        class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+            class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
         Featured
     </span>
 
@@ -606,15 +611,16 @@
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
                                         class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
-                                        style="padding: 4px 9px 4px 9px !important;">
+                                        style="padding: 4px 9px 4px 9px !important;
+                                            cursor: pointer;">
                                     <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
                             @if($product->mainVariantImage)
                                 <img
-                                    class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
-                                    src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
-                                    alt="{{ $product->name }}">
+                                        class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
+                                        src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
+                                        alt="{{ $product->name }}">
                             @else
                                 <img class="w-full h-full object-cover" src="{{ asset('upload/no-image.jpg') }}"
                                      alt="No Image Available">
@@ -660,7 +666,7 @@
                 </span>
                                     @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
                                         <span
-                                            class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                                class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
                         Rs {{ number_format($variant->cut_price) }}
                     </span>
                                     @endif
@@ -669,12 +675,12 @@
                                     @php $totalStock = $product->variants->sum('stock'); @endphp
                                     @if($totalStock <= 0)
                                         <span
-                                            class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
                         Out of Stock
                     </span>
                                     @else
                                         <span
-                                            class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
                         <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
                     </span>
                                     @endif
@@ -744,7 +750,8 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 pt-0 sm:mb-8 mb-3 lg:mb-12" style="margin-bottom: 20px !important;">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 pt-0 sm:mb-8 mb-3 lg:mb-12"
+         style="margin-bottom: 20px !important;">
     @php $brandCount = count($brands ?? []); @endphp
     @if($brandCount > 6)
         <!-- Swiper Container with pb-12 for padding bottom -->
@@ -794,9 +801,11 @@
         .brandsSwiper {
             padding-bottom: 40px !important; /* Space for dots at the bottom */
         }
+
         .brands-swiper-pagination {
             bottom: 0px !important; /* Position dots at the very bottom edge */
         }
+
         .brandsSwiper {
             padding-bottom: 40px !important;
         }
@@ -816,7 +825,7 @@
             background-color: #9ca3af; /* Gray-400 */
         }
 
-        .swiper-horizontal>.swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal, .swiper-pagination-custom, .swiper-pagination-fraction{
+        .swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal, .swiper-pagination-custom, .swiper-pagination-fraction {
             margin-bottom: 10px;
         }
 
@@ -884,12 +893,14 @@
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i> Handpicked For You
                 </h2>
-                <p class="text-xs sm:text-sm text-gray-500 mb-1">Personalized recommendations tailored specially to your taste</p>
+                <p class="text-xs sm:text-sm text-gray-500 mb-1">Personalized recommendations tailored specially to your
+                    taste</p>
             </div>
         </div>
 
         <!-- GRID CONTAINER WITH ID -->
-        <div id="for-you-grid" class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-3">
+        <div id="for-you-grid"
+             class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-3">
             @include('frontend.partials.for-you-cards', ['products' => $products])
         </div>
 
@@ -909,13 +920,13 @@
         let hasMorePages = {{ $products->hasMorePages() ? 'true' : 'false' }};
         let isLoading = false;
 
-        $('main').scroll(function() {
+        $('main').scroll(function () {
             let $main = $(this);
 
             if (!hasMorePages) return;
 
-            if($main.scrollTop() + $main.innerHeight() >= $main[0].scrollHeight - 300) {
-                if(isLoading) return;
+            if ($main.scrollTop() + $main.innerHeight() >= $main[0].scrollHeight - 300) {
+                if (isLoading) return;
 
                 isLoading = true;
                 page++;
@@ -945,11 +956,11 @@
                 $.ajax({
                     url: "{{ route('index') }}?page=" + page,
                     type: "GET",
-                    success: function(response) {
+                    success: function (response) {
                         // Response aate hi shimmer cards hata dena
                         $('.product-shimmer').remove();
 
-                        if($.trim(response) === "") {
+                        if ($.trim(response) === "") {
                             hasMorePages = false;
                             $('#no-more-products').removeClass('hidden');
                         } else {
@@ -957,7 +968,7 @@
                             isLoading = false;
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         console.log(xhr.responseText);
                         // Error aane par bhi shimmer hata dena
                         $('.product-shimmer').remove();
@@ -975,9 +986,9 @@
                 loop: true,
                 effect: "fade",
                 speed: 1000,
-                autoplay: { delay: 3000, disableOnInteraction: false },
-                pagination: { el: ".swiper-pagination", clickable: true },
-                navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+                autoplay: {delay: 3000, disableOnInteraction: false},
+                pagination: {el: ".swiper-pagination", clickable: true},
+                navigation: {nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev"},
             });
 
             // Brands Swiper Initialization with Pagination
@@ -996,9 +1007,9 @@
                 slidesPerView: 2,
                 spaceBetween: 12,
                 breakpoints: {
-                    640: { slidesPerView: 3 },
-                    768: { slidesPerView: 4 },
-                    1024: { slidesPerView: 6 }
+                    640: {slidesPerView: 3},
+                    768: {slidesPerView: 4},
+                    1024: {slidesPerView: 6}
                 }
             });
         });

@@ -1355,7 +1355,7 @@ class FrontendController extends Controller
         $type = $type ?? $request->get('type');
 
         $title = "Products";
-        $query = Product::with(['variants', 'mainVariantImage', 'reviews']);
+        $query = Product::with(['variants', 'mainVariantImage', 'reviews', 'flashSale']);
 
         if ($type == 'flash-sale') {
             $title = "Flash Sales Products";
@@ -1373,15 +1373,23 @@ class FrontendController extends Controller
 
         $products = $query->paginate(12);
 
+        // WISHLIST IDS FETCHING (Crucial for heart icon state)
+        $wishlistProductIds = [];
+        if (Auth::check()) {
+            $wishlistProductIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('product_id')
+                ->toArray();
+        }
+
         // AJAX ya JSON request ko handle karne ke liye strict check
         if ($request->ajax() || $request->wantsJson() || $request->has('page')) {
             return response()->json([
-                'html' => view('frontend.partials.product-list-cart', compact('products'))->render(),
+                'html' => view('frontend.partials.product-list-cart', compact('products', 'wishlistProductIds'))->render(),
                 'next_page_url' => $products->nextPageUrl()
             ]);
         }
 
-        return view('frontend.product-list', compact('products', 'title'));
+        return view('frontend.product-list', compact('products', 'title', 'wishlistProductIds'));
     }
 
     public function shopCategories()

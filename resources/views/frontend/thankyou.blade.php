@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="min-h-[80vh] flex items-center justify-center bg-slate-50/50 px-4 py-8">
+    <div class="min-h-[80vh] flex items-center justify-center px-4 py-8">
 
         <div class="max-w-md w-full bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 md:p-10 text-center transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
 

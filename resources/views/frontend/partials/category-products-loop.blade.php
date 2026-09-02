@@ -11,7 +11,8 @@
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <button type="submit" class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition"
-                    style="padding: 4px 9px 4px 9px !important;">
+                    style="padding: 4px 9px 4px 9px !important;
+                        cursor: pointer;">
                 <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
             </button>
         </form>

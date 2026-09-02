@@ -174,7 +174,7 @@
                               method="POST" class="w-full flex justify-end mt-2">
                             @csrf
                             <button type="button"
-                                    class="cancel-btn px-4 py-2 font-semibold text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] transition-all shadow-md shadow-rose-500/10 flex items-center justify-center gap-2"
+                                    class="cancel-btn cursor-pointer px-4 py-2 font-semibold text-sm rounded-xl bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] transition-all shadow-md shadow-rose-500/10 flex items-center justify-center gap-2"
                                     data-id="{{ $order->id }}">
                                 <i class="fa-solid fa-xmark text-xs"></i>
                                 Cancel Order
@@ -188,7 +188,7 @@
                               method="POST" class="w-full sm:w-auto mt-2">
                             @csrf
                             <button type="button"
-                                    class="restore-btn w-full sm:w-auto p-3 py-2 font-semibold text-sm rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md shadow-indigo-600/10 flex items-center justify-center gap-2"
+                                    class="restore-btn cursor-pointer w-full sm:w-auto p-3 py-2 font-semibold text-sm rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md shadow-indigo-600/10 flex items-center justify-center gap-2"
                                     data-id="{{ $order->id }}">
                                 <i class="fa-solid fa-rotate-left text-xs"></i>
                                 Restore Order
