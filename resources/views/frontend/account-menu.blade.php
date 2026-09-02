@@ -6,14 +6,17 @@
     <div class="min-h-screen bg-gray-50 pb-32 lg:pb-20"
          style="padding-bottom: calc(8rem + env(safe-area-inset-bottom));">
 
-        <!-- TOP HEADER -->
-        <div class="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-30 border-b border-gray-100">
+        <!-- TOP HEADER - Mobile Only -->
+        <div class="md:hidden bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-30 border-b border-gray-100">
             <div class="max-w-4xl mx-auto flex items-center gap-3 px-4 py-3.5">
                 <a href="{{ route('index') }}"
                    class="w-9 h-9 flex items-center justify-center rounded-full text-gray-600 hover:bg-gray-100 active:scale-95 transition">
                     <i class="fa-solid fa-arrow-left text-sm"></i>
                 </a>
-                <h1 class="text-lg font-bold text-gray-900 tracking-tight">My Account</h1>
+
+                <h1 class="text-lg font-bold text-gray-900 tracking-tight">
+                    My Account
+                </h1>
             </div>
         </div>
 
@@ -76,7 +79,7 @@
 
                 @auth
                     <div>
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-2">Account</h3>
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-gray-300 px-1 mb-2">Account</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <a href="{{ route('frontend.user_info.index') }}"
                                class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-emerald-500 hover:shadow-md transition group">
@@ -85,7 +88,7 @@
                                         <i class="fa-solid fa-user text-base"></i>
                                     </span>
                                     <div>
-                                        <span class="text-sm font-bold text-gray-800 block">My Profile</span>
+                                        <span class="text-sm font-bold text-gray-800 block">Profile</span>
                                         <span class="text-xs text-gray-400">Manage personal info</span>
                                     </div>
                                 </div>
@@ -93,13 +96,13 @@
                             </a>
 
                             <a href="{{ route('frontend.orders.index') }}"
-                               class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-blue-500 hover:shadow-md transition group">
+                               class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-emerald-500 hover:shadow-md transition group">
                                 <div class="flex items-center gap-3">
                                     <span class="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl group-hover:scale-105 transition">
                                         <i class="fa-solid fa-bag-shopping text-base"></i>
                                     </span>
                                     <div>
-                                        <span class="text-sm font-bold text-gray-800 block">My Orders</span>
+                                        <span class="text-sm font-bold text-gray-800 block">Orders</span>
                                         <span class="text-xs text-gray-400">View order history</span>
                                     </div>
                                 </div>
@@ -113,13 +116,13 @@
                     <h3 class="text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-2">Shopping</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <a href="{{ route('wishlist') }}"
-                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-rose-500 hover:shadow-md transition group">
+                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-emerald-500 hover:shadow-md transition group">
                             <div class="flex items-center gap-3">
                                 <span class="w-10 h-10 flex items-center justify-center bg-rose-50 text-rose-500 rounded-xl group-hover:scale-105 transition">
                                     <i class="fa-solid fa-heart text-base"></i>
                                 </span>
                                 <div>
-                                    <span class="text-sm font-bold text-gray-800 block">My Wishlist</span>
+                                    <span class="text-sm font-bold text-gray-800 block">Wishlist</span>
                                     <span class="text-xs text-gray-400">Saved items</span>
                                 </div>
                             </div>
@@ -132,13 +135,13 @@
                         </a>
 
                         <a href="{{ route('cart') }}"
-                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-amber-500 hover:shadow-md transition group">
+                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-emerald-500 hover:shadow-md transition group">
                             <div class="flex items-center gap-3">
                                 <span class="w-10 h-10 flex items-center justify-center bg-amber-50 text-amber-600 rounded-xl group-hover:scale-105 transition">
                                     <i class="fa-solid fa-cart-shopping text-base"></i>
                                 </span>
                                 <div>
-                                    <span class="text-sm font-bold text-gray-800 block">My Cart</span>
+                                    <span class="text-sm font-bold text-gray-800 block">Cart</span>
                                     <span class="text-xs text-gray-400">Items in cart</span>
                                 </div>
                             </div>
@@ -154,9 +157,9 @@
 
                 <div>
                     <h3 class="text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1 mb-2">Support</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-1 gap-3">
                         <a href="{{ route('contact') }}"
-                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-indigo-500 hover:shadow-md transition group">
+                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:border-emerald-500 hover:shadow-md transition group">
                             <div class="flex items-center gap-3">
                                 <span class="w-10 h-10 flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-xl group-hover:scale-105 transition">
                                     <i class="fa-solid fa-headset text-base"></i>
@@ -175,7 +178,7 @@
                     <div class="-mt-2">
                         <a href="{{ route('logout') }}"
                            onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();"
-                           class="flex items-center justify-between bg-white rounded-xl border border-red-100 px-4 py-4 shadow-xs hover:bg-red-50 hover:border-red-200 transition group">
+                           class="flex items-center justify-between bg-white rounded-xl border border-gray-200 px-4 py-4 shadow-xs hover:bg-red-50 hover:border-red-500 transition group">
                             <div class="flex items-center gap-3">
                                 <span class="w-10 h-10 flex items-center justify-center bg-red-50 text-red-600 rounded-xl group-hover:scale-105 transition">
                                     <i class="fa-solid fa-right-from-bracket text-base"></i>

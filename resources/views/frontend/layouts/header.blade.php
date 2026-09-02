@@ -6,7 +6,8 @@
 @endphp
 
 <!-- ================= MAIN HEADER (Sticky ONLY on Mobile, Normal scroll on Desktop) ================= -->
-<div class="bg-black sticky top-0 lg:static z-50 shadow-lg" x-data="{ mobileSearchOpen: false }">
+<div class="bg-black sticky top-0 lg:static z-[100] shadow-lg relative"
+     x-data="{ mobileSearchOpen: false }">
 
     <header
             class="container mx-auto flex flex-col justify-between h-13 md:h-20 text-white px-3 sm:px-4 relative">
@@ -41,7 +42,7 @@
             </a>
 
             <!-- Center Search Bar (Desktop) - FIXED ALIGNMENT -->
-            <div class="search-wrapper hidden lg:flex flex-1 max-w-xl mx-auto justify-center relative px-4">
+            <div class="search-wrapper hidden lg:flex flex-1 max-w-xl mx-auto justify-center relative px-4 z-[999]">
                 <form action="{{ route('categories') }}" method="GET"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20"
                       style="margin-left: 15px">
@@ -65,7 +66,8 @@
                 </form>
 
                 <div id="search-suggestions"
-                     class="search-suggestions absolute left-0 right-0 top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-30 hidden mt-1 max-h-96 overflow-y-auto"></div>
+                     class="search-suggestions absolute left-0 right-0 top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] hidden mt-1 max-h-96 overflow-y-auto">
+                </div>
             </div>
 
             <!-- Right Side Icons & Sign In Dropdown -->
@@ -153,17 +155,17 @@
                         </div>
 
                         @auth
-                            <a href="{{ route('frontend.user_info.index') }}"
+                            <a href="{{ route('account.menu') }}"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
                                 <i class="fa-solid fa-user"></i>
-                                My Profile
+                                Account
                             </a>
                         @else
                             <button type="button"
                                     onclick="handleNavAuthClick(event)"
                                     class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left">
                                 <i class="fa-solid fa-user"></i>
-                                My Profile
+                                Account
                             </button>
                         @endauth
 
