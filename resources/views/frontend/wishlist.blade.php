@@ -39,7 +39,7 @@
 
             @media (max-width: 767px) {
                 .empty-wishlist {
-                    height: 80vh;
+                    height: 70vh;
                 }
             }
         </style>
