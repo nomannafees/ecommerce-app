@@ -41,7 +41,7 @@
             </a>
 
             <!-- Center Search Bar (Desktop) - FIXED ALIGNMENT -->
-            <div class="search-wrapper hidden md:flex flex-1 max-w-xl mx-auto justify-center relative px-4">
+            <div class="search-wrapper hidden lg:flex flex-1 max-w-xl mx-auto justify-center relative px-4">
                 <form action="{{ route('categories') }}" method="GET"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20"
                       style="margin-left: 15px">
@@ -72,7 +72,8 @@
             <div class="flex items-center gap-2 sm:gap-5 shrink-0">
 
                 <!-- Mobile Search Button Icon -->
-                <button @click="mobileSearchOpen = !mobileSearchOpen" class="text-sm hover:text-gray-300 md:hidden p-1">
+                <button @click="mobileSearchOpen = !mobileSearchOpen"
+                        class="text-sm hover:text-gray-300 lg:hidden p-1">
                     <i class="fa-solid fa-magnifying-glass text-base"></i>
                 </button>
 
@@ -90,7 +91,7 @@
                     <i class="fa-solid fa-cart-shopping fa-sm"></i>
 
                     <span id="header-cart-count"
-                          class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5">
+                          class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($cartCount ?? 0) > 0 ? '' : 'hidden' }}">
                         {{ $cartCount ?? 0 }}
                     </span>
                 </a>

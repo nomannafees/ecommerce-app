@@ -536,15 +536,55 @@
                             el.innerText = data.cartCount;
                             el.classList.remove('hidden');
                         });
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: data.message,
-                            showConfirmButton: false,
-                            timer: 2000,
-                            timerProgressBar: true
-                        });
+                        if (window.innerWidth < 768) {
+
+                            Swal.fire({
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: false,
+                                background: '#333333',
+                                color: '#ffffff',
+                                width: 'auto',
+                                padding: '0.8rem 1.4rem', // Top/Bottom aur Left/Right ki padding ko mazeed chota kiya gaya hai
+                                didOpen: (popup) => {
+                                    popup.style.borderRadius = '14px';
+                                    popup.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.3)';
+
+                                    // SweetAlert ke andar jo extra content wrapper hota hai uski spacing khatam karne ke liye
+                                    const content = popup.querySelector('.swal2-html-container');
+                                    if (content) {
+                                        content.style.margin = '0';
+                                        content.style.padding = '0';
+                                    }
+
+                                    const title = popup.querySelector('.swal2-title');
+                                    if (title) {
+                                        title.style.textAlign = 'center';
+                                        title.style.margin = '0';
+                                        title.style.padding = '0';
+                                        title.style.fontSize = '14px';
+                                        title.style.fontWeight = '500';
+                                        title.style.whiteSpace = 'nowrap';
+                                    }
+                                },
+                                title: data.message
+                            });
+
+                        } else {
+
+                            // 🖥️ DESKTOP TOAST
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+
+                        }
                     } else {
                         Swal.fire({
                             icon: 'error',

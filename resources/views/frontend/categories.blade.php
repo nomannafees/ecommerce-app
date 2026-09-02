@@ -795,7 +795,7 @@
                             button.classList.remove('processing');
                             button.disabled = false;
 
-                            // Agar user login nahi hai, to toast ki jagah login modal kholo
+                            // Agar user login nahi hai, to login modal kholo
                             if (!data.status && data.message === 'Please login first') {
                                 if (typeof openAuthModal === 'function') {
                                     openAuthModal();
@@ -803,12 +803,8 @@
                                 return;
                             }
 
-                            // ✅ FIX: pehle yahan icon.className = '...text-lg...' likha hua tha,
-                            // jo poori class list overwrite kar deta tha aur original size
-                            // (text-xs sm:text-sm) ki jagah "text-lg" laga deta tha — isi wajah
-                            // se click karte hi icon bara ho jata tha. Ab sirf zaroori classes
-                            // (solid/regular, color) hi toggle karte hain, size classes ko chhuwa
-                            // nahi jata.
+                            // Sirf zaroori classes (solid/regular, color) hi toggle karte hain,
+                            // size classes (text-xs sm:text-sm) ko chhuwa nahi jata.
                             const isAdded = data.action === 'added' || (data.message && data.message.toLowerCase().includes('added'));
                             const isRemoved = data.action === 'removed' || (data.message && data.message.toLowerCase().includes('remove'));
 
@@ -823,6 +819,20 @@
                                 icon.classList.toggle('text-red-500');
                                 icon.classList.toggle('fa-regular');
                                 icon.classList.toggle('text-gray-600');
+                            }
+
+                            // ✅ FIX: header aur mobile-nav wishlist count badge yahan update karna
+                            // zaroori hai, kyunki upar 'e.stopPropagation()' ki wajah se ye event
+                            // 'document' tak nahi pohanchta — is liye layouts/app.blade.php ka global
+                            // handler (jo '.wishlist-count' update karta hai) is page par kabhi chalta
+                            // hi nahi tha, isi wajah se badge sirf page reload ke baad update hoti thi.
+                            if (typeof data.wishlistCount !== 'undefined') {
+                                $('.wishlist-count').text(data.wishlistCount);
+                                if (data.wishlistCount > 0) {
+                                    $('.wishlist-count').removeClass('hidden');
+                                } else {
+                                    $('.wishlist-count').addClass('hidden');
+                                }
                             }
                         })
                         .catch(error => {

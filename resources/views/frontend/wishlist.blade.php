@@ -5,20 +5,21 @@
     <div class="px-4 md:px-10 pb-10 pt-6 min-h-[49vh]">
 
         <!-- HEADER -->
-        <div class="hidden md:block mb-4 text-center">
+        <div id="wishlistHeader"
+             class="{{ $wishlists->isEmpty() ? 'hidden' : '' }}">
+        <div  class="hidden md:block mb-4 text-center">
             <h2 class="text-3xl font-bold text-gray-800">My Wishlist</h2>
 
             <p class="text-sm text-gray-500 mt-1">
                 Save your favorite products and purchase them later anytime
             </p>
         </div>
-
+        </div>
 
         <!-- EMPTY STATE -->
         <div id="emptyWishlist" class=" {{ $wishlists->isEmpty() ? '' : 'hidden' }} empty-wishlist flex items-center justify-center px-4 py-8">
             <div
                  class="text-center  ">
-
                 <i class="fa-regular fa-heart text-5xl text-gray-300"></i>
 
                 <h2 class="text-xl font-semibold mt-4 text-gray-700">
@@ -34,12 +35,12 @@
 
         <style>
             .empty-wishlist {
-                height: 37.5vh;
+                height: 40vh;
             }
 
             @media (max-width: 767px) {
                 .empty-wishlist {
-                    height: 70vh;
+                    height: 75vh;
                 }
             }
         </style>

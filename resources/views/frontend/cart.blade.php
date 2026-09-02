@@ -2,28 +2,46 @@
 
 @section('content')
 
-    <div class="px-4 md:px-10 pb-10 pt-6 bg-gray-50 min-h-[49vh]">
+    <div class="px-4 md:px-10 pb-10 pt-6 min-h-[49vh]">
 
         <!-- HEADER -->
-        <div class="mb-4 text-center">
-            <h1 class="text-2xl font-bold text-gray-800">My Cart</h1>
-            <p class="text-[16px] text-gray-500">
-                Review your items before checkout
-            </p>
-        </div>
-
-        <!-- EMPTY STATE (hamesha DOM mein maujood, sirf 'hidden' class se control hoga) -->
-        <div class="empty-cart-message text-center py-10 bg-white rounded-xl shadow-sm {{ $carts->isEmpty() ? '' : 'hidden' }}">
-            <i class="fa-solid fa-cart-shopping text-5xl text-gray-300"></i>
-            <h3 class="text-xl font-semibold mt-4 text-gray-700">Your cart is empty</h3>
-            <p class="text-sm text-gray-500 mt-1">Start shopping now 🛍️</p>
-            <div class="mt-4">
-                <a href="{{ url('/') }}"
-                   class="inline-block bg-black text-white px-6 py-2 rounded-xl text-xs font-semibold hover:bg-gray-800 transition">
-                    Shop Now
-                </a>
+        <div  class="{{ $carts->isEmpty() ? 'hidden' : '' }}">
+            <div class="mb-4 text-center">
+                <h1 class="text-2xl font-bold text-gray-800">My Cart</h1>
+                <p class="text-[16px] text-gray-500">
+                    Review your items before checkout
+                </p>
             </div>
         </div>
+
+
+        <!-- EMPTY STATE (hamesha DOM mein maujood, sirf 'hidden' class se control hoga) -->
+        <div  class="empty-cart flex items-center justify-center px-4 py-8 {{ $carts->isEmpty() ? '' : 'hidden' }}">
+            <div  class="empty-cart-message text-center   ">
+                <i class="fa-solid fa-cart-shopping text-5xl text-gray-300"></i>
+                <h3 class="text-xl font-semibold mt-4 text-gray-700">Your cart is empty</h3>
+                <p class="text-sm text-gray-500 mt-1">Start shopping now 🛍️</p>
+                <div class="mt-4">
+                    <a href="{{ url('/') }}"
+                       class="inline-block bg-black text-white px-6 py-2 rounded-xl text-xs font-semibold hover:bg-gray-800 transition">
+                        Shop Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+
+        <style>
+            .empty-cart {
+                height: 40vh;
+            }
+
+            @media (max-width: 767px) {
+                .empty-cart {
+                    height: 75vh;
+                }
+            }
+        </style>
 
         <!-- CART GRID (hamesha DOM mein maujood, sirf 'hidden' class se control hoga) -->
         <div class="cart-grid-wrapper grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-start container mx-auto {{ $carts->isEmpty() ? 'hidden' : '' }}">

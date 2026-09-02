@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/png" href="{{ asset('upload/favicon/images.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon/latesticon.png') }}">
     <title>{{ config('app.name', 'ShopNest') }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
@@ -18,19 +18,21 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-50 min-h-screen overflow-x-hidden">
-<div id="app">
-    <div class="flex bg-gray-100 h-screen">
-        <main class="flex-1 h-screen overflow-y-scroll">
-            @include('frontend.layouts.header')
-            @yield('content')
-            @if (!request()->is('thank-you'))
-                @include('frontend.layouts.footer')
-            @endif
-        </main>
-    </div>
-</div>
+<body class="bg-gray-50 min-h-screen overflow-x-hidden flex flex-col justify-between">
+<div id="app" class="flex flex-col min-h-screen justify-between w-full">
 
+    <!-- Header & Content ka Wrapper (Ye khali jagah ko poora bhardega) -->
+    <div class="flex-grow">
+        @include('frontend.layouts.header')
+        @yield('content')
+    </div>
+
+    <!-- Footer (Ye ab hamesha bottom par rahega) -->
+    @if (!request()->is('thank-you'))
+        @include('frontend.layouts.footer')
+    @endif
+
+</div>
 <!-- ================= MOBILE BOTTOM NAVIGATION (Daraz Style) ================= -->
 <div class="md:hidden fixed bottom-0 left-0 right-0 inset-x-0 bg-white border-t border-gray-200 shadow-lg z-50 px-4 py-2" style="    margin-bottom: -2px !important;">
     <div class="flex items-center justify-between">
@@ -442,14 +444,14 @@
                 $('.cart-count').removeClass('hidden');
                 $('.cart-count').text(res.cartCount);
 
-                // Swal.fire({
-                //     toast: true,
-                //     position: 'top-end',
-                //     icon: 'success',
-                //     title: res.message,
-                //     showConfirmButton: false,
-                //     timer: 2000
-                // });
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: res.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
 
             },
 
