@@ -149,10 +149,38 @@ class CategoryProduct extends Controller
 
         // Search Filter
         if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+            $searchTerm = trim($request->search);
+            $length = mb_strlen($searchTerm);
+            $wildcard = '%' . $searchTerm . '%';
+
+            $query->where(function ($q) use ($searchTerm, $wildcard, $length) {
+
+                // 1. Name & Description
+                $q->where('name', 'LIKE', $wildcard)
+                    ->orWhere('description', 'LIKE', $wildcard);
+
+                // 2. Reverse Match
+                $q->orWhereRaw(
+                    "LOWER(?) LIKE CONCAT('%', LOWER(name), '%')",
+                    [$searchTerm]
+                );
+
+                // 3. Partial Match
+                if ($length >= 3) {
+                    $q->orWhereRaw(
+                        "LOWER(name) LIKE CONCAT('%', SUBSTRING(LOWER(?), 1, 3), '%')",
+                        [$searchTerm]
+                    )
+                        ->orWhereRaw(
+                            "LOWER(name) LIKE CONCAT('%', SUBSTRING(LOWER(?), GREATEST(1, CHAR_LENGTH(?) - 2), 3), '%')",
+                            [$searchTerm, $searchTerm]
+                        );
+                }
+
+                // 4. Category Name
+                $q->orWhereHas('category', function ($catQ) use ($wildcard) {
+                    $catQ->where('name', 'LIKE', $wildcard);
+                });
             });
         }
 
@@ -235,7 +263,7 @@ class CategoryProduct extends Controller
 
         if ($page == 1) {
             $offset = 0;
-            $limit = 10;
+            $limit = 15;
         } else {
             $offset = 15 + (($page - 2) * 10);
             $limit = 10;

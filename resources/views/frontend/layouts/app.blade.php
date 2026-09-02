@@ -43,11 +43,17 @@
             <span class="text-[10px] mt-0.5">Home</span>
         </a>
 
-        <!-- Products / Shop -->
+
         <a href="{{ route('shop.categories') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('shop.categories') ? 'text-black font-bold' : '' }}">
-            <i class="fa-solid fa-bag-shopping text-base"></i>
-            <span class="text-[10px] mt-0.5">Shop</span>
+            <i class="fa-solid fa-shop text-base"></i>
+            <span class="text-[10px] mt-0.5">Categories</span>
         </a>
+
+        <!-- Products / Shop -->
+{{--        <a href="{{ route('shop.categories') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('shop.categories') ? 'text-black font-bold' : '' }}">--}}
+{{--            <i class="fa-solid fa-cart-shopping text-base"></i>--}}
+{{--            <span class="text-[10px] mt-0.5">Cart</span>--}}
+{{--        </a>--}}
 
         <!-- Cart with Dynamic Badge -->
         <a href="{{ route('cart') }}"
@@ -61,7 +67,7 @@
         </span>
             </div>
 
-            <span class="text-[10px] mt-0.5">Cart</span>
+            <span class="text-[10px] -mt-1">Cart</span>
         </a>
 
         <!-- Wishlist -->
@@ -72,7 +78,7 @@
             {{ $wishlistCount ?? 0 }}
         </span>
             </div>
-            <span class="text-[10px] mt-0.5">Wishlist</span>
+            <span class="text-[10px] -mt-1">Wishlist</span>
         </a>
 
         <!-- Profile / Account -->
