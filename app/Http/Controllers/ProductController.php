@@ -205,12 +205,18 @@ class ProductController extends Controller
             }
         }
 
+        // Description Images Process
+        $description = $this->processDescriptionImages(
+            $request->description ?? '',
+            $product
+        );
+
         // Product update
         $product->update([
             'category_id'  => $request->category_id,
             'name'         => $request->name,
             'slug'         => $slug,
-            'description'  => $request->description,
+            'description'  => $description,
             'brand_id'     => $request->brand_id,
             'product_type' => $request->product_type ?? 'normal',
             'is_featured'  => $request->has('is_featured') ? 1 : 0,
@@ -543,6 +549,280 @@ class ProductController extends Controller
         }
 
         return redirect()->route('products.index')->with('success', 'Product and Variants updated successfully!');
+    }
+
+    private function processDescriptionImages(string $description, ?Product $product = null): string
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Description Images Folder
+        |--------------------------------------------------------------------------
+        */
+
+        $folder = storage_path('app/public/description-images');
+
+        if (!file_exists($folder)) {
+            mkdir($folder, 0777, true);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find Existing Images
+        |--------------------------------------------------------------------------
+        */
+
+        $oldImages = [];
+
+        if ($product && !empty($product->description)) {
+
+            preg_match_all(
+                '/<img[^>]+src=["\']([^"\']+)["\']/i',
+                $product->description,
+                $matches
+            );
+
+            $oldImages = $matches[1] ?? [];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find Base64 Images From New Description
+        |--------------------------------------------------------------------------
+        */
+
+        preg_match_all(
+            '/<img[^>]+src=["\'](data:image\/[^"\']+)["\']/i',
+            $description,
+            $base64Matches
+        );
+
+        $base64Images = $base64Matches[1] ?? [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Upload New Base64 Images
+        |--------------------------------------------------------------------------
+        */
+
+        foreach ($base64Images as $base64Image) {
+
+            if (
+            !preg_match(
+                '/^data:image\/(\w+);base64,(.+)$/',
+                $base64Image,
+                $imageData
+            )
+            ) {
+                continue;
+            }
+
+
+            $extension = strtolower($imageData[1]);
+
+            $allowedExtensions = [
+                'jpeg',
+                'jpg',
+                'png',
+                'webp',
+                'gif',
+            ];
+
+            if (!in_array($extension, $allowedExtensions)) {
+                continue;
+            }
+
+
+            $imageContent = base64_decode(
+                $imageData[2],
+                true
+            );
+
+            if ($imageContent === false) {
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Generate Unique Filename
+            |--------------------------------------------------------------------------
+            */
+
+            $filename =
+                time()
+                . '_description_'
+                . Str::random(12)
+                . '.'
+                . $extension;
+
+
+            $filePath = $folder . '/' . $filename;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save Image
+            |--------------------------------------------------------------------------
+            */
+
+            file_put_contents(
+                $filePath,
+                $imageContent
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Storage URL
+            |--------------------------------------------------------------------------
+            */
+
+            $imageUrl = asset(
+                'storage/description-images/' . $filename
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Replace Base64 With Storage URL
+            |--------------------------------------------------------------------------
+            */
+
+            $description = str_replace(
+                $base64Image,
+                $imageUrl,
+                $description
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find Images Still Used In New Description
+        |--------------------------------------------------------------------------
+        */
+
+        preg_match_all(
+            '/<img[^>]+src=["\']([^"\']+)["\']/i',
+            $description,
+            $newMatches
+        );
+
+        $newImages = $newMatches[1] ?? [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete Old Images Which Are No Longer Used
+        |--------------------------------------------------------------------------
+        */
+
+        if ($product) {
+
+            foreach ($oldImages as $oldImage) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Convert URL To Relative Storage Path
+                |--------------------------------------------------------------------------
+                */
+
+                $oldPath = parse_url(
+                    $oldImage,
+                    PHP_URL_PATH
+                );
+
+
+                if (!$oldPath) {
+                    continue;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Only Delete Our Description Images
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                !str_contains(
+                    $oldPath,
+                    '/storage/description-images/'
+                )
+                ) {
+                    continue;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Check Whether Image Is Still Used
+                |--------------------------------------------------------------------------
+                */
+
+                $stillUsed = false;
+
+                foreach ($newImages as $newImage) {
+
+                    if ($newImage === $oldImage) {
+
+                        $stillUsed = true;
+
+                        break;
+                    }
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Delete If Removed From Description
+                |--------------------------------------------------------------------------
+                */
+
+                if (!$stillUsed) {
+
+                    $filename = basename($oldPath);
+
+                    $file = $folder . '/' . $filename;
+
+                    if (file_exists($file)) {
+
+                        @unlink($file);
+
+                    }
+                }
+            }
+        }
+
+
+        return $description;
+    }
+
+    public function uploadDescriptionImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+        ]);
+
+        $image = $request->file('image');
+
+        $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+
+        $folder = storage_path('app/public/description-images');
+
+        if (!file_exists($folder)) {
+            mkdir($folder, 0777, true);
+        }
+
+        $image->move($folder, $filename);
+
+        return response()->json([
+            'success' => true,
+            'url' => asset('storage/description-images/' . $filename),
+        ]);
     }
 
     /**

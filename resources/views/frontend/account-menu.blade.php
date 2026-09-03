@@ -24,13 +24,13 @@
         <div class="max-w-4xl mx-auto px-4 pt-6 space-y-5">
 
             <!-- USER PROFILE CARD -->
-            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-500 p-5 shadow-md shadow-emerald-900/10">
+            <div class="relative overflow-hidden rounded-2xl bg-white p-5 shadow-sm ">
                 <!-- Decorative background circles -->
                 <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-white/10"></div>
                 <div class="absolute -bottom-10 -right-2 w-20 h-20 rounded-full bg-white/10"></div>
 
                 <div class="relative flex items-center gap-3.5">
-                    <div class="w-14 h-14 rounded-full bg-emerald-50 backdrop-blur-sm ring-2 ring-white/40 text-emerald-600 flex items-center justify-center text-xl font-bold shrink-0">
+                    <div class="w-14 h-14 rounded-full bg-emerald-50 backdrop-blur-sm ring-2 ring-white/40 border border-emerald-600 text-emerald-600 flex items-center justify-center text-xl font-bold shrink-0">
                         @auth
                             {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
                         @else
@@ -45,7 +45,7 @@
                                 Hello, Guest
                             @endauth
                         </p>
-                        <p class="text-xs text-emerald-50/90 truncate mt-0.5">
+                        <p class="text-xs text-black text-[14px] truncate mt-0.5">
                             @auth
                                 {{ Auth::user()->email }}
                             @else
@@ -55,7 +55,7 @@
                     </div>
                     @auth
                         <a href="{{ route('frontend.user_info.index') }}"
-                           class="ml-auto shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white transition">
+                           class="ml-auto shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-emerald-50 hover:bg-emerald/25 text-emerald-600 transition">
                             <i class="fa-solid fa-pen text-xs"></i>
                         </a>
                     @endauth

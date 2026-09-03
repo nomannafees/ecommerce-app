@@ -146,4 +146,9 @@ Route::middleware(['auth', 'admin'])->prefix('/admin')->group(function () {
 
     Route::resource('/flash-sales', FlashSaleController::class);
     Route::get('/flash-sales/get-data/{productId}', [FlashSaleController::class, 'getFlashSaleData'])->name('flash-sales.get-data');
+
+//    Route::post(
+//        '/products/upload-description-image',
+//        [ProductController::class, 'uploadDescriptionImage']
+//    )->name('products.description-image.upload');
 });

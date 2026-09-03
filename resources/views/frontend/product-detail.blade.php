@@ -1,6 +1,25 @@
 @extends('frontend.layouts.app')
 @section('content')
 
+    <style>
+        /* Product Description */
+        .product-description ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
+
+        .product-description ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
+
+        .product-description li {
+            margin-bottom: 0.25rem;
+        }
+    </style>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
     <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 pb-16 sm:py-6">
@@ -150,7 +169,7 @@
 
                 <div class="mt-4">
                     <h3 class="font-semibold text-sm sm:text-base mb-1">Description</h3>
-                    <div class="text-gray-600 text-xs sm:text-sm leading-5 sm:leading-6 prose prose-sm line-clamp-2">
+                    <div class=" text-gray-600 text-xs sm:text-sm leading-5 sm:leading-6 prose prose-sm line-clamp-2">
                         {!! $product->description !!}
                     </div>
                 </div>
@@ -217,6 +236,58 @@
 
                 </div>
 
+            </div>
+        </div>
+
+        <!-- ================= PRODUCT DESCRIPTION SECTION ================= -->
+        <div class="mt-5 sm:mt-6 pt-2 ">
+            <div class=" rounded-lg transition-all duration-300 ">
+
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
+                            <i class="fa-solid fa-align-left text-sm"></i>
+                        </div>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product Description</h2>
+                    </div>
+
+                    <!-- Optional subtle badge or tag -->
+                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50/80 px-2.5 py-1 rounded-full">
+                Overview
+            </span>
+                </div>
+
+                <!-- Description Container with Gradient Fade Overlay -->
+                <div class="relative">
+                    <div id="fullDescriptionContent"
+                         class="product-description text-gray-600 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out"
+                         style="max-height: 160px;">
+                        {!! $product->description !!}
+                    </div>
+
+                    <!-- Fade Overlay (Only visible when collapsed) -->
+                    <div id="descGradientOverlay" class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
+                </div>
+
+                <!-- Toggle Button -->
+                <div class="mt-4 pt-2 flex justify-center">
+                    <button type="button"
+                            id="descToggleBtn"
+                            onclick="toggleFullDescription()"
+                            class="group inline-flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-emerald-100 bg-emerald-100 text-gray-700 font-semibold text-xs sm:text-sm transition-all duration-200 border border-emerald-100 hover:border-emerald-200">
+
+                        <span id="descToggleText">Read Full Description</span>
+
+                        <span class="w-5 h-5 rounded-full bg-emerald-200 text-emerald-400 group-hover:text-emerald-500 flex items-center justify-center shadow-sm transition-transform duration-300"
+                              id="descToggleIconWrapper">
+
+            <i id="descToggleIcon"
+               class="fa-solid fa-chevron-down text-[10px]"></i>
+
+        </span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -970,4 +1041,31 @@
         }
 
     </style>
+
+    <script>
+        let isExpanded = false;
+
+        function toggleFullDescription() {
+            const content = document.getElementById('fullDescriptionContent');
+            const toggleText = document.getElementById('descToggleText');
+            const icon = document.getElementById('descToggleIcon');
+            const gradientOverlay = document.getElementById('descGradientOverlay');
+
+            isExpanded = !isExpanded;
+
+            if (isExpanded) {
+                // Expand to full scroll height
+                content.style.maxHeight = content.scrollHeight + 'px';
+                toggleText.textContent = 'Show Less';
+                icon.style.transform = 'rotate(180deg)';
+                gradientOverlay.style.opacity = '0'; // Hide gradient when fully open
+            } else {
+                // Collapse back
+                content.style.maxHeight = '160px';
+                toggleText.textContent = 'Read Full Description';
+                icon.style.transform = 'rotate(0deg)';
+                gradientOverlay.style.opacity = '1'; // Show gradient when collapsed
+            }
+        }
+    </script>
 @endsection

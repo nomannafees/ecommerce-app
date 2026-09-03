@@ -1,6 +1,111 @@
 @extends('layouts.app')
 @extends('layouts.app')
 @section('content')
+
+    <style>
+
+            /* Select2 Wrapper Width Fix */
+        .select2-container {
+            width: 100% !important;
+            display: block !important;
+        }
+
+        /* Select2 Container Base Styling */
+        .select2-container--default .select2-selection--single {
+            height: 48px !important;
+            border-radius: 0.75rem !important; /* rounded-xl */
+            border: 1px solid #e5e7eb !important; /* border-gray-200 */
+            padding-left: 2.5rem !important; /* Icon spacing */
+            padding-right: 2.5rem !important;
+            display: flex !important;
+            align-items: center !important;
+            background-color: #ffffff !important;
+            transition: all 0.2s ease-in-out !important;
+            width: 100% !important;
+        }
+
+        /* Green Focus & Open State */
+        .select2-container--default.select2-container--focus .select2-selection--single,
+        .select2-container--default.select2-container--open .select2-selection--single {
+            border-color: #10b981 !important; /* Emerald 500 */
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important; /* Green Shadow Ring */
+            outline: none !important;
+        }
+
+        /* Hide Default Arrow */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            display: none !important;
+        }
+
+        /* Hide Clear/Cross (×) Icon */
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            display: none !important;
+        }
+
+        /* Text & Placeholder Styling */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #1f2937 !important;
+            font-size: 0.875rem !important;
+            padding-left: 0 !important;
+            line-height: normal !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #9ca3af !important;
+        }
+
+        #tiptap-editor {
+            outline: none;
+        }
+
+        #tiptap-editor .ProseMirror {
+            min-height: 220px;
+            outline: none;
+        }
+
+        #tiptap-editor .ProseMirror p {
+            margin-bottom: 12px;
+        }
+
+        #tiptap-editor .ProseMirror ul {
+            list-style-type: disc;
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        #tiptap-editor .ProseMirror ol {
+            list-style-type: decimal;
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+
+        #tiptap-editor .ProseMirror img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+        /* Tiptap Editor Lists */
+        #tiptap-editor ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
+
+        #tiptap-editor ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
+
+        #tiptap-editor li {
+            margin: 0.25rem 0;
+        }
+
+        #tiptap-editor p {
+            margin: 0.5rem 0;
+        }
+    </style>
     <div class=" mx-auto p-6 space-y-6">
         <form action="{{ !empty($product) ? route('products.update', $product->id) : route('products.store') }}"
               method="POST"
@@ -26,57 +131,7 @@
 
                 <div class="grid gap-6 md:grid-cols-2">
 
-                    <style>
-                        /* Select2 Wrapper Width Fix */
-                        .select2-container {
-                            width: 100% !important;
-                            display: block !important;
-                        }
 
-                        /* Select2 Container Base Styling */
-                        .select2-container--default .select2-selection--single {
-                            height: 48px !important;
-                            border-radius: 0.75rem !important; /* rounded-xl */
-                            border: 1px solid #e5e7eb !important; /* border-gray-200 */
-                            padding-left: 2.5rem !important; /* Icon spacing */
-                            padding-right: 2.5rem !important;
-                            display: flex !important;
-                            align-items: center !important;
-                            background-color: #ffffff !important;
-                            transition: all 0.2s ease-in-out !important;
-                            width: 100% !important;
-                        }
-
-                        /* Green Focus & Open State */
-                        .select2-container--default.select2-container--focus .select2-selection--single,
-                        .select2-container--default.select2-container--open .select2-selection--single {
-                            border-color: #10b981 !important; /* Emerald 500 */
-                            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important; /* Green Shadow Ring */
-                            outline: none !important;
-                        }
-
-                        /* Hide Default Arrow */
-                        .select2-container--default .select2-selection--single .select2-selection__arrow {
-                            display: none !important;
-                        }
-
-                        /* Hide Clear/Cross (×) Icon */
-                        .select2-container--default .select2-selection--single .select2-selection__clear {
-                            display: none !important;
-                        }
-
-                        /* Text & Placeholder Styling */
-                        .select2-container--default .select2-selection--single .select2-selection__rendered {
-                            color: #1f2937 !important;
-                            font-size: 0.875rem !important;
-                            padding-left: 0 !important;
-                            line-height: normal !important;
-                        }
-
-                        .select2-container--default .select2-selection--single .select2-selection__placeholder {
-                            color: #9ca3af !important;
-                        }
-                    </style>
 
                     <!-- 1. SELECT CATEGORY (Only Child Categories Selectable) -->
                     <div>
@@ -329,12 +384,68 @@
 
                 <!-- DESCRIPTION EDITOR -->
                 <div class="mt-6">
-                    <label class="block mb-2 text-sm font-semibold text-gray-700 tracking-wide">Product
-                        Description</label>
-                    <div class="rounded-xl overflow-hidden shadow-2xs border border-gray-200 bg-white">
-            <textarea id="description-editor" name="description" rows="6"
-                      class="w-full px-4 py-3 text-sm focus:outline-hidden invisible">{{ old('description', $product->description ?? '') }}</textarea>
+
+                    <label class="block mb-2 text-sm font-semibold text-gray-700 tracking-wide">
+                        Product Description
+                    </label>
+
+                    <!-- Toolbar -->
+                    <div class="flex flex-wrap items-center gap-2 p-3 border border-gray-200 bg-gray-50 rounded-t-xl">
+
+                        <button
+                                type="button"
+                                id="bold-btn"
+                                class="px-3 py-2 text-sm font-bold bg-white border border-gray-200 rounded-lg hover:bg-gray-100">
+                            B
+                        </button>
+
+                        <button
+                                type="button"
+                                id="italic-btn"
+                                class="px-3 py-2 text-sm italic bg-white border border-gray-200 rounded-lg hover:bg-gray-100">
+                            I
+                        </button>
+
+                        <button
+                                type="button"
+                                id="bullet-btn"
+                                class="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100">
+                            • List
+                        </button>
+
+                        <button
+                                type="button"
+                                id="ordered-btn"
+                                class="px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg hover:bg-gray-100">
+                            1. List
+                        </button>
+
+                        <button
+                                type="button"
+                                id="image-btn"
+                                class="px-3 py-2 text-sm text-emerald-700 bg-white border border-gray-200 rounded-lg hover:bg-emerald-50">
+                            <i class="fa-regular fa-image mr-1"></i>
+                            Image
+                        </button>
+
+
                     </div>
+
+
+                    <!-- Editor -->
+                    <div
+                            id="tiptap-editor"
+                            class="min-h-[250px] p-4 bg-white border-x border-b border-gray-200 rounded-b-xl focus:outline-none">
+                    </div>
+
+
+                    <!-- Database field -->
+                    <textarea
+                            id="description-editor"
+                            name="description"
+                            class="hidden"
+                    >{{ old('description', $product->description ?? '') }}</textarea>
+
                 </div>
             </div>
 
@@ -680,13 +791,7 @@
     </style>
 
     <script>
-        ClassicEditor
-            .create(document.querySelector('#description-editor'), {
-                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
-            })
-            .catch(error => {
-                console.error(error);
-            });
+
 
         const sizeSystems = {
             uk: ['UK 6', 'UK 8', 'UK 10', 'UK 12', 'UK 14', 'UK 16'],
