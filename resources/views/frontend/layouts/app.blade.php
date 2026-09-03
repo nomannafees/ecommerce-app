@@ -6,7 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon/latesticon.png') }}">
     <!-- 1. Dynamic Title (Agar page par title na ho toh default show hoga) -->
-    <title>@yield('title', 'ShopNest - Online Shopping in Pakistan')</title>
+    @php
+        // URL ka aakhri segment nikalna (misal: 'categories' ya 'product-name')
+        $lastSegment = request()->segment(count(request()->segments()));
+
+        // Formatting: dashes khatam karna aur Capitalize karna (jaise: 'product-name' -> 'Product Name')
+        $formattedTitle = $lastSegment ? ucwords(str_replace(['-', '_'], ' ', $lastSegment)) : 'Default Title';
+    @endphp
+
+    <title>@yield('title', $formattedTitle)</title>
 
     <!-- 2. Dynamic SEO Meta Description -->
     <meta name="description" content="@yield('meta_description', 'Best online shopping platform for quality products at affordable prices.')">
