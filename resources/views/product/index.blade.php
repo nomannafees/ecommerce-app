@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Products')
 @section('content')
 
     <div class=" mx-auto p-6">

@@ -5,7 +5,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    @php
+        // URL ka aakhri segment nikalna (misal: 'categories' ya 'product-name')
+        $lastSegment = request()->segment(count(request()->segments()));
+
+        // Formatting: dashes khatam karna aur Capitalize karna (jaise: 'product-name' -> 'Product Name')
+        $formattedTitle = $lastSegment ? ucwords(str_replace(['-', '_'], ' ', $lastSegment)) : 'Default Title';
+    @endphp
+
+    <title>@yield('title', $formattedTitle)</title>
 
     <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon/latesticon.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">

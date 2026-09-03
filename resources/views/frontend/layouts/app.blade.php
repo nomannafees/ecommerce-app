@@ -5,7 +5,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ asset('assets/images/favicon/latesticon.png') }}">
-    <title>{{ config('app.name', 'ShopNest') }}</title>
+    <!-- 1. Dynamic Title (Agar page par title na ho toh default show hoga) -->
+    <title>@yield('title', 'ShopNest - Online Shopping in Pakistan')</title>
+
+    <!-- 2. Dynamic SEO Meta Description -->
+    <meta name="description" content="@yield('meta_description', 'Best online shopping platform for quality products at affordable prices.')">
+
+    <!-- 3. Canonical URL (Duplicate content se bachne ke liye) -->
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    <!-- 4. Open Graph Tags (Jab aap link WhatsApp ya Facebook par share karein, bilkul Daraz ki tarah image/title aye) -->
+    <meta property="og:title" content="@yield('title', 'ShopNest  ')">
+    <meta property="og:description" content="@yield('meta_description', 'Best online shopping platform.')">
+    <meta property="og:image" content="@yield('meta_image', asset('default-share-image.jpg'))">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

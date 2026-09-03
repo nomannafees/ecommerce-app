@@ -118,7 +118,7 @@ class OrderController extends Controller
     public function orderDetail(Request $request, $id)
     {
         // 1. User ID check (Token support + Query Param support - FIXED)
-        $user_id = Auth::id() ?? $request->query('user_id') ?? $request->user_id;
+        $user_id =  $request->user_id;
 
         if (!$user_id) {
             return response()->json([
@@ -146,6 +146,50 @@ class OrderController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Order details retrieved successfully.',
+            'data'    => $order
+        ], 200);
+    }
+
+    public function cancelOrder(Request $request, $id)
+    {
+        // 1. User ID check (Token support + Request parameter support)
+        $user_id = $request->user_id;
+
+        if (!$user_id) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'User ID is required or user is not authenticated.'
+            ], 401);
+        }
+
+        // 2. Find order belonging to the authenticated user
+        $order = Order::where('id', $id)
+            ->where('user_id', $user_id)
+            ->first();
+
+        // 3. Check if order exists
+        if (!$order) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        // 4. Check if order status is pending
+        if ($order->status !== 'pending') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'You can only cancel pending orders'
+            ], 400);
+        }
+
+        // 5. Update order status to cancelled
+        $order->status = 'cancelled';
+        $order->save();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Order cancelled successfully',
             'data'    => $order
         ], 200);
     }

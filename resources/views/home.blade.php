@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title', 'Dashboard')
 @section('content')
     <div class="min-h-screen bg-slate-50/50 py-6 sm:py-8">
         <div class="w-full px-4 sm:px-6 lg:px-8">

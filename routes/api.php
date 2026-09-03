@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/place-order', [\App\Http\Controllers\Api\CheckoutController::class, 'checkoutStore']);
     Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
     Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
+    Route::post('/cancel-order/{id}', [\App\Http\Controllers\Api\OrderController::class, 'cancelOrder']);
 
 
    // user profile
