@@ -42,7 +42,7 @@
             </a>
 
             <!-- Center Search Bar (Desktop) - FIXED ALIGNMENT -->
-            <div class="search-wrapper hidden lg:flex flex-1 max-w-xl mx-auto justify-center relative px-4 z-[999]">
+            <div class="search-wrapper hidden lg:flex flex-1 max-w-xl mx-auto justify-center relative px-4 z-[40]">
                 <form action="{{ route('categories') }}" method="GET"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20"
                       style="margin-left: 15px">

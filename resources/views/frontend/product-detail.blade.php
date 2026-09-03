@@ -18,6 +18,13 @@
         .product-description li {
             margin-bottom: 0.25rem;
         }
+        .swiper-button-next, .swiper-rtl .swiper-button-prev {
+            padding: 30px 30px 30px 32px;
+        }
+
+        .swiper-button-prev, .swiper-rtl .swiper-button-next {
+            padding: 30px 30px;
+        }
     </style>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -31,36 +38,41 @@
         <!-- Grid: Left column ka size kam (max width constraint ke sath) aur right column ko bara kar diya hai -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
 
-            <!-- LEFT COLUMN: Image & Swiper (Width reduced to lg:col-span-5) -->
+            <!-- LEFT COLUMN: Image & Swiper -->
             <div class="lg:col-span-5">
-                <!-- SWIPER MAIN SLIDER -->
-                <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group">
-                    <div class="swiper-wrapper cursor-pointer">
-                        @foreach($product->variants->unique('variant_image_id') as $v)
-                            @if($v->variantImage)
-                                <div class="swiper-slide" data-color="{{ $v->color_name }}"
-                                     data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}">
-                                    <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                         class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover"
-                                         alt="{{ $product->name }}">
-                                </div>
-                            @endif
-                        @endforeach
-                    </div>
-                    <style>
-                        .swiper-button-next, .swiper-rtl .swiper-button-prev {
-                            padding: 30px 30px 30px 32px;
-                        }
+                <!-- SWIPER MAIN SLIDER WITH ZOOM CONTAINER -->
+                <div class="relative flex gap-4">
 
-                        .swiper-button-prev, .swiper-rtl .swiper-button-next {
-                            padding: 30px 30px;
-                        }
-                    </style>
-                    <div style="padding: 0px 22px"
-                         class="swiper-button-next !text-black bg-white/70 w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-xs sm:after:!text-sm"></div>
-                    <div style="padding: 0px 22px"
-                         class="swiper-button-prev px-3 sm:px-5 !text-black bg-white/70 w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-xs sm:after:!text-sm"></div>
-                    <div class="swiper-pagination"></div>
+                    <!-- Main Swiper -->
+                    <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group w-full">
+                        <div class="swiper-wrapper cursor-crosshair" id="zoomContainer" onmousemove="zoomIn(event)" onmouseleave="zoomOut()" onmouseenter="zoomEnter(event)">
+                            @foreach($product->variants->unique('variant_image_id') as $v)
+                                @if($v->variantImage)
+                                    <div class="swiper-slide relative" data-color="{{ $v->color_name }}"
+                                         data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}">
+                                        <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
+                                             class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image"
+                                             alt="{{ $product->name }}">
+
+                                        <!-- Magnifier Lens (Green Theme) -->
+                                        <div class="magnifier-lens hidden absolute border-2 border-emerald-500 bg-emerald-500/20 pointer-events-none w-28 h-28 rounded-md"></div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+
+                        <!-- Swiper Navigation Buttons -->
+                        <div style="padding: 0px 22px"
+                             class="swiper-button-next !text-black bg-white/70 w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-xs sm:after:!text-sm"></div>
+                        <div style="padding: 0px 22px"
+                             class="swiper-button-prev px-3 sm:px-5 !text-black bg-white/70 w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-xs sm:after:!text-sm"></div>
+                        <div class="swiper-pagination"></div>
+                    </div>
+
+                    <!-- ZOOMED PREVIEW BOX -->
+                    <div id="zoomResult" class="hidden lg:block absolute left-[102%] top-0 w-[450px] h-[490px] bg-white rounded-xl shadow-xl overflow-hidden z-50 border border-gray-200 pointer-events-none opacity-0 transition-opacity duration-200">
+                        <div id="zoomedImage" class="w-full h-full bg-no-repeat"></div>
+                    </div>
                 </div>
 
                 <!-- THUMBNAIL CAROUSEL -->
@@ -297,7 +309,7 @@
 
         @if($totalReviews > 0)
             <!-- Combined Rating Summary & Breakdown Card -->
-                <div class="bg-gray-50 rounded-xl p-3 sm:p-5 border border-gray-100 space-y-4">
+                <div class="">
 
                     <!-- Top Part: Average Rating & Breakdown Side-by-Side (or Stacked on Mobile) -->
                     <div class="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
@@ -341,7 +353,7 @@
                         <!-- Individual Reviews Cards List inside the same wrapper -->
                         <div class="space-y-3">
                             @foreach($product->reviews as $review)
-                                <div class="p-3 bg-white border border-gray-100 rounded-lg">
+                                <div class="p-3 border-b border-gray-200">
 
                                     <!-- Header: User Info & Rating -->
                                     <div class="flex items-start justify-between gap-3">
@@ -352,7 +364,7 @@
                                                 {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
                                             </div>
                                             <div>
-                                                <h4 class="font-semibold text-gray-900 text-xs">{{ $review->user->name ?? 'Verified Customer' }}</h4>
+                                                <h4 class="font-semibold text-gray-900 text-xs">{{ ucwords($review->user->name ?? 'Verified Customer') }}</h4>
                                                 <div class="flex items-center gap-1.5 mt-0.5">
                                                     <div class="flex text-yellow-400 text-[9px] gap-0.5">
                                                         @for($s = 1; $s <= 5; $s++)
@@ -1066,6 +1078,75 @@
                 icon.style.transform = 'rotate(0deg)';
                 gradientOverlay.style.opacity = '1'; // Show gradient when collapsed
             }
+        }
+    </script>
+
+    <script>
+        function zoomEnter(event) {
+            const result = document.getElementById('zoomResult');
+            result.classList.remove('opacity-0');
+        }
+
+        function zoomOut() {
+            const result = document.getElementById('zoomResult');
+            result.classList.add('opacity-0');
+
+            // Sabhi slides ki lenses chhupa dein
+            document.querySelectorAll('.magnifier-lens').forEach(lens => lens.classList.add('hidden'));
+        }
+
+        function zoomIn(event) {
+            const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
+            if (!activeSlide) return;
+
+            const img = activeSlide.querySelector('.main-product-image');
+            const lens = activeSlide.querySelector('.magnifier-lens');
+            const result = document.getElementById('zoomResult');
+            const zoomed = document.getElementById('zoomedImage');
+
+            if (!img || !lens) return;
+
+            // Lens aur Result box ko show karein
+            lens.classList.remove('hidden');
+            result.classList.remove('opacity-0');
+
+            // Zoomed box mein active image ka path set karein
+            zoomed.style.backgroundImage = `url('${img.src}')`;
+
+            // Mouse ki position image ke andar nikalain
+            const rect = img.getBoundingClientRect();
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+
+            // Lens ke dimensions
+            const lensWidth = lens.offsetWidth;
+            const lensHeight = lens.offsetHeight;
+
+            // Lens ko image se bahar na jane dena (Boundary checks)
+            if (x < lensWidth / 2) x = lensWidth / 2;
+            if (x > rect.width - lensWidth / 2) x = rect.width - lensWidth / 2;
+            if (y < lensHeight / 2) y = lensHeight / 2;
+            if (y > rect.height - lensHeight / 2) y = rect.height - lensHeight / 2;
+
+            // Lens ki positioning (Mouse ke center mein)
+            let lensX = x - lensWidth / 2;
+            let lensY = y - lensHeight / 2;
+            lens.style.left = lensX + 'px';
+            lens.style.top = lensY + 'px';
+
+            // Zoomed preview background size (Proportion set karna)
+            const bgWidth = rect.width * 2.5;
+            const bgHeight = rect.height * 2.5;
+            zoomed.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
+
+            // Zoomed preview ki calculation
+            let fx = bgWidth / rect.width;
+            let fy = bgHeight / rect.height;
+
+            let bgPosX = -(x * fx - zoomed.offsetWidth / 2);
+            let bgPosY = -(y * fy - zoomed.offsetHeight / 2);
+
+            zoomed.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
         }
     </script>
 @endsection

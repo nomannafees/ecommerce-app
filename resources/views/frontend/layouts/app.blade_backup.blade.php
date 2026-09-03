@@ -77,12 +77,12 @@
         </a>
 
         <!-- Products / Shop -->
-    {{--        <a href="{{ route('shop.categories') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('shop.categories') ? 'text-black font-bold' : '' }}">--}}
-    {{--            <i class="fa-solid fa-cart-shopping text-base"></i>--}}
-    {{--            <span class="text-[10px] mt-0.5">Cart</span>--}}
-    {{--        </a>--}}
+{{--        <a href="{{ route('shop.categories') }}" class="flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('shop.categories') ? 'text-black font-bold' : '' }}">--}}
+{{--            <i class="fa-solid fa-cart-shopping text-base"></i>--}}
+{{--            <span class="text-[10px] mt-0.5">Cart</span>--}}
+{{--        </a>--}}
 
-    <!-- Cart with Dynamic Badge -->
+        <!-- Cart with Dynamic Badge -->
         <a href="{{ route('cart') }}"
            class="relative flex flex-col items-center justify-center text-gray-600 hover:text-black transition {{ request()->routeIs('cart') ? 'text-black font-bold' : '' }}">
 
