@@ -42,9 +42,9 @@
         <div>
             <label for="email" class="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-600">Email Address</label>
             <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                    <i class="fa-regular fa-envelope text-sm"></i>
-                </span>
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                <i class="fa-regular fa-envelope text-sm"></i>
+            </span>
                 <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus
                        placeholder="admin@shopnest.com"
                        class="bg-gray-50 border rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all @error('email') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 @enderror">
@@ -54,16 +54,19 @@
             @enderror
         </div>
 
-        <!-- Password Field -->
+        <!-- Password Field with Eye Icon -->
         <div>
             <label for="password" class="block mb-1.5 text-xs font-bold uppercase tracking-wider text-gray-600">Password</label>
             <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
-                    <i class="fa-solid fa-lock text-sm"></i>
-                </span>
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
+                <i class="fa-solid fa-lock text-sm"></i>
+            </span>
                 <input id="password" type="password" name="password" required autocomplete="current-password"
                        placeholder="••••••••"
-                       class="bg-gray-50 border rounded-xl w-full pl-10 pr-4 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all @error('password') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 @enderror">
+                       class="bg-gray-50 border rounded-xl w-full pl-10 pr-10 py-3 text-sm text-gray-800 placeholder-gray-400 outline-none transition-all @error('password') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-200 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 @enderror">
+                <button type="button" onclick="togglePasswordVisibility('password', 'passwordIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                    <i id="passwordIcon" class="fa-regular fa-eye text-sm"></i>
+                </button>
             </div>
             @error('password')
             <span class="text-red-500 text-xs mt-1 block font-medium">{{ $message }}</span>
@@ -92,6 +95,25 @@
         </p>
     </div>
 </div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
 
 </body>
 </html>

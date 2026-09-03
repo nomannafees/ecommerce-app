@@ -154,11 +154,16 @@
                     <span id="modalLoginEmailError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
 
-                <!-- Password Field -->
+                <!-- Password Field with Eye Icon -->
                 <div class="mb-4">
                     <label for="modalLoginPassword" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
-                    <input id="modalLoginPassword" type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
-                           class="bg-gray-50 border rounded-xl w-full px-4 py-3 text-sm text-gray-800 outline-none transition-all @error('password') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-300 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @enderror">
+                    <div class="relative">
+                        <input id="modalLoginPassword" type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
+                               class="bg-gray-50 border rounded-xl w-full px-4 py-3 pr-10 text-sm text-gray-800 outline-none transition-all @error('password') border-red-500 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 @else border-gray-300 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 @enderror">
+                        <button type="button" onclick="togglePasswordVisibility('modalLoginPassword', 'modalLoginPasswordIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                            <i id="modalLoginPasswordIcon" class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
                     <!-- Password Error Message -->
                     <span id="modalLoginPasswordError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
@@ -202,21 +207,35 @@
                     <input id="modalRegisterEmail" type="email" name="email" required autocomplete="email" placeholder="name@company.com" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
                     <span id="modalRegisterEmailError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
+
+                <!-- Register Password Field with Eye Icon -->
                 <div class="mb-5">
                     <label for="modalRegisterPassword" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
-                    <input id="modalRegisterPassword" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                    <div class="relative">
+                        <input id="modalRegisterPassword" type="password" name="password" required autocomplete="new-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 pr-10 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                        <button type="button" onclick="togglePasswordVisibility('modalRegisterPassword', 'modalRegisterPasswordIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                            <i id="modalRegisterPasswordIcon" class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
                     <span id="modalRegisterPasswordError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
+
+                <!-- Register Confirm Password Field with Eye Icon -->
                 <div class="mb-6">
                     <label for="modalRegisterPasswordConfirm" class="block mb-2 text-sm font-medium text-gray-700">Confirm Password</label>
-                    <input id="modalRegisterPasswordConfirm" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                    <div class="relative">
+                        <input id="modalRegisterPasswordConfirm" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 rounded-xl w-full px-4 py-3 pr-10 text-sm text-gray-800 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
+                        <button type="button" onclick="togglePasswordVisibility('modalRegisterPasswordConfirm', 'modalRegisterPasswordConfirmIcon')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                            <i id="modalRegisterPasswordConfirmIcon" class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
                     <span id="modalRegisterPasswordConfirmError" class="text-red-500 text-xs mt-1 hidden block"></span>
                 </div>
 
-                <!-- General Error Box (agar kisi field se link na ho, jaise "email already taken" agar Laravel validation format alag ho) -->
+                <!-- General Error Box -->
                 <div id="modalRegisterGeneralError" class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs hidden text-center font-medium"></div>
 
-                <!-- Submit Button with Register Icon -->
+                <!-- Submit Button -->
                 <button type="submit" id="modalRegisterBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl shadow-md transition duration-300 cursor-pointer flex items-center justify-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.765Z" />
@@ -894,6 +913,24 @@
             }
         });
     });
+</script>
+
+<!-- JavaScript Function for Toggle Password Visibility -->
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
 </script>
 
 @stack('scripts')
