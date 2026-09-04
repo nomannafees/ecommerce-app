@@ -18,6 +18,7 @@
         .product-description li {
             margin-bottom: 0.25rem;
         }
+
         .swiper-button-next, .swiper-rtl .swiper-button-prev {
             padding: 30px 30px 30px 32px;
         }
@@ -44,18 +45,37 @@
                 <div class="relative flex gap-4">
 
                     <!-- Main Swiper -->
-                    <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group w-full">
-                        <div class="swiper-wrapper cursor-crosshair" id="zoomContainer" onmousemove="zoomIn(event)" onmouseleave="zoomOut()" onmouseenter="zoomEnter(event)">
+                    <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group w-full"
+                         onwheel="handleZoomScroll(event)">
+
+                        <div class="swiper-wrapper cursor-crosshair" id="zoomContainer">
+
                             @foreach($product->variants->unique('variant_image_id') as $v)
                                 @if($v->variantImage)
-                                    <div class="swiper-slide relative" data-color="{{ $v->color_name }}"
-                                         data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}">
+                                    <div class="swiper-slide relative"
+                                         data-color="{{ $v->color_name }}"
+                                         data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}"
+                                         onmouseleave="zoomOut()">
+
+
+                                    <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
                                         <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                             class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image"
-                                             alt="{{ $product->name }}">
+                                             class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image cursor-zoom-in"
+                                             alt="{{ $product->name }}"
+                                             onmousemove="zoomIn(event)"
+                                             onmouseenter="zoomEnter(event)"
+                                             onclick="openMobileZoom()">
+
 
                                         <!-- Magnifier Lens (Green Theme) -->
-                                        <div class="magnifier-lens hidden absolute border-2 border-emerald-500 bg-emerald-500/20 pointer-events-none w-28 h-28 rounded-md"></div>
+                                        <div class="magnifier-lens hidden lg:block absolute border-2 border-emerald-500 bg-emerald-500/20 pointer-events-none w-28 h-28 rounded-md"></div>
+
+                                        <!-- Mobile ke liye Tap Indicator -->
+                                        <div class="absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full lg:hidden pointer-events-none shadow-md">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                            </svg>
+                                        </div>
                                     </div>
                                 @endif
                             @endforeach
@@ -70,7 +90,8 @@
                     </div>
 
                     <!-- ZOOMED PREVIEW BOX -->
-                    <div id="zoomResult" class="hidden lg:block absolute left-[102%] top-0 w-[450px] h-[490px] bg-white rounded-xl shadow-xl overflow-hidden z-50 border border-gray-200 pointer-events-none opacity-0 transition-opacity duration-200">
+                    <div id="zoomResult"
+                         class="hidden lg:block absolute left-[102%] top-0 w-[450px] h-[490px] bg-white rounded-xl shadow-xl overflow-hidden z-50 border border-gray-200 pointer-events-none opacity-0 transition-opacity duration-200">
                         <div id="zoomedImage" class="w-full h-full bg-no-repeat"></div>
                     </div>
                 </div>
@@ -102,6 +123,23 @@
                         ❯
                     </button>
                 </div>
+            </div>
+
+            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS -->
+            <div id="mobileZoomModal" class="fixed inset-0 z-[999] bg-black/90 hidden flex-col items-center justify-center p-4">
+                <button onclick="closeMobileZoom()" class="absolute top-5 right-5 text-white bg-white/20 hover:bg-white/40 p-3 rounded-full text-xl font-bold transition z-50">
+                    ✕
+                </button>
+                <div class="relative max-w-full max-h-full flex items-center justify-center w-full h-full">
+                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 text-white bg-black/50 hover:bg-black/80 p-3 rounded-full text-lg font-bold transition z-20">
+                        ❮
+                    </button>
+                    <img id="mobileZoomModalImg" src="" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl">
+                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 text-white bg-black/50 hover:bg-black/80 p-3 rounded-full text-lg font-bold transition z-20">
+                        ❯
+                    </button>
+                </div>
+                <div id="mobileImageCounter" class="text-white/80 text-sm mt-2"></div>
             </div>
 
             <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
@@ -164,11 +202,13 @@
     </span>
 
                     @if($hasFlashSale && $discountPercent > 0)
-                        <span id="discountBadge" class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                        <span id="discountBadge"
+                              class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
             {{ number_format($discountPercent, 0) }}% OFF
         </span>
                     @else
-                        <span id="discountBadge" class="hidden bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"></span>
+                        <span id="discountBadge"
+                              class="hidden bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"></span>
                     @endif
                 </div>
 
@@ -223,12 +263,15 @@
                     <h3 class="font-semibold text-xs sm:text-sm mb-1.5">Quantity</h3>
                     <div class="flex items-center border border-gray-400 rounded-lg w-fit overflow-hidden bg-gray-50">
                         <button type="button" onclick="qty(-1)"
-                                class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">-
+                                class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">
+                            -
                         </button>
                         <input id="qtyInput" type="text" value="1"
-                               class="w-10 sm:w-12 text-center text-xs sm:text-sm outline-none border-x border-x-gray-400 bg-transparent" readonly>
+                               class="w-10 sm:w-12 text-center text-xs sm:text-sm outline-none border-x border-x-gray-400 bg-transparent"
+                               readonly>
                         <button type="button" onclick="qty(1)"
-                                class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">+
+                                class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">
+                            +
                         </button>
                     </div>
                 </div>
@@ -261,7 +304,8 @@
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
                             <i class="fa-solid fa-align-left text-sm"></i>
                         </div>
-                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product Description</h2>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product
+                            Description</h2>
                     </div>
 
                     <!-- Optional subtle badge or tag -->
@@ -279,7 +323,8 @@
                     </div>
 
                     <!-- Fade Overlay (Only visible when collapsed) -->
-                    <div id="descGradientOverlay" class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
+                    <div id="descGradientOverlay"
+                         class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
                 </div>
 
                 <!-- Toggle Button -->
@@ -1082,21 +1127,110 @@
     </script>
 
     <script>
-        function zoomEnter(event) {
-            const result = document.getElementById('zoomResult');
-            result.classList.remove('opacity-0');
+        let zoomLevel = 2.5;
+        let mobileImages = [];
+        let currentMobileIndex = 0;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const slides = document.querySelectorAll('.mainImageSwiper .swiper-slide');
+            slides.forEach(slide => {
+                const img = slide.querySelector('img');
+                if (img) {
+                    mobileImages.push(img.src);
+                }
+            });
+        });
+
+        function openMobileZoom() {
+            if (window.innerWidth < 1024 && mobileImages.length > 0) {
+                const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
+                if (activeSlide) {
+                    const activeImg = activeSlide.querySelector('img');
+                    if (activeImg) {
+                        currentMobileIndex = mobileImages.indexOf(activeImg.src);
+                        if (currentMobileIndex === -1) currentMobileIndex = 0;
+                    }
+                }
+                const modal = document.getElementById('mobileZoomModal');
+                updateMobileModalImage();
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
         }
+
+        function closeMobileZoom() {
+            const modal = document.getElementById('mobileZoomModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeMobileModalImage(direction) {
+            currentMobileIndex += direction;
+            if (currentMobileIndex < 0) {
+                currentMobileIndex = mobileImages.length - 1;
+            } else if (currentMobileIndex >= mobileImages.length) {
+                currentMobileIndex = 0;
+            }
+            updateMobileModalImage();
+        }
+
+        function updateMobileModalImage() {
+            const modalImg = document.getElementById('mobileZoomModalImg');
+            const counter = document.getElementById('mobileImageCounter');
+            if (mobileImages.length > 0) {
+                modalImg.src = mobileImages[currentMobileIndex];
+                counter.innerText = `${currentMobileIndex + 1} / ${mobileImages.length}`;
+            }
+        }
+
+        function zoomEnter(event) {
+            if (window.innerWidth < 1024) return;
+
+            const result = document.getElementById('zoomResult');
+
+            if (result) {
+                result.classList.remove('opacity-0');
+            }
+
+            zoomIn(event);
+        }
+
 
         function zoomOut() {
             const result = document.getElementById('zoomResult');
-            result.classList.add('opacity-0');
 
-            // Sabhi slides ki lenses chhupa dein
-            document.querySelectorAll('.magnifier-lens').forEach(lens => lens.classList.add('hidden'));
+            if (result) {
+                result.classList.add('opacity-0');
+            }
+
+            document.querySelectorAll('.magnifier-lens').forEach(lens => {
+                lens.classList.add('hidden');
+            });
+        }
+
+
+        function handleZoomScroll(event) {
+            if (window.innerWidth < 1024) return;
+            event.preventDefault();
+
+            if (event.deltaY < 0) {
+                zoomLevel = Math.min(zoomLevel + 0.3, 5.0);
+            } else {
+                zoomLevel = Math.max(zoomLevel - 0.3, 1.2);
+            }
+
+            zoomIn(event);
         }
 
         function zoomIn(event) {
-            const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
+            if (window.innerWidth < 1024) return;
+
+            const activeSlide = document.querySelector(
+                '.mainImageSwiper .swiper-slide-active'
+            );
+
             if (!activeSlide) return;
 
             const img = activeSlide.querySelector('.main-product-image');
@@ -1104,49 +1238,78 @@
             const result = document.getElementById('zoomResult');
             const zoomed = document.getElementById('zoomedImage');
 
-            if (!img || !lens) return;
+            if (!img || !lens || !result || !zoomed) return;
 
-            // Lens aur Result box ko show karein
+            const rect = img.getBoundingClientRect();
+
+            // Cursor image ke bahar hai
+            if (
+                event.clientX < rect.left ||
+                event.clientX > rect.right ||
+                event.clientY < rect.top ||
+                event.clientY > rect.bottom
+            ) {
+                zoomOut();
+                return;
+            }
+
+            // Zoom show
             lens.classList.remove('hidden');
             result.classList.remove('opacity-0');
 
-            // Zoomed box mein active image ka path set karein
-            zoomed.style.backgroundImage = `url('${img.src}')`;
+            // Background image set
+            const imageUrl = img.src;
 
-            // Mouse ki position image ke andar nikalain
-            const rect = img.getBoundingClientRect();
+            if (zoomed.dataset.image !== imageUrl) {
+                zoomed.style.backgroundImage = `url("${imageUrl}")`;
+                zoomed.style.backgroundRepeat = 'no-repeat';
+                zoomed.dataset.image = imageUrl;
+            }
+
+            const baseSize = 150;
+            const dynamicLensSize = baseSize / (zoomLevel * 0.6);
+
+            lens.style.width = dynamicLensSize + 'px';
+            lens.style.height = dynamicLensSize + 'px';
+
             let x = event.clientX - rect.left;
             let y = event.clientY - rect.top;
 
-            // Lens ke dimensions
             const lensWidth = lens.offsetWidth;
             const lensHeight = lens.offsetHeight;
 
-            // Lens ko image se bahar na jane dena (Boundary checks)
-            if (x < lensWidth / 2) x = lensWidth / 2;
-            if (x > rect.width - lensWidth / 2) x = rect.width - lensWidth / 2;
-            if (y < lensHeight / 2) y = lensHeight / 2;
-            if (y > rect.height - lensHeight / 2) y = rect.height - lensHeight / 2;
+            // Lens ko image ke andar hi rakho
+            x = Math.max(
+                lensWidth / 2,
+                Math.min(rect.width - lensWidth / 2, x)
+            );
 
-            // Lens ki positioning (Mouse ke center mein)
-            let lensX = x - lensWidth / 2;
-            let lensY = y - lensHeight / 2;
-            lens.style.left = lensX + 'px';
-            lens.style.top = lensY + 'px';
+            y = Math.max(
+                lensHeight / 2,
+                Math.min(rect.height - lensHeight / 2, y)
+            );
 
-            // Zoomed preview background size (Proportion set karna)
-            const bgWidth = rect.width * 2.5;
-            const bgHeight = rect.height * 2.5;
-            zoomed.style.backgroundSize = `${bgWidth}px ${bgHeight}px`;
+            const lensX = x - lensWidth / 2;
+            const lensY = y - lensHeight / 2;
 
-            // Zoomed preview ki calculation
-            let fx = bgWidth / rect.width;
-            let fy = bgHeight / rect.height;
+            lens.style.left = `${lensX}px`;
+            lens.style.top = `${lensY}px`;
 
-            let bgPosX = -(x * fx - zoomed.offsetWidth / 2);
-            let bgPosY = -(y * fy - zoomed.offsetHeight / 2);
+            const cx = zoomed.offsetWidth / lensWidth;
+            const cy = zoomed.offsetHeight / lensHeight;
 
-            zoomed.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+            zoomed.style.backgroundSize =
+                `${rect.width * cx}px ${rect.height * cy}px`;
+
+            const bgPosX =
+                -((x * cx) - (zoomed.offsetWidth / 2));
+
+            const bgPosY =
+                -((y * cy) - (zoomed.offsetHeight / 2));
+
+            zoomed.style.backgroundPosition =
+                `${bgPosX}px ${bgPosY}px`;
         }
+
     </script>
 @endsection

@@ -270,6 +270,84 @@
         @endforelse
     </div>
 
+
+
+    <section class="container mx-auto px-3 sm:px-7 mb-2">
+        <div class="">
+
+            <div class="mb-3 mt-2">
+                <!-- Top Row: Icon Badge + Heading -->
+                <div class="flex items-center gap-3">
+                    <!-- Icon Badge Box -->
+                    <div class="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center text-green-600 border border-green-100 shadow-sm mt-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <!-- Heading -->
+                    <h2 class="text-xl sm:text-2xl mt-1 sm:mt-2 font-bold text-gray-900 flex items-center gap-2">Our Services</h2>
+                </div>
+                <!-- Subtitle description -->
+                <p class="text-xs sm:text-sm text-gray-500">We provide the best features and benefits for your shopping experience</p>
+            </div>
+
+            <!-- Main Box: divide-y added for clean mobile row separation -->
+            <div class="flex flex-col lg:flex-row justify-around items-center bg-white border border-gray-200 py-3 lg:py-8 px-4 sm:px-6 rounded-lg shadow-sm divide-y divide-gray-100 lg:divide-y-0">
+
+                <!-- Item 1: Free Delivery -->
+                <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-green-600">
+                    <div class="flex items-center">
+                        <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.5-2 3-2 3s1.5-.5 3-2l3-3 4-4-5-5-4 4-3 3z"/><path d="M15 9l5 5"/><path d="M16 5l3 3"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-900 mb-0.5">Free Delivery</h3>
+                            <p class="text-xs text-gray-500">For all orders over PKR6999</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2: 15 Days Return -->
+                <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-green-600">
+                    <div class="flex items-center">
+                        <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.65-5.65"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-900 mb-0.5">15 Days Return</h3>
+                            <p class="text-xs text-gray-500">If goods have problems</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3: Secure Payment -->
+                <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-green-600">
+                    <div class="flex items-center">
+                        <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-900 mb-0.5">Secure Payment</h3>
+                            <p class="text-xs text-gray-500">100% secure payment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4: 24/7 Support -->
+                <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto">
+                    <div class="flex items-center">
+                        <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-900 mb-0.5">24/7 Support</h3>
+                            <p class="text-xs text-gray-500">Dedicated support</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- 2. TOP 8 MOST ORDERED PRODUCTS (BESTSELLERS) -->
     <!-- BESTSELLING PRODUCTS SECTION -->
     <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-2 mb-2 sm:mb-2 lg:mb-1 flex justify-between items-center">

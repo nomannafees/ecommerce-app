@@ -41,20 +41,21 @@
                 @endif
             </a>
 
-            <!-- Center Search Bar (Desktop) - FIXED ALIGNMENT -->
-            <div class="search-wrapper hidden lg:flex flex-1 max-w-xl mx-auto justify-center relative px-4 z-[40]">
+            <!-- Center Search Bar (Desktop) -->
+            <div class="search-wrapper hidden lg:block flex-1 max-w-xl mx-auto relative z-[40]">
+
                 <form action="{{ route('categories') }}" method="GET"
-                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 z-20"
-                      style="margin-left: 15px">
+                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
                     <input type="text"
                            name="search"
                            value="{{ request('search') }}"
                            placeholder="Search products, brands and more..."
                            autocomplete="off"
-                           class="w-180 search-input pl-3  pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+                           class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
-                    <button type="button" class="px-2.5 text-gray-500 hover:text-black transition"
+                    <button type="button"
+                            class="px-2.5 text-gray-500 hover:text-black transition"
                             title="Search by Image">
                         <i class="fa-solid fa-qrcode text-base"></i>
                     </button>
@@ -65,9 +66,11 @@
                     </button>
                 </form>
 
+                <!-- Suggestions -->
                 <div id="search-suggestions"
-                     class="search-suggestions absolute left-0 right-0 top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] hidden mt-1 max-h-96 overflow-y-auto">
+                     class="search-suggestions absolute left-0 w-full top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] hidden mt-1 max-h-96 overflow-y-auto">
                 </div>
+
             </div>
 
             <!-- Right Side Icons & Sign In Dropdown -->
@@ -249,7 +252,7 @@
 
 <!-- ================= STICKY SUB-HEADER CATEGORIES & CENTER NAV BAR (Sticky on Desktop ONLY) ================= -->
 @if (!request()->is('login'))
-    <div class="bg-white shadow-md hidden lg:block lg:sticky lg:top-0 z-40">
+    <div class="bg-white shadow-md hidden lg:block lg:sticky lg:top-0 z-20">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2 flex items-center justify-between">
 
             <!-- Left Side: All Categories Dropdown Button -->
