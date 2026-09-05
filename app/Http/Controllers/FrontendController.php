@@ -242,8 +242,95 @@ class FrontendController extends Controller
         $avgRating = round($product->reviews->avg('rating'), 1) ?: 0;
         $totalReviews = $product->reviews->count();
 
-        return view('frontend.product-detail', compact('product', 'avgRating', 'totalReviews'));
+        // --- RELATED PRODUCTS BY SUB-CATEGORY (Main -> Sub -> Child hierarchy) ---
+        $relatedProducts = collect(); // Default empty collection
+
+        if ($product->category_id) {
+            $currentCategory = Categorie::find($product->category_id);
+
+            if ($currentCategory) {
+
+                $subCategory = $currentCategory;
+
+                if ($currentCategory->parent_id != 0) {
+                    $parent = Categorie::find($currentCategory->parent_id);
+
+                    if ($parent && $parent->parent_id != 0) {
+                        // Current category CHILD hai (uska parent khud kisi Main ka child hai) -> parent hi sub-category hai
+                        $subCategory = $parent;
+                    } else {
+                        // Current category khud SUB-category hai (uska parent Main hai, parent_id == 0)
+                        $subCategory = $currentCategory;
+                    }
+                }
+
+                // Sub-category + uske sab children (sibling child-categories) ke IDs nikalo
+                $categoryIds = array_merge(
+                    [$subCategory->id],
+                    Categorie::where('parent_id', $subCategory->id)->pluck('id')->toArray()
+                );
+
+                $relatedProducts = Product::with(['images', 'variants'])
+                    ->whereIn('category_id', $categoryIds)
+                    ->where('id', '!=', $product->id)
+                    ->get();
+            }
+        }
+// ------------------------------------
+
+
+
+        return view('frontend.product-detail', compact('product', 'avgRating', 'totalReviews', 'relatedProducts'));
     }
+    //        $relatedProducts = collect();
+//
+//        if ($product->category_id) {
+//
+//            // Current product ki category
+//            $category = Categorie::find($product->category_id);
+//
+//            if ($category) {
+//
+//                // Sabse upar wali Main Category find karein
+//                while ($category->parent_id) {
+//                    $category = $category->parent;
+//                }
+//
+//                // Ab $category main/root category hai
+//                $mainCategoryId = $category->id;
+//
+//                // Main category + uski saari sub/child categories
+//                $categoryIds = [$mainCategoryId];
+//
+//                $categoriesToCheck = [$mainCategoryId];
+//
+//                while (!empty($categoriesToCheck)) {
+//
+//                    $children = Categorie::whereIn(
+//                        'parent_id',
+//                        $categoriesToCheck
+//                    )->pluck('id')->toArray();
+//
+//                    if (empty($children)) {
+//                        break;
+//                    }
+//
+//                    $categoryIds = array_merge($categoryIds, $children);
+//
+//                    $categoriesToCheck = $children;
+//                }
+//
+//                // Main category aur tamam descendants ke products
+//                $relatedProducts = Product::with([
+//                    'images',
+//                    'variants'
+//                ])
+//                    ->whereIn('category_id', $categoryIds)
+//                    ->where('id', '!=', $product->id)
+//                    ->take(12)
+//                    ->get();
+//            }
+//        }
 
     public function frontendProduct(Request $request)
     {
