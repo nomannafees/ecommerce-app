@@ -342,8 +342,8 @@
 
                             <span class="w-5 h-5 rounded-full bg-gray-800 text-gray-300 group-hover:bg-gray-700 group-hover:text-white flex items-center justify-center shadow-sm transition-all duration-300"
                                   id="descToggleIconWrapper">
-                <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
-            </span>
+                             <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </span>
                         </button>
                     </div>
                 @endif
@@ -463,9 +463,9 @@
                                 <button type="button"
                                         id="seeMoreReviewsBtn"
                                         onclick="loadMoreReviews()"
-                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-xl transition duration-200 border border-emerald-200 cursor-pointer">
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-black hover:bg-black text-white text-xs font-semibold rounded-xl transition-all duration-200 ease-in-out border cursor-pointer shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
                                     <span id="seeMoreBtnText">See More Reviews</span>
-                                    <i id="seeMoreBtnIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+                                    <i id="seeMoreBtnIcon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                                 </button>
                             </div>
                         @endif
@@ -1541,7 +1541,7 @@
                 // Count ko wapas 3 par le aao
                 visibleReviewCount = 3;
 
-                // Button ko wapas apni original halat mein kar do
+                // Button ko wapas apni original halat mein kar do (Black theme maintain rakhte hue)
                 if (btnText) btnText.innerText = 'See More Reviews';
                 if (btnIcon) {
                     btnIcon.style.display = 'inline-block';
@@ -1549,8 +1549,9 @@
                 }
                 if (btn) {
                     btn.disabled = false;
+                    // Emerald ki jagah yahan black/gray classes laga di hain
                     btn.classList.remove('bg-gray-100', 'text-gray-400', 'border-gray-200', 'cursor-not-allowed');
-                    btn.classList.add('bg-emerald-50', 'hover:bg-emerald-100', 'text-emerald-700', 'border-emerald-200', 'cursor-pointer');
+                    btn.classList.add('bg-gray-900', 'hover:bg-black', 'text-white', 'border-gray-800', 'cursor-pointer');
                 }
                 return;
             }
