@@ -336,14 +336,14 @@
                         <button type="button"
                                 id="descToggleBtn"
                                 onclick="toggleFullDescription()"
-                                class="group inline-flex items-center cursor-pointer gap-2 px-4 py-2 rounded-xl hover:bg-emerald-100 bg-emerald-100 text-gray-700 font-semibold text-xs sm:text-sm transition-all duration-200 border border-emerald-100 hover:border-emerald-200">
+                                class="group inline-flex items-center cursor-pointer gap-2 px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm border border-gray-800">
 
                             <span id="descToggleText">Read Full Description</span>
 
-                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-400 cursor-pointer group-hover:text-emerald-500 flex items-center justify-center shadow-sm transition-transform duration-300"
+                            <span class="w-5 h-5 rounded-full bg-gray-800 text-gray-300 group-hover:bg-gray-700 group-hover:text-white flex items-center justify-center shadow-sm transition-all duration-300"
                                   id="descToggleIconWrapper">
-                    <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
-                </span>
+                <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+            </span>
                         </button>
                     </div>
                 @endif
