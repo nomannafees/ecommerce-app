@@ -17,6 +17,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // frontent routes
 Route::get('/sliders', [\App\Http\Controllers\Api\SliderController::class,'index']);
+Route::get('/flash-sale-products', [\App\Http\Controllers\Api\ProductController::class, 'flashSaleProducts']);
 Route::get('/all-products', [\App\Http\Controllers\Api\ProductController::class,'index']);
 Route::get('/product/{slug}', [\App\Http\Controllers\Api\ProductController::class,'productDetail']);
 Route::get('/products/bestselling', [\App\Http\Controllers\Api\ProductController::class, 'bestsellingProducts']);

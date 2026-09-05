@@ -308,61 +308,50 @@
         </div>
 
         <!-- ================= PRODUCT DESCRIPTION SECTION ================= -->
-        <div class="mt-5 sm:mt-6 pt-2 ">
-            <div class=" rounded-lg transition-all duration-300 ">
+        <div class="mt-5 sm:mt-6 pt-2">
+            <div class="rounded-lg transition-all duration-300">
 
-                <!-- Header -->
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
                             <i class="fa-solid fa-align-left text-sm"></i>
                         </div>
-                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product
-                            Description</h2>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product Description</h2>
                     </div>
-
-                    <!-- Optional subtle badge or tag -->
-                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50/80 px-2.5 py-1 rounded-full">
+                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
                 Overview
             </span>
                 </div>
 
-                <!-- Description Container with Gradient Fade Overlay -->
                 <div class="relative">
                     <div id="fullDescriptionContent"
                          class="product-description text-gray-600 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out"
-                         style="max-height: 160px;">
+                         @if(strlen(strip_tags($product->description)) > 350) style="max-height: 160px;" @endif>
                         {!! $product->description !!}
                     </div>
-
-                    <!-- Fade Overlay (Only visible when collapsed) -->
-                    <div id="descGradientOverlay"
-                         class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
                 </div>
 
-                <!-- Toggle Button -->
-                <div class="mt-4 pt-2 flex justify-center">
-                    <button type="button"
-                            id="descToggleBtn"
-                            onclick="toggleFullDescription()"
-                            class="group inline-flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-emerald-100 bg-emerald-100 text-gray-700 font-semibold text-xs sm:text-sm transition-all duration-200 border border-emerald-100 hover:border-emerald-200">
+                @if(strlen(strip_tags($product->description)) > 650)
+                    <div id="descToggleWrapper" class="mt-4 pt-2 flex justify-center">
+                        <button type="button"
+                                id="descToggleBtn"
+                                onclick="toggleFullDescription()"
+                                class="group inline-flex items-center cursor-pointer gap-2 px-4 py-2 rounded-xl hover:bg-emerald-100 bg-emerald-100 text-gray-700 font-semibold text-xs sm:text-sm transition-all duration-200 border border-emerald-100 hover:border-emerald-200">
 
-                        <span id="descToggleText">Read Full Description</span>
+                            <span id="descToggleText">Read Full Description</span>
 
-                        <span class="w-5 h-5 rounded-full bg-emerald-200 text-emerald-400 group-hover:text-emerald-500 flex items-center justify-center shadow-sm transition-transform duration-300"
-                              id="descToggleIconWrapper">
-
-            <i id="descToggleIcon"
-               class="fa-solid fa-chevron-down text-[10px]"></i>
-
-        </span>
-                    </button>
-                </div>
+                            <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-400 cursor-pointer group-hover:text-emerald-500 flex items-center justify-center shadow-sm transition-transform duration-300"
+                                  id="descToggleIconWrapper">
+                    <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+                </span>
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
 
         <!-- ================= COMPLETE CUSTOMER REVIEWS SECTION ================= -->
-        <div class="mt-8 sm:mt-10 pt-4 border-t border-gray-200">
+        <div class="mt-8 sm:mt-10 pt-2 border-t border-gray-200">
             <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Customer Reviews</h2>
 
         @if($totalReviews > 0)
@@ -410,8 +399,8 @@
 
                         <!-- Individual Reviews Cards List inside the same wrapper -->
                         <div class="space-y-3">
-                            @foreach($product->reviews as $review)
-                                <div class="p-3 border-b border-gray-200">
+                            @foreach($product->reviews as $index => $review)
+                                <div class="p-3 border-b border-gray-200 review-item {{ $index >= 3 ? 'hidden' : '' }}">
 
                                     <!-- Header: User Info & Rating -->
                                     <div class="flex items-start justify-between gap-3">
@@ -437,8 +426,8 @@
 
                                         <span
                                                 class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
-                                    <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
-                                </span>
+                            <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
+                        </span>
                                     </div>
 
                                     <!-- Comment Content -->
@@ -466,6 +455,19 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        <!-- See More Button (Only shows if total reviews are greater than 3) -->
+                        @if($totalReviews > 3)
+                            <div class="text-center mt-4 pt-2" id="seeMoreContainer">
+                                <button type="button"
+                                        id="seeMoreReviewsBtn"
+                                        onclick="loadMoreReviews()"
+                                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-xl transition duration-200 border border-emerald-200 cursor-pointer">
+                                    <span id="seeMoreBtnText">See More Reviews</span>
+                                    <i id="seeMoreBtnIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </button>
+                            </div>
+                        @endif
                     </div>
 
                 </div>
@@ -1337,6 +1339,96 @@
             const bgPosY = -((y * cy) - (zoomed.offsetHeight / 2));
 
             zoomed.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Thoda delay taake browser element ki actual height ko theek se measure kar le
+            setTimeout(function() {
+                const content = document.getElementById("fullDescriptionContent");
+                const toggleWrapper = document.getElementById("descToggleWrapper");
+
+                if (content && toggleWrapper) {
+                    // Agar description ki height 160px ya us se kam hai, to button ko hide kar do
+                    if (content.scrollHeight <= 160) {
+                        toggleWrapper.style.display = "none";
+                        content.style.maxHeight = "none";
+                    }
+                }
+            }, 100); // 100 milliseconds ka delay
+        });
+
+        let isExpanded = false;
+        function toggleFullDescription() {
+            const content = document.getElementById("fullDescriptionContent");
+            const toggleText = document.getElementById("descToggleText");
+            const toggleIcon = document.getElementById("descToggleIcon");
+
+            isExpanded = !isExpanded;
+
+            if (isExpanded) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggleText.innerText = "Show Less";
+                toggleIcon.classList.add("rotate-180");
+            } else {
+                content.style.maxHeight = "160px";
+                toggleText.innerText = "Read Full Description";
+                toggleIcon.classList.remove("rotate-180");
+            }
+        }
+    </script>
+
+    <script>
+        let visibleReviewCount = 3;
+
+        function loadMoreReviews() {
+            const allReviews = document.querySelectorAll('.review-item');
+            const totalReviews = allReviews.length;
+            const btnText = document.getElementById('seeMoreBtnText');
+            const btnIcon = document.getElementById('seeMoreBtnIcon');
+            const btn = document.getElementById('seeMoreReviewsBtn');
+
+            // Agar saare reviews pehle hi khul chuke hain, to dobara click karne par reset (band) kar do
+            if (visibleReviewCount >= totalReviews) {
+                // Shuru ke 3 ke ilawa baaki sab ko wapas hide kar do
+                allReviews.forEach((el, index) => {
+                    if (index >= 3) {
+                        el.classList.add('hidden');
+                    }
+                });
+
+                // Count ko wapas 3 par le aao
+                visibleReviewCount = 3;
+
+                // Button ko wapas apni original halat mein kar do
+                if (btnText) btnText.innerText = 'See More Reviews';
+                if (btnIcon) {
+                    btnIcon.style.display = 'inline-block';
+                    btnIcon.classList.remove('rotate-180');
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-100', 'text-gray-400', 'border-gray-200', 'cursor-not-allowed');
+                    btn.classList.add('bg-emerald-50', 'hover:bg-emerald-100', 'text-emerald-700', 'border-emerald-200', 'cursor-pointer');
+                }
+                return;
+            }
+
+            // Warna mazeed 3-3 reviews kholte jao
+            let nextLimit = visibleReviewCount + 3;
+
+            for (let i = visibleReviewCount; i < nextLimit && i < totalReviews; i++) {
+                allReviews[i].classList.remove('hidden');
+            }
+
+            visibleReviewCount = nextLimit;
+
+            // Jab aakhri reviews par pohonch jayein, to "No More Reviews" dikha do (lekin click par band hone ki capability ke sath)
+            if (visibleReviewCount >= totalReviews) {
+                if (btnText) btnText.innerText = 'No More Reviews (Click to Show Less)';
+                if (btnIcon) btnIcon.style.display = 'none';
+            }
         }
     </script>
 

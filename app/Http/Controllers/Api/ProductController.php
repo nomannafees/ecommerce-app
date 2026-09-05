@@ -265,4 +265,27 @@ class ProductController extends Controller
         ], 200);
     }
 
+    public function flashSaleProducts(Request $request)
+    {
+        $products = Product::whereHas('flashSale', function ($query) {
+            $query->whereDate('start_time', '<=', now())
+                ->whereDate('end_time', '>=', now());
+        })
+            ->with(['variants', 'mainVariantImage', 'reviews', 'flashSale'])
+            ->latest()
+            ->get();
+
+        // Har product ke liye average rating aur total reviews calculate karna
+        $products->each(function ($product) {
+            $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
+            $product->total_reviews = $product->reviews->count();
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $products
+        ]);
+    }
+
+
 }
