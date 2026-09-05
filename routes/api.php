@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CategoryProduct;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\BannerController;
+use App\Models\AdminStore;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
