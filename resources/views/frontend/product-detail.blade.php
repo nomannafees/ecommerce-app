@@ -336,7 +336,7 @@
                         <button type="button"
                                 id="descToggleBtn"
                                 onclick="toggleFullDescription()"
-                                class="group inline-flex items-center cursor-pointer gap-2 px-5 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm border border-gray-800">
+                                class="group inline-flex items-center cursor-pointer gap-2 px-3 py-2 rounded-xl bg-gray-900 hover:bg-black text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm border border-gray-800">
 
                             <span id="descToggleText">Read Full Description</span>
 
