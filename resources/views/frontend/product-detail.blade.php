@@ -46,7 +46,8 @@
 
                     <!-- Main Swiper -->
                     <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group w-full"
-                         onwheel="handleZoomScroll(event)">
+                         onwheel="handleZoomScroll(event)"
+                         onmouseleave="zoomOut()">
 
                         <div class="swiper-wrapper cursor-crosshair" id="zoomContainer">
 
@@ -55,10 +56,10 @@
                                     <div class="swiper-slide relative"
                                          data-color="{{ $v->color_name }}"
                                          data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                         onmouseleave="zoomOut()">
+                                    >
 
 
-                                    <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
+                                        <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
                                         <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
                                              class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image cursor-zoom-in"
                                              alt="{{ $product->name }}"
@@ -125,21 +126,33 @@
                 </div>
             </div>
 
-            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS -->
-            <div id="mobileZoomModal" class="fixed inset-0 z-[999] bg-black/90 hidden flex-col items-center justify-center p-4">
-                <button onclick="closeMobileZoom()" class="absolute top-5 right-5 text-white bg-white/20 hover:bg-white/40 p-3 rounded-full text-xl font-bold transition z-50">
-                    ✕
-                </button>
-                <div class="relative max-w-full max-h-full flex items-center justify-center w-full h-full">
-                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 text-white bg-black/50 hover:bg-black/80 p-3 rounded-full text-lg font-bold transition z-20">
+            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS & TOUCH SWIPE -->
+            <div id="mobileZoomModal" class="fixed inset-0 z-[999] bg-black/90 hidden flex-col justify-center items-center px-4"
+                 ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
+
+                <!-- Top Bar: Counter & Close Button -->
+                <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-white px-2 z-50">
+                    <span id="mobileImageCounter" class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
+                    <button onclick="closeMobileZoom()" class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Main Image Container with Arrows -->
+                <div class="relative w-full max-w-lg flex items-center justify-center">
+                    <!-- Left Arrow -->
+                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
                         ❮
                     </button>
-                    <img id="mobileZoomModalImg" src="" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl">
-                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 text-white bg-black/50 hover:bg-black/80 p-3 rounded-full text-lg font-bold transition z-20">
+
+                    <!-- Modal Image -->
+                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image" class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
+
+                    <!-- Right Arrow -->
+                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
                         ❯
                     </button>
                 </div>
-                <div id="mobileImageCounter" class="text-white/80 text-sm mt-2"></div>
             </div>
 
             <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
@@ -1131,18 +1144,52 @@
         let mobileImages = [];
         let currentMobileIndex = 0;
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const slides = document.querySelectorAll('.mainImageSwiper .swiper-slide');
+        // Touch Swipe Variables
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipeGesture();
+        }
+
+        function handleSwipeGesture() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe Left -> Next Image
+                changeMobileModalImage(1);
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe Right -> Previous Image
+                changeMobileModalImage(-1);
+            }
+        }
+
+        // Mobile Images array setup (Duplicates remove karne ke liye Set use kiya gaya hai)
+        function refreshMobileImages() {
+            mobileImages = [];
+            const slides = document.querySelectorAll('.mainImageSwiper .swiper-slide:not(.swiper-slide-duplicate)');
             slides.forEach(slide => {
-                const img = slide.querySelector('img');
-                if (img) {
+                const img = slide.querySelector('.main-product-image');
+                if (img && img.src && !mobileImages.includes(img.src)) {
                     mobileImages.push(img.src);
                 }
             });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            refreshMobileImages();
         });
 
         function openMobileZoom() {
-            if (window.innerWidth < 1024 && mobileImages.length > 0) {
+            if (window.innerWidth < 1024) {
+                refreshMobileImages();
+                if (mobileImages.length === 0) return;
+
                 const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
                 if (activeSlide) {
                     const activeImg = activeSlide.querySelector('img');
@@ -1151,6 +1198,7 @@
                         if (currentMobileIndex === -1) currentMobileIndex = 0;
                     }
                 }
+
                 const modal = document.getElementById('mobileZoomModal');
                 updateMobileModalImage();
                 modal.classList.remove('hidden');
@@ -1167,7 +1215,9 @@
         }
 
         function changeMobileModalImage(direction) {
+            if (mobileImages.length === 0) return;
             currentMobileIndex += direction;
+
             if (currentMobileIndex < 0) {
                 currentMobileIndex = mobileImages.length - 1;
             } else if (currentMobileIndex >= mobileImages.length) {
@@ -1179,7 +1229,7 @@
         function updateMobileModalImage() {
             const modalImg = document.getElementById('mobileZoomModalImg');
             const counter = document.getElementById('mobileImageCounter');
-            if (mobileImages.length > 0) {
+            if (mobileImages.length > 0 && modalImg && counter) {
                 modalImg.src = mobileImages[currentMobileIndex];
                 counter.innerText = `${currentMobileIndex + 1} / ${mobileImages.length}`;
             }
@@ -1187,29 +1237,24 @@
 
         function zoomEnter(event) {
             if (window.innerWidth < 1024) return;
-
             const result = document.getElementById('zoomResult');
-
             if (result) {
                 result.classList.remove('opacity-0');
             }
-
             zoomIn(event);
         }
 
-
         function zoomOut() {
             const result = document.getElementById('zoomResult');
-
             if (result) {
                 result.classList.add('opacity-0');
             }
 
             document.querySelectorAll('.magnifier-lens').forEach(lens => {
                 lens.classList.add('hidden');
+                lens.style.display = 'none';
             });
         }
-
 
         function handleZoomScroll(event) {
             if (window.innerWidth < 1024) return;
@@ -1227,10 +1272,7 @@
         function zoomIn(event) {
             if (window.innerWidth < 1024) return;
 
-            const activeSlide = document.querySelector(
-                '.mainImageSwiper .swiper-slide-active'
-            );
-
+            const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
             if (!activeSlide) return;
 
             const img = activeSlide.querySelector('.main-product-image');
@@ -1242,7 +1284,7 @@
 
             const rect = img.getBoundingClientRect();
 
-            // Cursor image ke bahar hai
+            // Cursor Out of Bounds Check (Jab cursor image se bahar jaye ga tab hi zoom band hoga)
             if (
                 event.clientX < rect.left ||
                 event.clientX > rect.right ||
@@ -1253,11 +1295,10 @@
                 return;
             }
 
-            // Zoom show
             lens.classList.remove('hidden');
+            lens.style.display = 'block';
             result.classList.remove('opacity-0');
 
-            // Background image set
             const imageUrl = img.src;
 
             if (zoomed.dataset.image !== imageUrl) {
@@ -1278,16 +1319,8 @@
             const lensWidth = lens.offsetWidth;
             const lensHeight = lens.offsetHeight;
 
-            // Lens ko image ke andar hi rakho
-            x = Math.max(
-                lensWidth / 2,
-                Math.min(rect.width - lensWidth / 2, x)
-            );
-
-            y = Math.max(
-                lensHeight / 2,
-                Math.min(rect.height - lensHeight / 2, y)
-            );
+            x = Math.max(lensWidth / 2, Math.min(rect.width - lensWidth / 2, x));
+            y = Math.max(lensHeight / 2, Math.min(rect.height - lensHeight / 2, y));
 
             const lensX = x - lensWidth / 2;
             const lensY = y - lensHeight / 2;
@@ -1298,18 +1331,13 @@
             const cx = zoomed.offsetWidth / lensWidth;
             const cy = zoomed.offsetHeight / lensHeight;
 
-            zoomed.style.backgroundSize =
-                `${rect.width * cx}px ${rect.height * cy}px`;
+            zoomed.style.backgroundSize = `${rect.width * cx}px ${rect.height * cy}px`;
 
-            const bgPosX =
-                -((x * cx) - (zoomed.offsetWidth / 2));
+            const bgPosX = -((x * cx) - (zoomed.offsetWidth / 2));
+            const bgPosY = -((y * cy) - (zoomed.offsetHeight / 2));
 
-            const bgPosY =
-                -((y * cy) - (zoomed.offsetHeight / 2));
-
-            zoomed.style.backgroundPosition =
-                `${bgPosX}px ${bgPosY}px`;
+            zoomed.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
         }
-
     </script>
+
 @endsection
