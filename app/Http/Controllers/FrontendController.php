@@ -276,61 +276,17 @@ class FrontendController extends Controller
                     ->get();
             }
         }
-// ------------------------------------
 
+// --- WISHLIST IDS ---
+        $wishlistProductIds = [];
+        if (Auth::check()) {
+            $wishlistProductIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('product_id')
+                ->toArray();
+        }
 
-
-        return view('frontend.product-detail', compact('product', 'avgRating', 'totalReviews', 'relatedProducts'));
+        return view('frontend.product-detail', compact('product', 'avgRating', 'totalReviews', 'relatedProducts', 'wishlistProductIds'));
     }
-    //        $relatedProducts = collect();
-//
-//        if ($product->category_id) {
-//
-//            // Current product ki category
-//            $category = Categorie::find($product->category_id);
-//
-//            if ($category) {
-//
-//                // Sabse upar wali Main Category find karein
-//                while ($category->parent_id) {
-//                    $category = $category->parent;
-//                }
-//
-//                // Ab $category main/root category hai
-//                $mainCategoryId = $category->id;
-//
-//                // Main category + uski saari sub/child categories
-//                $categoryIds = [$mainCategoryId];
-//
-//                $categoriesToCheck = [$mainCategoryId];
-//
-//                while (!empty($categoriesToCheck)) {
-//
-//                    $children = Categorie::whereIn(
-//                        'parent_id',
-//                        $categoriesToCheck
-//                    )->pluck('id')->toArray();
-//
-//                    if (empty($children)) {
-//                        break;
-//                    }
-//
-//                    $categoryIds = array_merge($categoryIds, $children);
-//
-//                    $categoriesToCheck = $children;
-//                }
-//
-//                // Main category aur tamam descendants ke products
-//                $relatedProducts = Product::with([
-//                    'images',
-//                    'variants'
-//                ])
-//                    ->whereIn('category_id', $categoryIds)
-//                    ->where('id', '!=', $product->id)
-//                    ->take(12)
-//                    ->get();
-//            }
-//        }
 
     public function frontendProduct(Request $request)
     {
