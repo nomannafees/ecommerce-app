@@ -514,7 +514,7 @@
                             <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
                                 {{-- IMAGE CONTAINER --}}
-                                <div class="relative bg-gray-100 overflow-hidden h-35 xs:h-38 sm:h-43 2xl:h-43 md:h-43 lg:h-43">
+                                <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-38 sm:h-43 2xl:h-43 md:h-43 lg:h-43">
 
                                     {{-- Wishlist Form Button --}}
                                     <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" onclick="event.preventDefault();">
