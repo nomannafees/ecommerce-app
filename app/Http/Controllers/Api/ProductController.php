@@ -287,5 +287,23 @@ class ProductController extends Controller
         ]);
     }
 
+    public function adminStore()
+    {
+        $setting = AdminStore::latest()->first();
 
+        return response()->json([
+            'success' => true,
+            'data' => $setting
+        ], 200);
+    }
+
+    public function adminStore()
+    {
+        $setting = AdminStore::latest()->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $setting
+        ], 200);
+    }
 }
