@@ -1,53 +1,113 @@
 @extends('frontend.layouts.app')
 @section('content')
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <style>
+        /* Product Description */
+        .product-description ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
 
-    <div class="max-w-7xl mx-auto px-4 py-10">
+        .product-description ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
 
-        <div class="mb-6 text-sm text-gray-500">
+        .product-description li {
+            margin-bottom: 0.25rem;
+        }
+
+        .swiper-button-next, .swiper-rtl .swiper-button-prev {
+            padding: 30px 30px 30px 32px;
+        }
+
+        .swiper-button-prev, .swiper-rtl .swiper-button-next {
+            padding: 30px 30px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 pb-16 sm:py-6">
+
+        <div class="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500 truncate">
             Home / Products / <span class="text-black font-medium">{{ $product->name }}</span>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Grid: Left column ka size kam (max width constraint ke sath) aur right column ko bara kar diya hai -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
 
-            <div>
-                <!-- SWIPER MAIN SLIDER -->
-                <div class="swiper mainImageSwiper bg-white rounded-2xl overflow-hidden shadow-md relative group">
-                    <div class="swiper-wrapper cursor-pointer">
-                        @foreach($product->variants->unique('variant_image_id') as $v)
-                            @if($v->variantImage)
-                                <div class="swiper-slide" data-color="{{ $v->color_name }}" data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}">
-                                    <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                         class="w-full h-[500px] object-cover"
-                                         alt="{{ $product->name }}">
-                                </div>
-                            @endif
-                        @endforeach
+            <!-- LEFT COLUMN: Image & Swiper -->
+            <div class="lg:col-span-5">
+                <!-- SWIPER MAIN SLIDER WITH ZOOM CONTAINER -->
+                <div class="relative flex gap-4">
+
+                    <!-- Main Swiper -->
+                    <div class="swiper mainImageSwiper bg-white rounded-xl overflow-hidden relative group w-full"
+                         onwheel="handleZoomScroll(event)"
+                         onmouseleave="zoomOut()">
+
+                        <div class="swiper-wrapper cursor-crosshair" id="zoomContainer">
+
+                            @foreach($product->variants->unique('variant_image_id') as $v)
+                                @if($v->variantImage)
+                                    <div class="swiper-slide relative"
+                                         data-color="{{ $v->color_name }}"
+                                         data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}"
+                                    >
+
+
+                                        <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
+                                        <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
+                                             class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image cursor-zoom-in"
+                                             alt="{{ $product->name }}"
+                                             onmousemove="zoomIn(event)"
+                                             onmouseenter="zoomEnter(event)"
+                                             onclick="openMobileZoom()">
+
+
+                                        <!-- Magnifier Lens (Green Theme) -->
+                                        <div class="magnifier-lens hidden lg:block absolute border-2 border-emerald-500 bg-emerald-500/20 pointer-events-none w-28 h-28 rounded-md"></div>
+
+                                        <!-- Mobile ke liye Tap Indicator -->
+                                        <div class="absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full lg:hidden pointer-events-none shadow-md">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+
+                        <!-- Swiper Navigation Buttons -->
+                        <div style="padding: 0px 22px"
+                             class="swiper-button-next !text-black bg-white/70 w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-xs sm:after:!text-sm"></div>
+                        <div style="padding: 0px 22px"
+                             class="swiper-button-prev px-3 sm:px-5 !text-black bg-white/70 w-9 h-9 sm:w-10 sm:h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-xs sm:after:!text-sm"></div>
+                        <div class="swiper-pagination"></div>
                     </div>
-                    <style>
-                        .swiper-button-next, .swiper-rtl .swiper-button-prev {
-                            padding: 30px 30px 30px 32px;
-                        }
-                        .swiper-button-prev, .swiper-rtl .swiper-button-next {
-                            padding: 30px 30px;
-                        }
-                    </style>
-                    <div style="padding: 0px 22px" class="swiper-button-next !text-black bg-white/70 w-10 h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-sm"></div>
-                    <div style="padding: 0px 22px" class="swiper-button-prev px-5 !text-black bg-white/70 w-10 h-10 rounded-full shadow-md !opacity-0 group-hover:!opacity-100 transition-opacity duration-300 after:!text-sm"></div>
-                    <div class="swiper-pagination"></div>
+
+                    <!-- ZOOMED PREVIEW BOX -->
+                    <div id="zoomResult"
+                         class="hidden lg:block absolute left-[102%] top-0 w-[450px] h-[490px] bg-white rounded-xl shadow-xl overflow-hidden z-50 border border-gray-200 pointer-events-none opacity-0 transition-opacity duration-200">
+                        <div id="zoomedImage" class="w-full h-full bg-no-repeat"></div>
+                    </div>
                 </div>
 
                 <!-- THUMBNAIL CAROUSEL -->
-                <div class="relative mt-4 group">
-                    <div id="thumbCarousel" class="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth select-none py-2">
+                <div class="relative mt-3 group hidden md:block">
+                    <div id="thumbCarousel"
+                         class="flex gap-2.5 overflow-x-auto scrollbar-hide scroll-smooth select-none py-1.5">
                         @php $thumbIndex = 0; @endphp
                         @foreach($product->variants->unique('variant_image_id') as $v)
                             @if($v->variantImage)
                                 <div class="shrink-0 min-w-[20%]">
                                     <img onclick="changeSwiperSlide({{ $thumbIndex }}, this)"
                                          src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                         class="thumb cursor-pointer shadow-sm rounded-lg h-20 w-full object-cover border-2 {{ $v->variantImage->is_main ? 'border-gray-400' : 'border-transparent' }}"
+                                         class="thumb cursor-pointer shadow-sm rounded-lg h-18 w-full object-cover border-2 {{ $v->variantImage->is_main ? 'border-gray-300' : 'border-transparent' }}"
                                          data-index="{{ $thumbIndex }}">
                                 </div>
                                 @php $thumbIndex++; @endphp
@@ -55,25 +115,61 @@
                         @endforeach
                     </div>
 
-                    <button onclick="moveCarousel(-1)" class="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-r opacity-0 group-hover:opacity-100 transition z-10">❮</button>
-                    <button onclick="moveCarousel(1)" class="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-l opacity-0 group-hover:opacity-100 transition z-10">❯</button>
+                    <button onclick="moveCarousel(-1)"
+                            class="absolute left-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-r opacity-0 group-hover:opacity-100 transition z-10">
+                        ❮
+                    </button>
+                    <button onclick="moveCarousel(1)"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-l opacity-0 group-hover:opacity-100 transition z-10">
+                        ❯
+                    </button>
                 </div>
             </div>
 
-            <!-- PRODUCT DETAILS SIDE -->
-            <div class="lg:sticky lg:top-6 h-fit">
+            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS & TOUCH SWIPE -->
+            <div id="mobileZoomModal" class="fixed inset-0 z-[999] bg-black/90 hidden flex-col justify-center items-center px-4"
+                 ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
 
-                <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 capitalize">
+                <!-- Top Bar: Counter & Close Button -->
+                <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-white px-2 z-50">
+                    <span id="mobileImageCounter" class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
+                    <button onclick="closeMobileZoom()" class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Main Image Container with Arrows -->
+                <div class="relative w-full max-w-lg flex items-center justify-center">
+                    <!-- Left Arrow -->
+                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
+                        ❮
+                    </button>
+
+                    <!-- Modal Image -->
+                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image" class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
+
+                    <!-- Right Arrow -->
+                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
+                        ❯
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
+            <div class="lg:col-span-7">
+
+                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 capitalize">
                     {{ $product->name }}
                 </h1>
 
-                <p class="mt-2 text-gray-500">
-                    Brand: <span class="font-medium text-black">{{ ucfirst($product->prod_brand->name ?? 'Generic') }}</span>
+                <p class="mt-1 text-xs text-gray-500">
+                    Brand: <span
+                            class="font-medium text-black">{{ ucfirst($product->prod_brand->name ?? 'Generic') }}</span>
                 </p>
 
                 <!-- DYNAMIC TOP RATING STARS -->
-                <div class="flex items-center gap-2 mt-4">
-                    <div class="flex text-yellow-500 text-sm">
+                <div class="flex items-center gap-2 mt-2">
+                    <div class="flex text-yellow-500 text-xs">
                         @for($i = 1; $i <= 5; $i++)
                             @if($i <= floor($avgRating))
                                 <i class="fa-solid fa-star"></i>
@@ -84,34 +180,61 @@
                             @endif
                         @endfor
                     </div>
-                    <span class="text-gray-500 text-sm">({{ number_format($avgRating, 1) }} - {{ $totalReviews }} {{ Str::plural('Review', $totalReviews) }})</span>
+                    <span
+                            class="text-gray-500 text-xs">({{ number_format($avgRating, 1) }} - {{ $totalReviews }} {{ Str::plural('Review', $totalReviews) }})</span>
                 </div>
 
                 @php
                     $defaultVariant = $product->mainVariant ?? $product->variants->first();
-                    $initialPrice = $defaultVariant ? $defaultVariant->price : ($product->base_price ?? 0);
-                    $initialCutPrice = $defaultVariant ? $defaultVariant->cut_price : null;
+
+                    // Flash Sale Check & Calculation (Card section ki tarah)
+                    $hasFlashSale = $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+                    $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+
+                    $originalPrice = $defaultVariant ? ($defaultVariant->cut_price ?? $defaultVariant->price) : ($product->base_price ?? 0);
+
+                    if ($hasFlashSale && $discountPercent > 0) {
+                        $initialPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                        $initialCutPrice = $originalPrice;
+                    } else {
+                        $initialPrice = $defaultVariant ? $defaultVariant->price : ($product->base_price ?? 0);
+                        $initialCutPrice = $defaultVariant ? $defaultVariant->cut_price : null;
+                    }
+
                     $initialStock = $defaultVariant ? $defaultVariant->stock : 0;
                 @endphp
 
-                <div class="mt-6 flex items-end gap-4">
-                    <span id="displayPrice" class="text-3xl font-bold text-green-600">
-                        Rs {{ number_format($initialPrice) }}
-                    </span>
-                    <span id="displayCutPrice" class="text-lg text-gray-400 line-through {{ $initialCutPrice ? '' : 'hidden' }}">
-                        Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
-                    </span>
+                <div class="mt-3 flex items-center gap-3">
+    <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-green-600">
+        Rs {{ number_format($initialPrice) }}
+    </span>
+
+                    <span id="displayCutPrice"
+                          class="text-xs sm:text-base text-gray-400 line-through {{ $initialCutPrice && $initialCutPrice > $initialPrice ? '' : 'hidden' }}">
+        Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
+    </span>
+
+                    @if($hasFlashSale && $discountPercent > 0)
+                        <span id="discountBadge"
+                              class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            {{ number_format($discountPercent, 0) }}% OFF
+        </span>
+                    @else
+                        <span id="discountBadge"
+                              class="hidden bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"></span>
+                    @endif
+                </div>
+
+                <div class="mt-2">
+            <span id="stockBadge"
+                  class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
+            </span>
                 </div>
 
                 <div class="mt-4">
-                    <span id="stockBadge" class="px-3 py-1 rounded-full text-sm font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                        {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
-                    </span>
-                </div>
-
-                <div class="mt-8">
-                    <h3 class="font-semibold text-lg mb-2">Description</h3>
-                    <div class="text-gray-600 leading-7 prose prose-sm line-clamp-2">
+                    <h3 class="font-semibold text-sm sm:text-base mb-1">Description</h3>
+                    <div class=" text-gray-600 text-xs sm:text-sm leading-5 sm:leading-6 prose prose-sm line-clamp-2">
                         {!! $product->description !!}
                     </div>
                 </div>
@@ -121,9 +244,9 @@
                 <input type="hidden" id="selectedVariantStock" value="{{ $initialStock }}">
 
                 @if($product->variants && $product->variants->count() > 0)
-                    <div class="mt-8">
-                        <h3 class="font-semibold mb-2 text-gray-800">Select Color</h3>
-                        <div class="flex flex-wrap gap-3">
+                    <div class="mt-4">
+                        <h3 class="font-semibold mb-1.5 text-xs sm:text-sm text-gray-800">Select Color</h3>
+                        <div class="flex flex-wrap gap-2">
                             @foreach($product->variants->unique('color_name') as $variant)
                                 @php
                                     $colorImg = $variant->variantImage ? asset('storage/' . $variant->variantImage->image_path) : '';
@@ -132,166 +255,427 @@
                                 <button type="button"
                                         onclick="selectColor(this, '{{ $variant->color_name }}')"
                                         data-image="{{ $colorImg }}"
-                                        class="color-btn border cursor-pointer rounded-lg p-1 flex items-center gap-2 text-sm font-medium transition duration-200 hover:border-gray-400 {{ $isDefaultColor ? 'border-gray-300 bg-black/5 ring-1 ring-black/10' : 'border-gray-200' }}">
+                                        class="color-btn border cursor-pointer rounded-lg p-1 flex items-center gap-1.5 text-xs font-medium transition duration-200 hover:border-gray-400 {{ $isDefaultColor ? 'border-gray-300 bg-black/5 ring-1 ring-black/10' : 'border-gray-200' }}">
                                     @if($colorImg)
-                                        <img src="{{ $colorImg }}" class="w-10 h-10 rounded object-cover">
+                                        <img src="{{ $colorImg }}" class="w-7 h-7 sm:w-8 sm:h-8 rounded object-cover">
                                     @endif
-                                    <span class="pr-3 pl-1">{{ ucfirst($variant->color_name ?? 'Default') }}</span>
+                                    <span class="pr-2 pl-1">{{ ucfirst($variant->color_name ?? 'Default') }}</span>
                                 </button>
                             @endforeach
                         </div>
                     </div>
 
-                    <div class="mt-8">
-                        <h3 class="font-semibold mb-2 text-gray-800">Select Size</h3>
-                        <div id="sizeContainer" class="flex flex-wrap gap-3">
+                    <div class="mt-4">
+                        <h3 class="font-semibold mb-1.5 text-xs sm:text-sm text-gray-800">Select Size</h3>
+                        <div id="sizeContainer" class="flex flex-wrap gap-2">
                         </div>
                     </div>
                 @endif
 
-                <div class="mt-8">
-                    <h3 class="font-semibold mb-2">Quantity</h3>
-                    <div class="flex items-center border border-gray-400 rounded-lg w-fit overflow-hidden">
-                        <button type="button" onclick="qty(-1)" class="px-4 py-2 text-lg hover:bg-gray-100 cursor-pointer">-</button>
-                        <input id="qtyInput" type="text" value="1" class="w-14 text-center outline-none border-x border-x-gray-400" readonly>
-                        <button type="button" onclick="qty(1)" class="px-4 py-2 text-lg hover:bg-gray-100 cursor-pointer">+</button>
+                <div class="mt-4">
+                    <h3 class="font-semibold text-xs sm:text-sm mb-1.5">Quantity</h3>
+                    <div class="flex items-center border border-gray-400 rounded-lg w-fit overflow-hidden bg-gray-50">
+                        <button type="button" onclick="qty(-1)"
+                                class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">
+                            -
+                        </button>
+                        <input id="qtyInput" type="text" value="1"
+                               class="w-10 sm:w-12 text-center text-xs sm:text-sm outline-none border-x border-x-gray-400 bg-transparent"
+                               readonly>
+                        <button type="button" onclick="qty(1)"
+                                class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">
+                            +
+                        </button>
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                    <button type="button" id="addToCartBtn" class="bg-black text-white px-8 py-3 cursor-pointer rounded-lg hover:bg-gray-800 transition">
+                <div class="flex flex-row gap-2 sm:gap-3 mt-5">
+
+                    <button type="button" id="addToCartBtn"
+                            class="flex-1 sm:flex-none bg-black text-white px-2 sm:px-7 py-2.5 cursor-pointer rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800 transition shadow-sm whitespace-nowrap">
                         Add To Cart
                     </button>
-                    <button type="button" id="buyNowBtn" class="bg-[#ff4d2d] text-white px-8 py-3 rounded-lg hover:bg-[#e63e20] transition w-full sm:w-auto cursor-pointer">
-                        <i class="fa-solid fa-bolt mr-2"></i> Buy Now
+
+                    <button type="button" id="buyNowBtn"
+                            class="flex-1 sm:flex-none bg-[#ff4d2d] text-white px-2 sm:px-7 py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-[#e63e20] transition cursor-pointer shadow-sm whitespace-nowrap">
+                        <i class="fa-solid fa-bolt mr-1"></i>
+                        Buy Now
                     </button>
+
                 </div>
 
+            </div>
+        </div>
+
+        <!-- ================= PRODUCT DESCRIPTION SECTION ================= -->
+        <div class="mt-5 sm:mt-6 pt-2">
+            <div class="rounded-lg transition-all duration-300">
+
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
+                            <i class="fa-solid fa-align-left text-sm"></i>
+                        </div>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product Description</h2>
+                    </div>
+                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                Overview
+            </span>
+                </div>
+
+                <div class="relative">
+                    <div id="fullDescriptionContent"
+                         class="product-description text-gray-600 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out"
+                         @if(strlen(strip_tags($product->description)) > 350) style="max-height: 160px;" @endif>
+                        {!! $product->description !!}
+                    </div>
+                </div>
+
+                @if(strlen(strip_tags($product->description)) > 650)
+                    <div id="descToggleWrapper" class="mt-4 pt-2 flex justify-center">
+                        <button type="button"
+                                id="descToggleBtn"
+                                onclick="toggleFullDescription()"
+                                class="group inline-flex items-center cursor-pointer gap-2 px-3 py-2 rounded-xl bg-gray-900 hover:bg-black text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm border border-gray-800">
+
+                            <span id="descToggleText">Read Full Description</span>
+
+                            <span class="w-5 h-5 rounded-full bg-gray-800 text-gray-300 group-hover:bg-gray-700 group-hover:text-white flex items-center justify-center shadow-sm transition-all duration-300"
+                                  id="descToggleIconWrapper">
+                             <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+                            </span>
+                        </button>
+                    </div>
+                @endif
             </div>
         </div>
 
         <!-- ================= COMPLETE CUSTOMER REVIEWS SECTION ================= -->
-        <div class="mt-8 pt-5 border-t border-gray-200">
-            <h2 class="text-2xl font-bold text-gray-900 mb-7">Customer Reviews</h2>
-
         @if($totalReviews > 0)
-            <!-- Rating Score Summary & Breakdown Bars -->
-                <div class="bg-gray-50 rounded-2xl p-6 mb-7 flex flex-col md:flex-row items-center gap-8 shadow-sm border border-gray-100">
+            <div class="mt-8 sm:mt-10 pt-2 border-t border-gray-200">
+                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Customer Reviews</h2>
 
-                    <!-- Left: Average Rating -->
-                    <div class="text-center md:border-r md:border-gray-200 md:pr-10 w-full md:w-auto">
-                        <span class="text-5xl font-black text-gray-900">{{ number_format($avgRating, 1) }}</span>
-                        <div class="flex text-yellow-400 text-sm justify-center my-2 gap-0.5">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="{{ $i <= floor($avgRating) ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
-                            @endfor
-                        </div>
-                        <p class="text-xs text-gray-500 font-medium">Based on {{ $totalReviews }} {{ Str::plural('review', $totalReviews) }}</p>
-                    </div>
+            @if($totalReviews > 0)
+                <!-- Combined Rating Summary & Breakdown Card -->
+                    <div class="">
 
-                    <!-- Right: Dynamic 5-Star Breakdown Progress -->
-                    <div class="flex-1 w-full space-y-2">
-                        @for($star = 5; $star >= 1; $star--)
-                            @php
-                                $count = $product->reviews->where('rating', $star)->count();
-                                $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
-                            @endphp
-                            <div class="flex items-center text-xs text-gray-600 gap-3">
-                                <span class="w-12 font-medium">{{ $star }} Star</span>
-                                <div class="flex-1 bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                                    <div class="bg-yellow-400 h-2.5 rounded-full transition-all duration-500" style="width: {{ $percentage }}%"></div>
+                        <!-- Top Part: Average Rating & Breakdown Side-by-Side (or Stacked on Mobile) -->
+                        <div class="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
+
+                            <!-- Left: Average Rating -->
+                            <div class="text-center md:border-r md:border-gray-200 md:pr-8 w-full md:w-auto">
+                                <span class="text-3xl sm:text-4xl font-black text-gray-900">{{ number_format($avgRating, 1) }}</span>
+                                <div class="flex text-yellow-400 text-xs justify-center my-1 gap-0.5">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <i class="{{ $i <= floor($avgRating) ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
+                                    @endfor
                                 </div>
-                                <span class="w-8 text-right text-gray-400">{{ $count }}</span>
+                                <p class="text-[11px] text-gray-500 font-medium">Based
+                                    on {{ $totalReviews }} {{ Str::plural('review', $totalReviews) }}</p>
                             </div>
-                        @endfor
+
+                            <!-- Right: Dynamic 5-Star Breakdown Progress -->
+                            <div class="flex-1 w-full space-y-1.5">
+                                @for($star = 5; $star >= 1; $star--)
+                                    @php
+                                        $count = $product->reviews->where('rating', $star)->count();
+                                        $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+                                    @endphp
+                                    <div class="flex items-center text-[11px] sm:text-xs text-gray-600 gap-2">
+                                        <span class="w-10 font-medium">{{ $star }} Star</span>
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                            <div class="bg-yellow-400 h-2 rounded-full transition-all duration-500"
+                                                 style="width: {{ $percentage }}%"></div>
+                                        </div>
+                                        <span class="w-6 text-right text-gray-400">{{ $count }}</span>
+                                    </div>
+                                @endfor
+                            </div>
+
+                        </div>
+
+                        <!-- Divider Line inside the same card separating Summary and User Reviews List -->
+                        <div class=" pt-3 sm:pt-4">
+                            <h3 class="text-xs sm:text-sm font-bold text-gray-800 mb-3">Recent Reviews</h3>
+
+                            <!-- Individual Reviews Cards List inside the same wrapper -->
+                            <div class="space-y-3">
+                                @foreach($product->reviews as $index => $review)
+                                    <div class="p-3 border-b border-gray-200 review-item {{ $index >= 3 ? 'hidden' : '' }}">
+
+                                        <!-- Header: User Info & Rating -->
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="flex items-center gap-2.5">
+                                                <!-- Dynamic Avatar -->
+                                                <div
+                                                        class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
+                                                    {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
+                                                </div>
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-900 text-xs">{{ ucwords($review->user->name ?? 'Verified Customer') }}</h4>
+                                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                                        <div class="flex text-yellow-400 text-[9px] gap-0.5">
+                                                            @for($s = 1; $s <= 5; $s++)
+                                                                <i class="{{ $s <= $review->rating ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
+                                                            @endfor
+                                                        </div>
+                                                        <span
+                                                                class="text-[9px] text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <span
+                                                    class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
+                            <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
+                        </span>
+                                        </div>
+
+                                        <!-- Comment Content -->
+                                        @if($review->comment)
+                                            <p class="mt-2 text-gray-600 text-xs leading-normal">
+                                                {{ $review->comment }}
+                                            </p>
+                                        @endif
+
+                                    <!-- Review Attached Images -->
+                                        @if($review->images && $review->images->count() > 0)
+                                            <div class="flex flex-wrap gap-1.5 mt-2">
+                                                @foreach($review->images as $imgIndex => $img)
+                                                    <div
+                                                            onclick="openReviewModal({{ json_encode($review->images->pluck('image_path')->map(fn($p) => asset('storage/' . $p))) }}, {{ $imgIndex }})"
+                                                            class="cursor-pointer group overflow-hidden rounded-md border border-gray-200">
+                                                        <img src="{{ asset('storage/' . $img->image_path) }}"
+                                                             class="w-12 h-12 object-cover group-hover:scale-105 transition duration-200"
+                                                             alt="Review Image">
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- See More Button (Only shows if total reviews are greater than 3) -->
+                            @if($totalReviews > 3)
+                                <div class="text-center mt-4 pt-2" id="seeMoreContainer">
+                                    <button type="button"
+                                            id="seeMoreReviewsBtn"
+                                            onclick="loadMoreReviews()"
+                                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-black hover:bg-black text-white text-xs font-semibold rounded-xl transition-all duration-200 ease-in-out border cursor-pointer shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                                        <span id="seeMoreBtnText">See More Reviews</span>
+                                        <i id="seeMoreBtnIcon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
+
+                    </div>
+            @else
+                <!-- Empty Review State -->
+                    <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                        <i class="fa-regular fa-comment-dots text-3xl text-gray-300 mb-2 block"></i>
+                        <p class="text-gray-500 font-medium text-xs">There are currently no reviews for this product.</p>
+                    </div>
+                @endif
+            </div>
+        @endif
+
+        @if($relatedProducts->count() > 0)
+        <!-- ================= RELATED PRODUCTS SECTION ================= -->
+            <div class="mt-2 sm:mt-4 pt-2">
+
+                <!-- Header Container -->
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-emerald-600"></i> Related Products
+                        </h2>
+                        <p class="text-xs sm:text-sm text-gray-500">Explore more products from this category</p>
                     </div>
                 </div>
 
-                <!-- Individual Reviews Cards List -->
-                <div class="space-y-6">
-                    @foreach($product->reviews as $review)
-                        <div class="p-6 bg-white border border-gray-100 rounded-xl shadow-xs hover:shadow-md transition duration-200">
+                <!-- Responsive Grid Setup -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
+                    @foreach($relatedProducts as $index => $product)
+                        {{-- 12 Products ki limit --}}
+                        @if($index >= 12)
+                            @break
+                        @endif
 
-                            <!-- Header: User Info & Rating -->
-                            <div class="flex items-start justify-between gap-4">
-                                <div class="flex items-center gap-3">
-                                    <!-- Dynamic Avatar -->
-                                    <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                        {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
-                                    </div>
-                                    <div>
-                                        <h4 class="font-semibold text-gray-900 text-sm">{{ $review->user->name ?? 'Verified Customer' }}</h4>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            <div class="flex text-yellow-400 text-xs gap-0.5">
-                                                @for($s = 1; $s <= 5; $s++)
-                                                    <i class="{{ $s <= $review->rating ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
-                                                @endfor
-                                            </div>
-                                            <span class="text-xs text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
-                                        </div>
-                                    </div>
-                                </div>
+                        @php
+                            $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
+                            $avgRating = $product->reviews->avg('rating') ?? 0;
+                        @endphp
 
-                                <span class="bg-green-50 text-green-700 text-xs font-medium px-2.5 py-1 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
-                                    <i class="fa-solid fa-circle-check text-[10px]"></i> Verified Purchase
-                                </span>
+                        {{-- Card Container --}}
+                        <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full group">
+
+                            {{-- IMAGE CONTAINER --}}
+                            <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-38 sm:h-43 2xl:h-43 md:h-43 lg:h-43">
+
+                                {{-- Wishlist Form Button (Ab yeh anchor tag ke bahar mehfooz hai) --}}
+                                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" onclick="event.stopPropagation();">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                    <button type="submit"
+                                            class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
+                                            style="padding: 4px 9px 4px 9px !important; cursor: pointer;">
+                                        <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
+                                    </button>
+                                </form>
+
+                                {{-- Product Image with Link --}}
+                                <a href="{{ route('product.detail', $product->slug) }}" class="block w-full h-full">
+                                    @php
+                                        $mainImage = $product->mainVariantImage ?? ($product->images->first()->image_path ?? null);
+                                    @endphp
+
+                                    @if($mainImage)
+                                        <img src="{{ asset('storage/' . ($product->mainVariantImage->image_path ?? $product->images->first()->image_path)) }}"
+                                             alt="{{ $product->name }}"
+                                             class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
+                                    @else
+                                        <img src="{{ asset('upload/no-image.jpg') }}"
+                                             alt="No Image Available"
+                                             class="w-full h-full object-cover">
+                                    @endif
+                                </a>
                             </div>
 
-                            <!-- Comment Content -->
-                            @if($review->comment)
-                                <p class="mt-4 text-gray-600 text-sm leading-relaxed">
-                                    {{ $review->comment }}
-                                </p>
-                            @endif
+                            {{-- CARD CONTENT --}}
+                            <div class="p-1.5 sm:p-2.5 xs:p-2.5 md:p-2.5 lg:p-2.5 xl:p-2.5 2xl:p-2.5 flex-grow flex flex-col justify-between gap-2">
+                                <div>
+                                    {{-- Product Name with Link --}}
+                                    <a href="{{ route('product.detail', $product->slug) }}">
+                                        <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
+                                            {{ $product->name }}
+                                        </h4>
+                                    </a>
 
-                        <!-- Review Attached Images (Triggers Lightbox Swiper Popup) -->
-                            @if($review->images && $review->images->count() > 0)
-                                <div class="flex flex-wrap gap-3 mt-4">
-                                    @foreach($review->images as $imgIndex => $img)
-                                        <div onclick="openReviewModal({{ json_encode($review->images->pluck('image_path')->map(fn($p) => asset('storage/' . $p))) }}, {{ $imgIndex }})"
-                                             class="cursor-pointer group overflow-hidden rounded-lg border border-gray-200">
-                                            <img src="{{ asset('storage/' . $img->image_path) }}"
-                                                 class="w-16 h-16 object-cover group-hover:scale-105 transition duration-200"
-                                                 alt="Review Image">
+                                    {{-- Description Snippet --}}
+                                    <div class="text-[11px] sm:text-xs text-gray-600 line-clamp-1 mt-0.5">
+                                        {!! $product->description !!}
+                                    </div>
+
+                                    {{-- Rating Section --}}
+                                    <div class="flex items-center gap-1 mt-0.5">
+                                        <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($avgRating))
+                                                    <i class="fa-solid fa-star"></i>
+                                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                                @else
+                                                    <i class="fa-regular fa-star text-gray-300"></i>
+                                                @endif
+                                            @endfor
                                         </div>
-                                    @endforeach
+                                        <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">({{ number_format($avgRating, 1) }})</span>
+                                    </div>
                                 </div>
-                            @endif
 
+                                {{-- Price & Stock Section --}}
+                                <div class="flex items-center justify-between gap-2 -mt-1">
+                                    @php
+                                        $variant = $product->mainVariant ?? $product->variants->first();
+                                        $price = $variant->price ?? $product->price ?? 0;
+                                        $cutPrice = $variant->cut_price ?? null;
+                                    @endphp
+
+                                    <div class="flex flex-col">
+                                        {{-- Main Price --}}
+                                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                                        Rs {{ number_format($price) }}
+                                    </span>
+
+                                        {{-- Cut Price --}}
+                                        @if(!empty($cutPrice) && $cutPrice > $price)
+                                            <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                            Rs {{ number_format($cutPrice) }}
+                                        </span>
+                                        @endif
+                                    </div>
+
+                                    {{-- Stock Badge --}}
+                                    <div class="flex-shrink-0">
+                                        @php $totalStock = $product->variants->sum('stock'); @endphp
+                                        @if($totalStock <= 0)
+                                            <span class="inline-block bg-red-100 text-red-700 text-[9px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            Out of Stock
+                                        </span>
+                                        @else
+                                            <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                                            <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
                 </div>
-        @else
-            <!-- Empty Review State -->
-                <div class="text-center py-12 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                    <i class="fa-regular fa-comment-dots text-4xl text-gray-300 mb-3 block"></i>
-                    <p class="text-gray-500 font-medium">There are currently no reviews for this product.</p>
-                </div>
-            @endif
-        </div>
+            </div>
+        @endif
 
     </div>
 
+
     <!-- REVIEW IMAGE POPUP / LIGHTBOX MODAL -->
-    <div id="reviewImageModal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
-        <!-- Close Button (Cut Icon) -->
-        <button onclick="closeReviewModal()" type="button" class="absolute top-5 right-5 text-white/80 hover:text-white bg-black/40 hover:bg-black/80 rounded-full w-12 h-12 flex items-center justify-center text-2xl transition z-50 cursor-pointer">
+    <div id="reviewImageModal"
+         class="fixed inset-0 z-[9999] hidden bg-black/90 backdrop-blur-sm">
+
+        <!-- Close Button -->
+        <button onclick="closeReviewModal()" type="button"
+                class="absolute top-4 right-4 sm:top-6 sm:right-6 z-[10000]
+                   w-10 h-10 sm:w-12 sm:h-12
+                   flex items-center justify-center
+                   rounded-full bg-black/50 hover:bg-black/80
+                   text-white text-xl transition cursor-pointer">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
-        <!-- Modal Swiper Container -->
-        <div class="w-full max-w-4xl max-h-[85vh] relative">
-            <div class="swiper reviewModalSwiper w-full h-[75vh] rounded-2xl overflow-hidden">
-                <div class="swiper-wrapper flex items-center" id="reviewModalSwiperWrapper">
-                    <!-- Slides JS se render hongi -->
+        <!-- Modal Content -->
+        <div class="w-full h-full flex items-center justify-center px-4 sm:px-16">
+
+            <div class="relative w-full max-w-5xl h-[85vh]">
+
+                <!-- Swiper -->
+                <div class="swiper reviewModalSwiper w-full h-full">
+
+                    <div class="swiper-wrapper" id="reviewModalSwiperWrapper">
+                        <!-- Images JS se render hongi -->
+                    </div>
+
+                    <!-- Previous -->
+                    <div class="swiper-button-prev
+                            !text-white
+                            !w-10 !h-10 sm:!w-12 sm:!h-12
+                            !bg-black/50 hover:!bg-black/80
+                            rounded-full
+                            transition">
+                    </div>
+
+                    <!-- Next -->
+                    <div class="swiper-button-next
+                            !text-white
+                            !w-10 !h-10 sm:!w-12 sm:!h-12
+                            !bg-black/50 hover:!bg-black/80
+                            rounded-full
+                            transition">
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="swiper-pagination"></div>
+
                 </div>
-                <!-- Navigation -->
-                <div class="swiper-button-next !text-white bg-black/40 hover:bg-black/70 w-12 h-12 rounded-full !after:text-lg transition"></div>
-                <div class="swiper-button-prev !text-white bg-black/40 hover:bg-black/70 w-12 h-12 rounded-full !after:text-lg transition"></div>
-                <div class="swiper-pagination"></div>
+
             </div>
+
         </div>
     </div>
+
 
     <!-- SweetAlert2 aur Swiper CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -300,10 +684,12 @@
     <script>
         const allVariants = @json($product->variants);
         let selectedColor = "{{ $defaultVariant->color_name ?? '' }}";
+        // --- Flash Sale Variables ---
+        const hasActiveFlashSale = {{ $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time) ? 'true' : 'false' }};
+        const flashSalePercent = {{ $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time) ? $product->flashSale->discount_percentage : 0 }};
         let mainSwiper;
         let reviewSwiperInstance = null;
 
-        // Swiper Initializer
         window.addEventListener('DOMContentLoaded', () => {
             mainSwiper = new Swiper('.mainImageSwiper', {
                 loop: true,
@@ -326,100 +712,270 @@
                 }
             });
 
-            // Set initial active thumb border
-            let initialThumb = document.querySelector('.thumb[data-index="0"]');
-            if (initialThumb) {
-                updateThumbActiveState(initialThumb);
-            }
-
+            // Page load hotay hi default color wali slide par foran jump kar jayein (without visual flicker)
             if (selectedColor) {
-                renderSizesForColor(selectedColor, "{{ $defaultVariant->id ?? '' }}");
+                let defaultVariantId = "{{ $defaultVariant->id ?? '' }}";
+                let matchedVariant = allVariants.find(v => v.color_name === selectedColor);
+
+                let slides = document.querySelectorAll('.mainImageSwiper .swiper-wrapper .swiper-slide:not(.swiper-slide-duplicate)');
+                let slideIndexToMove = -1;
+                slides.forEach((slide, idx) => {
+                    if (slide.getAttribute('data-color') === selectedColor) {
+                        if (slideIndexToMove === -1) {
+                            slideIndexToMove = idx;
+                        }
+                    }
+                });
+
+                if (slideIndexToMove !== -1 && mainSwiper) {
+                    mainSwiper.slideTo(slideIndexToMove, 0); // 0 millisecond delay taake flick na ho
+                }
+
+                let colorButton = Array.from(document.querySelectorAll('.color-btn')).find(btn => btn.getAttribute('onclick').includes(selectedColor));
+                if (colorButton) {
+                    selectColor(colorButton, selectedColor, defaultVariantId || (matchedVariant ? matchedVariant.id : null));
+                }
+            } else {
+                let initialThumb = document.querySelector('.thumb[data-index="0"]');
+                if (initialThumb) {
+                    updateThumbActiveState(initialThumb);
+                }
             }
 
             // --- BUY NOW CLICK HANDLER ---
             const buyNowBtn = document.getElementById('buyNowBtn');
             if (buyNowBtn) {
-                buyNowBtn.addEventListener('click', function(e) {
+                buyNowBtn.addEventListener('click', function (e) {
                     e.preventDefault();
+                    triggerBuyNowAction();
+                });
+            }
 
-                    let productId = document.getElementById('product_id').value;
-                    let variantId = document.getElementById('selectedVariantId').value;
-                    let quantity = document.getElementById('qtyInput').value || 1;
-                    let stock = parseInt(document.getElementById('selectedVariantStock').value) || 0;
-
-                    if (stock <= 0) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'This product variant is out of stock!',
-                        });
-                        return;
-                    }
-
-                    if (!variantId) {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Warning',
-                            text: 'Please select a color and size first.',
-                        });
-                        return;
-                    }
-
-                    buyNowBtn.disabled = true;
-                    buyNowBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Processing...';
-
-                    fetch("{{ route('buy.now') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            variant_id: variantId,
-                            quantity: quantity
-                        })
-                    })
-                        .then(response => {
-                            if (response.status === 401) {
-                                throw new Error('Please login first.');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            buyNowBtn.disabled = false;
-                            buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Buy Now';
-
-                            if (data.success && data.redirect_url) {
-                                window.location.href = data.redirect_url;
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: data.message || 'Something went wrong.'
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            buyNowBtn.disabled = false;
-                            buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Buy Now';
-
-                            console.error('Error:', error);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: error.message || 'Failed to process request. Please make sure you are logged in.'
-                            });
-                        });
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    triggerAddToCartAction();
                 });
             }
         });
 
-        // 1. Color Select
-        function selectColor(element, colorName) {
-            selectedColor = colorName;
+        function triggerAddToCartAction() {
+            window.lastAction = 'cart';
+            let addToCartBtn = document.getElementById('addToCartBtn');
+            let variantId = document.getElementById('selectedVariantId').value;
+            let quantity = document.getElementById('qtyInput').value || 1;
+            let stock = parseInt(document.getElementById('selectedVariantStock').value) || 0;
 
+            if (stock <= 0) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Stock is not available',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                return;
+            }
+
+            if (!variantId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select a color and size first.'
+                });
+                return;
+            }
+
+            addToCartBtn.disabled = true;
+            addToCartBtn.innerHTML = 'Processing...';
+
+            fetch("{{ route('frontend.cart.add') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    variant_id: variantId,
+                    qty: quantity
+                })
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        throw new Error('Please login first.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.innerHTML = 'Add To Cart';
+
+                    if (data.status) {
+                        document.querySelectorAll('.cart-count').forEach(function (el) {
+                            el.innerText = data.cartCount;
+                            el.classList.remove('hidden');
+                        });
+                        if (window.innerWidth < 768) {
+
+                            Swal.fire({
+                                position: 'center',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: false,
+                                background: '#333333',
+                                color: '#ffffff',
+                                width: 'auto',
+                                padding: '0.8rem 1.4rem', // Top/Bottom aur Left/Right ki padding ko mazeed chota kiya gaya hai
+                                didOpen: (popup) => {
+                                    popup.style.borderRadius = '14px';
+                                    popup.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.3)';
+
+                                    // SweetAlert ke andar jo extra content wrapper hota hai uski spacing khatam karne ke liye
+                                    const content = popup.querySelector('.swal2-html-container');
+                                    if (content) {
+                                        content.style.margin = '0';
+                                        content.style.padding = '0';
+                                    }
+
+                                    const title = popup.querySelector('.swal2-title');
+                                    if (title) {
+                                        title.style.textAlign = 'center';
+                                        title.style.margin = '0';
+                                        title.style.padding = '0';
+                                        title.style.fontSize = '14px';
+                                        title.style.fontWeight = '500';
+                                        title.style.whiteSpace = 'nowrap';
+                                    }
+                                },
+                                title: data.message
+                            });
+
+                        } else {
+
+                            // 🖥️ DESKTOP TOAST
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true
+                            });
+
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(error => {
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.innerHTML = 'Add To Cart';
+
+                    if (error.message === 'Please login first.') {
+                        if (typeof openAuthModal === 'function') {
+                            openAuthModal();
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message
+                        });
+                    }
+                });
+        }
+
+        function triggerBuyNowAction() {
+            window.lastAction = 'buy';
+            let buyNowBtn = document.getElementById('buyNowBtn');
+            let productId = document.getElementById('product_id').value;
+            let variantId = document.getElementById('selectedVariantId').value;
+            let quantity = document.getElementById('qtyInput').value || 1;
+            let stock = parseInt(document.getElementById('selectedVariantStock').value) || 0;
+
+            if (stock <= 0) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Stock is not available',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                return;
+            }
+
+            if (!variantId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning',
+                    text: 'Please select a color and size first.',
+                });
+                return;
+            }
+
+            buyNowBtn.disabled = true;
+            buyNowBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin mr-2"></i> Processing...';
+
+            fetch("{{ route('buy.now') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({product_id: productId, variant_id: variantId, quantity: quantity})
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        throw new Error('Please login first.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    buyNowBtn.disabled = false;
+                    buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Buy Now';
+                    if (data.success && data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Something went wrong.'
+                        });
+                    }
+                })
+                .catch(error => {
+                    buyNowBtn.disabled = false;
+                    buyNowBtn.innerHTML = '<i class="fa-solid fa-bolt mr-2"></i> Buy Now';
+                    if (error.message === 'Please login first.') {
+                        if (typeof openAuthModal === 'function') {
+                            openAuthModal();
+                        }
+                    } else {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'Failed to process request.'
+                        });
+                    }
+                });
+        }
+
+        // 1. Color Select
+        function selectColor(element, colorName, preselectedVariantId = null) {
+            selectedColor = colorName;
             document.querySelectorAll('.color-btn').forEach(btn => {
                 btn.classList.remove('border-gray-300', 'bg-black/5', 'ring-1', 'ring-black/10');
                 btn.classList.add('border-gray-200');
@@ -429,7 +985,6 @@
 
             let slides = document.querySelectorAll('.mainImageSwiper .swiper-wrapper .swiper-slide:not(.swiper-slide-duplicate)');
             let slideIndexToMove = -1;
-
             slides.forEach((slide, idx) => {
                 if (slide.getAttribute('data-color') === colorName) {
                     if (slideIndexToMove === -1) {
@@ -446,27 +1001,25 @@
                 }
             }
 
-            renderSizesForColor(colorName);
+            renderSizesForColor(colorName, preselectedVariantId);
         }
 
         // 2. Render Sizes
         function renderSizesForColor(colorName, preselectedVariantId = null) {
             const sizeContainer = document.getElementById('sizeContainer');
             sizeContainer.innerHTML = '';
-
             const filteredVariants = allVariants.filter(v => v.color_name === colorName);
-
             filteredVariants.forEach((variant, index) => {
                 const sizeButton = document.createElement('button');
                 sizeButton.type = "button";
                 sizeButton.innerText = variant.size ? variant.size.toUpperCase() : 'FREE SIZE';
-
                 sizeButton.className = "size-btn border cursor-pointer rounded-lg px-4 py-2 text-sm font-medium transition duration-200 hover:border-gray-400 border-gray-200";
 
-                sizeButton.setAttribute('onclick', `selectSize(this, '${variant.id}', ${variant.stock}, ${variant.price}, '${variant.cut_price || ""}')`);
+                // Base original price determine karna (agar cut_price hai toh wo, warna variant.price)
+                let baseOriginalPrice = variant.cut_price && parseFloat(variant.cut_price) > 0 ? variant.cut_price : variant.price;
+                sizeButton.setAttribute('onclick', `selectSize(this, '${variant.id}', ${variant.stock}, ${variant.price}, '${baseOriginalPrice}')`);
 
                 sizeContainer.appendChild(sizeButton);
-
                 if ((preselectedVariantId && variant.id == preselectedVariantId) || (!preselectedVariantId && index === 0)) {
                     sizeButton.click();
                 }
@@ -474,7 +1027,7 @@
         }
 
         // 3. Size Select
-        function selectSize(element, variantId, stock, price, cutPrice) {
+        function selectSize(element, variantId, stock, variantPrice, baseOriginalPrice) {
             document.querySelectorAll('.size-btn').forEach(btn => {
                 btn.classList.remove('border-gray-300', 'bg-black/5', 'ring-1', 'ring-black/10');
                 btn.classList.add('border-gray-200');
@@ -486,14 +1039,43 @@
             document.getElementById('selectedVariantStock').value = stock;
             document.getElementById('qtyInput').value = 1;
 
-            document.getElementById('displayPrice').innerText = "Rs " + price.toLocaleString();
+            let finalPrice = variantPrice;
+            let originalPriceToDisplay = parseFloat(baseOriginalPrice) > 0 ? parseFloat(baseOriginalPrice) : variantPrice;
+
             let cutPriceElement = document.getElementById('displayCutPrice');
-            if (cutPrice && parseFloat(cutPrice) > price) {
-                cutPriceElement.innerText = "Rs " + parseFloat(cutPrice).toLocaleString();
-                cutPriceElement.classList.remove('hidden');
+            let discountBadge = document.getElementById('discountBadge');
+
+            // Flash sale calculation sync
+            if (hasActiveFlashSale && flashSalePercent > 0) {
+                let discountAmount = (originalPriceToDisplay * flashSalePercent) / 100;
+                finalPrice = originalPriceToDisplay - discountAmount;
+
+                if (cutPriceElement) {
+                    cutPriceElement.innerText = "Rs " + originalPriceToDisplay.toLocaleString();
+                    cutPriceElement.classList.remove('hidden');
+                }
+
+                if (discountBadge) {
+                    discountBadge.innerText = Math.round(flashSalePercent) + '% OFF';
+                    discountBadge.classList.remove('hidden');
+                }
             } else {
-                cutPriceElement.classList.add('hidden');
+                if (originalPriceToDisplay > finalPrice) {
+                    if (cutPriceElement) {
+                        cutPriceElement.innerText = "Rs " + originalPriceToDisplay.toLocaleString();
+                        cutPriceElement.classList.remove('hidden');
+                    }
+                } else {
+                    if (cutPriceElement) {
+                        cutPriceElement.classList.add('hidden');
+                    }
+                }
+                if (discountBadge) {
+                    discountBadge.classList.add('hidden');
+                }
             }
+
+            document.getElementById('displayPrice').innerText = "Rs " + finalPrice.toLocaleString();
 
             let stockBadge = document.getElementById('stockBadge');
             if (stock > 0) {
@@ -526,7 +1108,7 @@
         // Carousel Slider Navigation
         function moveCarousel(direction) {
             const carousel = document.getElementById('thumbCarousel');
-            carousel.scrollBy({ left: direction * 150, behavior: 'smooth' });
+            carousel.scrollBy({left: direction * 150, behavior: 'smooth'});
         }
 
         // Quantity Controller
@@ -534,88 +1116,461 @@
             let input = document.getElementById('qtyInput');
             let value = parseInt(input.value) || 1;
             let stock = parseInt(document.getElementById('selectedVariantStock').value) || 0;
-
             value += change;
             if (value < 1) value = 1;
-
             if (change > 0 && value > stock) {
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
                     icon: 'warning',
-                    title: stock > 0 ? 'Only ' + stock + ' items available' : 'Product is out of stock',
+                    title: stock > 0 ? 'Only ' + stock + ' items available' : 'Stock is not available',
                     showConfirmButton: false,
-                    timer: 2000
+                    timer: 2000,
+                    timerProgressBar: true
                 });
                 return;
             }
             input.value = value;
         }
 
-        // ================= REVIEW LIGHTBOX MODAL FUNCTIONS =================
-        function openReviewModal(imageUrls, startIndex = 0) {
+        // Review Image Modal ke liye functions (Swiper ke sath)
+        function openReviewModal(images, startIndex = 0) {
+
             const modal = document.getElementById('reviewImageModal');
             const wrapper = document.getElementById('reviewModalSwiperWrapper');
 
-            if (!imageUrls || imageUrls.length === 0) return;
-
+            // Purani slides remove
             wrapper.innerHTML = '';
 
-            imageUrls.forEach(url => {
-                const slide = document.createElement('div');
-                slide.className = 'swiper-slide flex items-center justify-center bg-black/20';
-                slide.innerHTML = `<img src="${url}" class="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl mx-auto" alt="Review Image">`;
-                wrapper.appendChild(slide);
+            // New images add
+            images.forEach(function (imgUrl) {
+
+                wrapper.insertAdjacentHTML('beforeend', `
+            <div class="swiper-slide review-modal-slide">
+                <img src="${imgUrl}"
+                     class="review-modal-image"
+                     alt="Review Image">
+            </div>
+        `);
+
             });
 
+            // Modal open
             modal.classList.remove('hidden');
+            modal.style.display = 'block';
+
             document.body.style.overflow = 'hidden';
 
+            // Purana swiper destroy
             if (reviewSwiperInstance) {
                 reviewSwiperInstance.destroy(true, true);
+                reviewSwiperInstance = null;
             }
 
+            // New Swiper
             reviewSwiperInstance = new Swiper('.reviewModalSwiper', {
                 initialSlide: startIndex,
-                loop: imageUrls.length > 1,
+                loop: images.length > 1,
+
                 navigation: {
-                    nextEl: '.reviewModalSwiper .swiper-button-next',
-                    prevEl: '.reviewModalSwiper .swiper-button-prev',
+                    nextEl: '#reviewImageModal .swiper-button-next',
+                    prevEl: '#reviewImageModal .swiper-button-prev',
                 },
+
                 pagination: {
-                    el: '.reviewModalSwiper .swiper-pagination',
-                    clickable: true,
+                    el: '#reviewImageModal .swiper-pagination',
+                    clickable: true
                 },
+
+                observer: true,
+                observeParents: true,
             });
         }
 
         function closeReviewModal() {
+
             const modal = document.getElementById('reviewImageModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
+
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+
+            document.body.style.overflow = '';
+
+            if (reviewSwiperInstance) {
+                reviewSwiperInstance.destroy(true, true);
+                reviewSwiperInstance = null;
             }
         }
-
-        // ESC Key aur Backdrop Click Events
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeReviewModal();
-            }
-        });
-
-        // document.getElementById('reviewImageModal')?.addEventListener('click', function(e) {
-        //     if (e.target === this) {
-        //         closeReviewModal();
-        //     }
-        // });
     </script>
 
     <style>
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        .swiper-pagination-bullet-active { background: #000 !important; }
-        .reviewModalSwiper .swiper-pagination-bullet-active { background: #fff !important; }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #000 !important;
+        }
+
+        .reviewModalSwiper .swiper-pagination-bullet-active {
+            background: #fff !important;
+        }
+
+
+        /* Review Modal */
+        .reviewModalSwiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .reviewModalSwiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .review-modal-slide {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .review-modal-image {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin: auto;
+        }
+
     </style>
+
+    <script>
+        let isExpanded = false;
+
+        function toggleFullDescription() {
+            const content = document.getElementById('fullDescriptionContent');
+            const toggleText = document.getElementById('descToggleText');
+            const icon = document.getElementById('descToggleIcon');
+            const gradientOverlay = document.getElementById('descGradientOverlay');
+
+            isExpanded = !isExpanded;
+
+            if (isExpanded) {
+                // Expand to full scroll height
+                content.style.maxHeight = content.scrollHeight + 'px';
+                toggleText.textContent = 'Show Less';
+                icon.style.transform = 'rotate(180deg)';
+                gradientOverlay.style.opacity = '0'; // Hide gradient when fully open
+            } else {
+                // Collapse back
+                content.style.maxHeight = '160px';
+                toggleText.textContent = 'Read Full Description';
+                icon.style.transform = 'rotate(0deg)';
+                gradientOverlay.style.opacity = '1'; // Show gradient when collapsed
+            }
+        }
+    </script>
+
+    <script>
+        let zoomLevel = 2.5;
+        let mobileImages = [];
+        let currentMobileIndex = 0;
+
+        // Touch Swipe Variables
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function handleTouchStart(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }
+
+        function handleTouchEnd(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipeGesture();
+        }
+
+        function handleSwipeGesture() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe Left -> Next Image
+                changeMobileModalImage(1);
+            }
+            if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe Right -> Previous Image
+                changeMobileModalImage(-1);
+            }
+        }
+
+        // Mobile Images array setup (Duplicates remove karne ke liye Set use kiya gaya hai)
+        function refreshMobileImages() {
+            mobileImages = [];
+            const slides = document.querySelectorAll('.mainImageSwiper .swiper-slide:not(.swiper-slide-duplicate)');
+            slides.forEach(slide => {
+                const img = slide.querySelector('.main-product-image');
+                if (img && img.src && !mobileImages.includes(img.src)) {
+                    mobileImages.push(img.src);
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            refreshMobileImages();
+        });
+
+        function openMobileZoom() {
+            if (window.innerWidth < 1024) {
+                refreshMobileImages();
+                if (mobileImages.length === 0) return;
+
+                const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
+                if (activeSlide) {
+                    const activeImg = activeSlide.querySelector('img');
+                    if (activeImg) {
+                        currentMobileIndex = mobileImages.indexOf(activeImg.src);
+                        if (currentMobileIndex === -1) currentMobileIndex = 0;
+                    }
+                }
+
+                const modal = document.getElementById('mobileZoomModal');
+                updateMobileModalImage();
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeMobileZoom() {
+            const modal = document.getElementById('mobileZoomModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function changeMobileModalImage(direction) {
+            if (mobileImages.length === 0) return;
+            currentMobileIndex += direction;
+
+            if (currentMobileIndex < 0) {
+                currentMobileIndex = mobileImages.length - 1;
+            } else if (currentMobileIndex >= mobileImages.length) {
+                currentMobileIndex = 0;
+            }
+            updateMobileModalImage();
+        }
+
+        function updateMobileModalImage() {
+            const modalImg = document.getElementById('mobileZoomModalImg');
+            const counter = document.getElementById('mobileImageCounter');
+            if (mobileImages.length > 0 && modalImg && counter) {
+                modalImg.src = mobileImages[currentMobileIndex];
+                counter.innerText = `${currentMobileIndex + 1} / ${mobileImages.length}`;
+            }
+        }
+
+        function zoomEnter(event) {
+            if (window.innerWidth < 1024) return;
+            const result = document.getElementById('zoomResult');
+            if (result) {
+                result.classList.remove('opacity-0');
+            }
+            zoomIn(event);
+        }
+
+        function zoomOut() {
+            const result = document.getElementById('zoomResult');
+            if (result) {
+                result.classList.add('opacity-0');
+            }
+
+            document.querySelectorAll('.magnifier-lens').forEach(lens => {
+                lens.classList.add('hidden');
+                lens.style.display = 'none';
+            });
+        }
+
+        function handleZoomScroll(event) {
+            if (window.innerWidth < 1024) return;
+            event.preventDefault();
+
+            if (event.deltaY < 0) {
+                zoomLevel = Math.min(zoomLevel + 0.3, 5.0);
+            } else {
+                zoomLevel = Math.max(zoomLevel - 0.3, 1.2);
+            }
+
+            zoomIn(event);
+        }
+
+        function zoomIn(event) {
+            if (window.innerWidth < 1024) return;
+
+            const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
+            if (!activeSlide) return;
+
+            const img = activeSlide.querySelector('.main-product-image');
+            const lens = activeSlide.querySelector('.magnifier-lens');
+            const result = document.getElementById('zoomResult');
+            const zoomed = document.getElementById('zoomedImage');
+
+            if (!img || !lens || !result || !zoomed) return;
+
+            const rect = img.getBoundingClientRect();
+
+            // Cursor Out of Bounds Check (Jab cursor image se bahar jaye ga tab hi zoom band hoga)
+            if (
+                event.clientX < rect.left ||
+                event.clientX > rect.right ||
+                event.clientY < rect.top ||
+                event.clientY > rect.bottom
+            ) {
+                zoomOut();
+                return;
+            }
+
+            lens.classList.remove('hidden');
+            lens.style.display = 'block';
+            result.classList.remove('opacity-0');
+
+            const imageUrl = img.src;
+
+            if (zoomed.dataset.image !== imageUrl) {
+                zoomed.style.backgroundImage = `url("${imageUrl}")`;
+                zoomed.style.backgroundRepeat = 'no-repeat';
+                zoomed.dataset.image = imageUrl;
+            }
+
+            const baseSize = 150;
+            const dynamicLensSize = baseSize / (zoomLevel * 0.6);
+
+            lens.style.width = dynamicLensSize + 'px';
+            lens.style.height = dynamicLensSize + 'px';
+
+            let x = event.clientX - rect.left;
+            let y = event.clientY - rect.top;
+
+            const lensWidth = lens.offsetWidth;
+            const lensHeight = lens.offsetHeight;
+
+            x = Math.max(lensWidth / 2, Math.min(rect.width - lensWidth / 2, x));
+            y = Math.max(lensHeight / 2, Math.min(rect.height - lensHeight / 2, y));
+
+            const lensX = x - lensWidth / 2;
+            const lensY = y - lensHeight / 2;
+
+            lens.style.left = `${lensX}px`;
+            lens.style.top = `${lensY}px`;
+
+            const cx = zoomed.offsetWidth / lensWidth;
+            const cy = zoomed.offsetHeight / lensHeight;
+
+            zoomed.style.backgroundSize = `${rect.width * cx}px ${rect.height * cy}px`;
+
+            const bgPosX = -((x * cx) - (zoomed.offsetWidth / 2));
+            const bgPosY = -((y * cy) - (zoomed.offsetHeight / 2));
+
+            zoomed.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Thoda delay taake browser element ki actual height ko theek se measure kar le
+            setTimeout(function() {
+                const content = document.getElementById("fullDescriptionContent");
+                const toggleWrapper = document.getElementById("descToggleWrapper");
+
+                if (content && toggleWrapper) {
+                    // Agar description ki height 160px ya us se kam hai, to button ko hide kar do
+                    if (content.scrollHeight <= 160) {
+                        toggleWrapper.style.display = "none";
+                        content.style.maxHeight = "none";
+                    }
+                }
+            }, 100); // 100 milliseconds ka delay
+        });
+
+        let isExpanded = false;
+        function toggleFullDescription() {
+            const content = document.getElementById("fullDescriptionContent");
+            const toggleText = document.getElementById("descToggleText");
+            const toggleIcon = document.getElementById("descToggleIcon");
+
+            isExpanded = !isExpanded;
+
+            if (isExpanded) {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggleText.innerText = "Show Less";
+                toggleIcon.classList.add("rotate-180");
+            } else {
+                content.style.maxHeight = "160px";
+                toggleText.innerText = "Read Full Description";
+                toggleIcon.classList.remove("rotate-180");
+            }
+        }
+    </script>
+
+    <script>
+        let visibleReviewCount = 3;
+
+        function loadMoreReviews() {
+            const allReviews = document.querySelectorAll('.review-item');
+            const totalReviews = allReviews.length;
+            const btnText = document.getElementById('seeMoreBtnText');
+            const btnIcon = document.getElementById('seeMoreBtnIcon');
+            const btn = document.getElementById('seeMoreReviewsBtn');
+
+            // Agar saare reviews pehle hi khul chuke hain, to dobara click karne par reset (band) kar do
+            if (visibleReviewCount >= totalReviews) {
+                // Shuru ke 3 ke ilawa baaki sab ko wapas hide kar do
+                allReviews.forEach((el, index) => {
+                    if (index >= 3) {
+                        el.classList.add('hidden');
+                    }
+                });
+
+                // Count ko wapas 3 par le aao
+                visibleReviewCount = 3;
+
+                // Button ko wapas apni original halat mein kar do (Black theme maintain rakhte hue)
+                if (btnText) btnText.innerText = 'See More Reviews';
+                if (btnIcon) {
+                    btnIcon.style.display = 'inline-block';
+                    btnIcon.classList.remove('rotate-180');
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    // Emerald ki jagah yahan black/gray classes laga di hain
+                    btn.classList.remove('bg-gray-100', 'text-gray-400', 'border-gray-200', 'cursor-not-allowed');
+                    btn.classList.add('bg-gray-900', 'hover:bg-black', 'text-white', 'border-gray-800', 'cursor-pointer');
+                }
+                return;
+            }
+
+            // Warna mazeed 3-3 reviews kholte jao
+            let nextLimit = visibleReviewCount + 3;
+
+            for (let i = visibleReviewCount; i < nextLimit && i < totalReviews; i++) {
+                allReviews[i].classList.remove('hidden');
+            }
+
+            visibleReviewCount = nextLimit;
+
+            // Jab aakhri reviews par pohonch jayein, to "No More Reviews" dikha do (lekin click par band hone ki capability ke sath)
+            if (visibleReviewCount >= totalReviews) {
+                if (btnText) btnText.innerText = 'No More Reviews (Click to Show Less)';
+                if (btnIcon) btnIcon.style.display = 'none';
+            }
+        }
+    </script>
 
 @endsection

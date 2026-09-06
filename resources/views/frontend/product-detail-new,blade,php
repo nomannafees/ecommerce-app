@@ -56,7 +56,7 @@
                                     <div class="swiper-slide relative"
                                          data-color="{{ $v->color_name }}"
                                          data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                    >
+                                         >
 
 
                                         <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
@@ -74,8 +74,7 @@
                                         <!-- Mobile ke liye Tap Indicator -->
                                         <div class="absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full lg:hidden pointer-events-none shadow-md">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                                             </svg>
                                         </div>
                                     </div>
@@ -127,39 +126,21 @@
                 </div>
             </div>
 
-            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS & TOUCH SWIPE -->
-            <div id="mobileZoomModal"
-                 class="fixed inset-0 z-[999] bg-black/90 hidden flex-col justify-center items-center px-4"
-                 ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-
-                <!-- Top Bar: Counter & Close Button -->
-                <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-white px-2 z-50">
-                    <span id="mobileImageCounter"
-                          class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
-                    <button onclick="closeMobileZoom()"
-                            class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">
-                        ✕
-                    </button>
-                </div>
-
-                <!-- Main Image Container with Arrows -->
-                <div class="relative w-full max-w-lg flex items-center justify-center">
-                    <!-- Left Arrow -->
-                    <button onclick="changeMobileModalImage(-1)"
-                            class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
+            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS -->
+            <div id="mobileZoomModal" class="fixed inset-0 z-[999] bg-black/90 hidden flex-col items-center justify-center p-4">
+                <button onclick="closeMobileZoom()" class="absolute top-5 right-5 text-white bg-white/20 hover:bg-white/40 p-3 rounded-full text-xl font-bold transition z-50">
+                    ✕
+                </button>
+                <div class="relative max-w-full max-h-full flex items-center justify-center w-full h-full">
+                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 text-white bg-black/50 hover:bg-black/80 p-3 rounded-full text-lg font-bold transition z-20">
                         ❮
                     </button>
-
-                    <!-- Modal Image -->
-                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image"
-                         class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
-
-                    <!-- Right Arrow -->
-                    <button onclick="changeMobileModalImage(1)"
-                            class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
+                    <img id="mobileZoomModalImg" src="" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl">
+                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 text-white bg-black/50 hover:bg-black/80 p-3 rounded-full text-lg font-bold transition z-20">
                         ❯
                     </button>
                 </div>
+                <div id="mobileImageCounter" class="text-white/80 text-sm mt-2"></div>
             </div>
 
             <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
@@ -315,9 +296,10 @@
         </div>
 
         <!-- ================= PRODUCT DESCRIPTION SECTION ================= -->
-        <div class="mt-5 sm:mt-6 pt-2">
-            <div class="rounded-lg transition-all duration-300">
+        <div class="mt-5 sm:mt-6 pt-2 ">
+            <div class=" rounded-lg transition-all duration-300 ">
 
+                <!-- Header -->
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
@@ -326,313 +308,165 @@
                         <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product
                             Description</h2>
                     </div>
-                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+
+                    <!-- Optional subtle badge or tag -->
+                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50/80 px-2.5 py-1 rounded-full">
                 Overview
             </span>
                 </div>
 
+                <!-- Description Container with Gradient Fade Overlay -->
                 <div class="relative">
                     <div id="fullDescriptionContent"
                          class="product-description text-gray-600 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out"
-                         @if(strlen(strip_tags($product->description)) > 350) style="max-height: 160px;" @endif>
+                         style="max-height: 160px;">
                         {!! $product->description !!}
                     </div>
+
+                    <!-- Fade Overlay (Only visible when collapsed) -->
+                    <div id="descGradientOverlay"
+                         class="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
                 </div>
 
-                @if(strlen(strip_tags($product->description)) > 650)
-                    <div id="descToggleWrapper" class="mt-4 pt-2 flex justify-center">
-                        <button type="button"
-                                id="descToggleBtn"
-                                onclick="toggleFullDescription()"
-                                class="group inline-flex items-center cursor-pointer gap-2 px-3 py-2 rounded-xl bg-gray-900 hover:bg-black text-white font-semibold text-xs sm:text-sm transition-all duration-200 shadow-sm border border-gray-800">
+                <!-- Toggle Button -->
+                <div class="mt-4 pt-2 flex justify-center">
+                    <button type="button"
+                            id="descToggleBtn"
+                            onclick="toggleFullDescription()"
+                            class="group inline-flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-emerald-100 bg-emerald-100 text-gray-700 font-semibold text-xs sm:text-sm transition-all duration-200 border border-emerald-100 hover:border-emerald-200">
 
-                            <span id="descToggleText">Read Full Description</span>
+                        <span id="descToggleText">Read Full Description</span>
 
-                            <span class="w-5 h-5 rounded-full bg-gray-800 text-gray-300 group-hover:bg-gray-700 group-hover:text-white flex items-center justify-center shadow-sm transition-all duration-300"
-                                  id="descToggleIconWrapper">
-                             <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
-                            </span>
-                        </button>
-                    </div>
-                @endif
+                        <span class="w-5 h-5 rounded-full bg-emerald-200 text-emerald-400 group-hover:text-emerald-500 flex items-center justify-center shadow-sm transition-transform duration-300"
+                              id="descToggleIconWrapper">
+
+            <i id="descToggleIcon"
+               class="fa-solid fa-chevron-down text-[10px]"></i>
+
+        </span>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- ================= COMPLETE CUSTOMER REVIEWS SECTION ================= -->
+        <div class="mt-8 sm:mt-10 pt-4 border-t border-gray-200">
+            <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Customer Reviews</h2>
+
         @if($totalReviews > 0)
-            <div class="mt-8 sm:mt-10 pt-2 border-t border-gray-200">
-                <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-4">Customer Reviews</h2>
+            <!-- Combined Rating Summary & Breakdown Card -->
+                <div class="">
 
-            @if($totalReviews > 0)
-                <!-- Combined Rating Summary & Breakdown Card -->
-                    <div class="">
+                    <!-- Top Part: Average Rating & Breakdown Side-by-Side (or Stacked on Mobile) -->
+                    <div class="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
 
-                        <!-- Top Part: Average Rating & Breakdown Side-by-Side (or Stacked on Mobile) -->
-                        <div class="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
-
-                            <!-- Left: Average Rating -->
-                            <div class="text-center md:border-r md:border-gray-200 md:pr-8 w-full md:w-auto">
-                                <span class="text-3xl sm:text-4xl font-black text-gray-900">{{ number_format($avgRating, 1) }}</span>
-                                <div class="flex text-yellow-400 text-xs justify-center my-1 gap-0.5">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        <i class="{{ $i <= floor($avgRating) ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
-                                    @endfor
-                                </div>
-                                <p class="text-[11px] text-gray-500 font-medium">Based
-                                    on {{ $totalReviews }} {{ Str::plural('review', $totalReviews) }}</p>
-                            </div>
-
-                            <!-- Right: Dynamic 5-Star Breakdown Progress -->
-                            <div class="flex-1 w-full space-y-1.5">
-                                @for($star = 5; $star >= 1; $star--)
-                                    @php
-                                        $count = $product->reviews->where('rating', $star)->count();
-                                        $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
-                                    @endphp
-                                    <div class="flex items-center text-[11px] sm:text-xs text-gray-600 gap-2">
-                                        <span class="w-10 font-medium">{{ $star }} Star</span>
-                                        <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                            <div class="bg-yellow-400 h-2 rounded-full transition-all duration-500"
-                                                 style="width: {{ $percentage }}%"></div>
-                                        </div>
-                                        <span class="w-6 text-right text-gray-400">{{ $count }}</span>
-                                    </div>
+                        <!-- Left: Average Rating -->
+                        <div class="text-center md:border-r md:border-gray-200 md:pr-8 w-full md:w-auto">
+                            <span class="text-3xl sm:text-4xl font-black text-gray-900">{{ number_format($avgRating, 1) }}</span>
+                            <div class="flex text-yellow-400 text-xs justify-center my-1 gap-0.5">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <i class="{{ $i <= floor($avgRating) ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
                                 @endfor
                             </div>
-
+                            <p class="text-[11px] text-gray-500 font-medium">Based
+                                on {{ $totalReviews }} {{ Str::plural('review', $totalReviews) }}</p>
                         </div>
 
-                        <!-- Divider Line inside the same card separating Summary and User Reviews List -->
-                        <div class=" pt-3 sm:pt-4">
-                            <h3 class="text-xs sm:text-sm font-bold text-gray-800 mb-3">Recent Reviews</h3>
+                        <!-- Right: Dynamic 5-Star Breakdown Progress -->
+                        <div class="flex-1 w-full space-y-1.5">
+                            @for($star = 5; $star >= 1; $star--)
+                                @php
+                                    $count = $product->reviews->where('rating', $star)->count();
+                                    $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
+                                @endphp
+                                <div class="flex items-center text-[11px] sm:text-xs text-gray-600 gap-2">
+                                    <span class="w-10 font-medium">{{ $star }} Star</span>
+                                    <div class="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-yellow-400 h-2 rounded-full transition-all duration-500"
+                                             style="width: {{ $percentage }}%"></div>
+                                    </div>
+                                    <span class="w-6 text-right text-gray-400">{{ $count }}</span>
+                                </div>
+                            @endfor
+                        </div>
 
-                            <!-- Individual Reviews Cards List inside the same wrapper -->
-                            <div class="space-y-3">
-                                @foreach($product->reviews as $index => $review)
-                                    <div class="p-3 border-b border-gray-200 review-item {{ $index >= 3 ? 'hidden' : '' }}">
+                    </div>
 
-                                        <!-- Header: User Info & Rating -->
-                                        <div class="flex items-start justify-between gap-3">
-                                            <div class="flex items-center gap-2.5">
-                                                <!-- Dynamic Avatar -->
-                                                <div
-                                                        class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
-                                                    {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
-                                                </div>
-                                                <div>
-                                                    <h4 class="font-semibold text-gray-900 text-xs">{{ ucwords($review->user->name ?? 'Verified Customer') }}</h4>
-                                                    <div class="flex items-center gap-1.5 mt-0.5">
-                                                        <div class="flex text-yellow-400 text-[9px] gap-0.5">
-                                                            @for($s = 1; $s <= 5; $s++)
-                                                                <i class="{{ $s <= $review->rating ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
-                                                            @endfor
-                                                        </div>
-                                                        <span
-                                                                class="text-[9px] text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
+                    <!-- Divider Line inside the same card separating Summary and User Reviews List -->
+                    <div class="border-t border-gray-200 pt-3 sm:pt-4">
+                        <h3 class="text-xs sm:text-sm font-bold text-gray-800 mb-3">Recent Reviews</h3>
+
+                        <!-- Individual Reviews Cards List inside the same wrapper -->
+                        <div class="space-y-3">
+                            @foreach($product->reviews as $review)
+                                <div class="p-3 border-b border-gray-200">
+
+                                    <!-- Header: User Info & Rating -->
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex items-center gap-2.5">
+                                            <!-- Dynamic Avatar -->
+                                            <div
+                                                    class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
+                                                {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-900 text-xs">{{ ucwords($review->user->name ?? 'Verified Customer') }}</h4>
+                                                <div class="flex items-center gap-1.5 mt-0.5">
+                                                    <div class="flex text-yellow-400 text-[9px] gap-0.5">
+                                                        @for($s = 1; $s <= 5; $s++)
+                                                            <i class="{{ $s <= $review->rating ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
+                                                        @endfor
                                                     </div>
+                                                    <span
+                                                            class="text-[9px] text-gray-400">• {{ $review->created_at->diffForHumans() }}</span>
                                                 </div>
                                             </div>
-
-                                            <span
-                                                    class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
-                            <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
-                        </span>
                                         </div>
 
-                                        <!-- Comment Content -->
-                                        @if($review->comment)
-                                            <p class="mt-2 text-gray-600 text-xs leading-normal">
-                                                {{ $review->comment }}
-                                            </p>
-                                        @endif
-
-                                    <!-- Review Attached Images -->
-                                        @if($review->images && $review->images->count() > 0)
-                                            <div class="flex flex-wrap gap-1.5 mt-2">
-                                                @foreach($review->images as $imgIndex => $img)
-                                                    <div
-                                                            onclick="openReviewModal({{ json_encode($review->images->pluck('image_path')->map(fn($p) => asset('storage/' . $p))) }}, {{ $imgIndex }})"
-                                                            class="cursor-pointer group overflow-hidden rounded-md border border-gray-200">
-                                                        <img src="{{ asset('storage/' . $img->image_path) }}"
-                                                             class="w-12 h-12 object-cover group-hover:scale-105 transition duration-200"
-                                                             alt="Review Image">
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        @endif
-
+                                        <span
+                                                class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
+                                    <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
+                                </span>
                                     </div>
-                                @endforeach
-                            </div>
 
-                            <!-- See More Button (Only shows if total reviews are greater than 3) -->
-                            @if($totalReviews > 3)
-                                <div class="text-center mt-4 pt-2" id="seeMoreContainer">
-                                    <button type="button"
-                                            id="seeMoreReviewsBtn"
-                                            onclick="loadMoreReviews()"
-                                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-black hover:bg-black text-white text-xs font-semibold rounded-xl transition-all duration-200 ease-in-out border cursor-pointer shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
-                                        <span id="seeMoreBtnText">See More Reviews</span>
-                                        <i id="seeMoreBtnIcon"
-                                           class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
-                                    </button>
-                                </div>
-                            @endif
-                        </div>
-
-                    </div>
-            @else
-                <!-- Empty Review State -->
-                    <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                        <i class="fa-regular fa-comment-dots text-3xl text-gray-300 mb-2 block"></i>
-                        <p class="text-gray-500 font-medium text-xs">There are currently no reviews for this
-                            product.</p>
-                    </div>
-                @endif
-            </div>
-        @endif
-
-        @if($relatedProducts->count() > 0)
-        <!-- ================= RELATED PRODUCTS SECTION ================= -->
-            <div class="mt-2 sm:mt-4 pt-2">
-
-                <!-- Header Container -->
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h2 class="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                            <i class="fa-solid fa-layer-group text-emerald-600"></i> Related Products
-                        </h2>
-                        <p class="text-xs sm:text-sm text-gray-500">Explore more products from this category</p>
-                    </div>
-                </div>
-
-                <!-- Responsive Grid Setup -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
-                    @foreach($relatedProducts as $index => $relatedProduct)
-                        {{-- 12 Products ki limit --}}
-                        @if($index >= 12)
-                            @break
-                        @endif
-
-                        @php
-                            $isWishlisted = in_array($relatedProduct->id, $wishlistProductIds ?? []);
-                            $avgRating = $relatedProduct->reviews->avg('rating') ?? 0;
-                        @endphp
-
-                        {{-- Card Container --}}
-                        <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full group">
-
-                            {{-- IMAGE CONTAINER --}}
-                            <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-38 sm:h-43 2xl:h-43 md:h-43 lg:h-43">
-
-                                {{-- Wishlist Form Button (Ab yeh anchor tag ke bahar mehfooz hai) --}}
-                                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm"
-                                      onclick="event.stopPropagation();">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $relatedProduct->id }}">
-                                    <button type="submit"
-                                            class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
-                                            style="padding: 4px 9px 4px 9px !important; cursor: pointer;">
-                                        <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
-                                    </button>
-                                </form>
-
-                                {{-- Product Image with Link --}}
-                                <a href="{{ route('product.detail', $relatedProduct->slug) }}"
-                                   class="block w-full h-full">
-                                    @php
-                                        $mainImage = $relatedProduct->mainVariantImage ?? ($relatedProduct->images->first()->image_path ?? null);
-                                    @endphp
-
-                                    @if($mainImage)
-                                        <img src="{{ asset('storage/' . ($relatedProduct->mainVariantImage->image_path ?? $relatedProduct->images->first()->image_path)) }}"
-                                             alt="{{ $relatedProduct->name }}"
-                                             class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
-                                    @else
-                                        <img src="{{ asset('upload/no-image.jpg') }}"
-                                             alt="No Image Available"
-                                             class="w-full h-full object-cover">
+                                    <!-- Comment Content -->
+                                    @if($review->comment)
+                                        <p class="mt-2 text-gray-600 text-xs leading-normal">
+                                            {{ $review->comment }}
+                                        </p>
                                     @endif
-                                </a>
-                            </div>
 
-                            {{-- CARD CONTENT --}}
-                            <div class="p-1.5 sm:p-2.5 xs:p-2.5 md:p-2.5 lg:p-2.5 xl:p-2.5 2xl:p-2.5 flex-grow flex flex-col justify-between gap-2">
-                                <div>
-                                    {{-- Product Name with Link --}}
-                                    <a href="{{ route('product.detail', $relatedProduct->slug) }}">
-                                        <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
-                                            {{ $relatedProduct->name }}
-                                        </h4>
-                                    </a>
-
-                                    {{-- Description Snippet --}}
-                                    <div class="text-[11px] sm:text-xs text-gray-600 line-clamp-1 mt-0.5">
-                                        {!! $relatedProduct->description !!}
-                                    </div>
-
-                                    {{-- Rating Section --}}
-                                    <div class="flex items-center gap-1 mt-0.5">
-                                        <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= floor($avgRating))
-                                                    <i class="fa-solid fa-star"></i>
-                                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                                    <i class="fa-solid fa-star-half-stroke"></i>
-                                                @else
-                                                    <i class="fa-regular fa-star text-gray-300"></i>
-                                                @endif
-                                            @endfor
+                                <!-- Review Attached Images -->
+                                    @if($review->images && $review->images->count() > 0)
+                                        <div class="flex flex-wrap gap-1.5 mt-2">
+                                            @foreach($review->images as $imgIndex => $img)
+                                                <div
+                                                        onclick="openReviewModal({{ json_encode($review->images->pluck('image_path')->map(fn($p) => asset('storage/' . $p))) }}, {{ $imgIndex }})"
+                                                        class="cursor-pointer group overflow-hidden rounded-md border border-gray-200">
+                                                    <img src="{{ asset('storage/' . $img->image_path) }}"
+                                                         class="w-12 h-12 object-cover group-hover:scale-105 transition duration-200"
+                                                         alt="Review Image">
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">({{ number_format($avgRating, 1) }})</span>
-                                    </div>
+                                    @endif
+
                                 </div>
-
-                                {{-- Price & Stock Section --}}
-                                <div class="flex items-center justify-between gap-2 -mt-1">
-                                    @php
-                                        $variant = $relatedProduct->mainVariant ?? $relatedProduct->variants->first();
-                                        $price = $variant->price ?? $relatedProduct->price ?? 0;
-                                        $cutPrice = $variant->cut_price ?? null;
-                                    @endphp
-
-                                    <div class="flex flex-col">
-                                        {{-- Main Price --}}
-                                            <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                                                Rs {{ number_format($price) }}
-                                            </span>
-
-                                        {{-- Cut Price --}}
-                                        @if(!empty($cutPrice) && $cutPrice > $price)
-                                            <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                                Rs {{ number_format($cutPrice) }}
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    {{-- Stock Badge --}}
-                                    <div class="flex-shrink-0">
-                                        @php $totalStock = $relatedProduct->variants->sum('stock'); @endphp
-                                        @if($totalStock <= 0)
-                                            <span class="inline-block bg-red-100 text-red-700 text-[9px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                                Out of Stock
-                                            </span>
-                                        @else
-                                            <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                            <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
-                    @endforeach
+                    </div>
+
                 </div>
-            </div>
-        @endif
+        @else
+            <!-- Empty Review State -->
+                <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                    <i class="fa-regular fa-comment-dots text-3xl text-gray-300 mb-2 block"></i>
+                    <p class="text-gray-500 font-medium text-xs">There are currently no reviews for this product.</p>
+                </div>
+            @endif
+        </div>
 
     </div>
-
 
     <!-- REVIEW IMAGE POPUP / LIGHTBOX MODAL -->
     <div id="reviewImageModal"
@@ -1298,31 +1132,6 @@
         let mobileImages = [];
         let currentMobileIndex = 0;
 
-        // Touch Swipe Variables
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        function handleTouchStart(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }
-
-        function handleTouchEnd(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipeGesture();
-        }
-
-        function handleSwipeGesture() {
-            const swipeThreshold = 50;
-            if (touchEndX < touchStartX - swipeThreshold) {
-                // Swipe Left -> Next Image
-                changeMobileModalImage(1);
-            }
-            if (touchEndX > touchStartX + swipeThreshold) {
-                // Swipe Right -> Previous Image
-                changeMobileModalImage(-1);
-            }
-        }
-
         // Mobile Images array setup (Duplicates remove karne ke liye Set use kiya gaya hai)
         function refreshMobileImages() {
             mobileImages = [];
@@ -1335,13 +1144,13 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
             refreshMobileImages();
         });
 
         function openMobileZoom() {
             if (window.innerWidth < 1024) {
-                refreshMobileImages();
+                refreshMobileImages(); // Dynamic update agar images badli hon
                 if (mobileImages.length === 0) return;
 
                 const activeSlide = document.querySelector('.mainImageSwiper .swiper-slide-active');
@@ -1406,7 +1215,6 @@
 
             document.querySelectorAll('.magnifier-lens').forEach(lens => {
                 lens.classList.add('hidden');
-                lens.style.display = 'none';
             });
         }
 
@@ -1438,7 +1246,7 @@
 
             const rect = img.getBoundingClientRect();
 
-            // Cursor Out of Bounds Check (Jab cursor image se bahar jaye ga tab hi zoom band hoga)
+            // Cursor Out of Bounds Check
             if (
                 event.clientX < rect.left ||
                 event.clientX > rect.right ||
@@ -1450,7 +1258,6 @@
             }
 
             lens.classList.remove('hidden');
-            lens.style.display = 'block';
             result.classList.remove('opacity-0');
 
             const imageUrl = img.src;
@@ -1491,98 +1298,6 @@
             const bgPosY = -((y * cy) - (zoomed.offsetHeight / 2));
 
             zoomed.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
-        }
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Thoda delay taake browser element ki actual height ko theek se measure kar le
-            setTimeout(function () {
-                const content = document.getElementById("fullDescriptionContent");
-                const toggleWrapper = document.getElementById("descToggleWrapper");
-
-                if (content && toggleWrapper) {
-                    // Agar description ki height 160px ya us se kam hai, to button ko hide kar do
-                    if (content.scrollHeight <= 160) {
-                        toggleWrapper.style.display = "none";
-                        content.style.maxHeight = "none";
-                    }
-                }
-            }, 100); // 100 milliseconds ka delay
-        });
-
-        let isExpanded = false;
-
-        function toggleFullDescription() {
-            const content = document.getElementById("fullDescriptionContent");
-            const toggleText = document.getElementById("descToggleText");
-            const toggleIcon = document.getElementById("descToggleIcon");
-
-            isExpanded = !isExpanded;
-
-            if (isExpanded) {
-                content.style.maxHeight = content.scrollHeight + "px";
-                toggleText.innerText = "Show Less";
-                toggleIcon.classList.add("rotate-180");
-            } else {
-                content.style.maxHeight = "160px";
-                toggleText.innerText = "Read Full Description";
-                toggleIcon.classList.remove("rotate-180");
-            }
-        }
-    </script>
-
-    <script>
-        let visibleReviewCount = 3;
-
-        function loadMoreReviews() {
-            const allReviews = document.querySelectorAll('.review-item');
-            const totalReviews = allReviews.length;
-            const btnText = document.getElementById('seeMoreBtnText');
-            const btnIcon = document.getElementById('seeMoreBtnIcon');
-            const btn = document.getElementById('seeMoreReviewsBtn');
-
-            // Agar saare reviews pehle hi khul chuke hain, to dobara click karne par reset (band) kar do
-            if (visibleReviewCount >= totalReviews) {
-                // Shuru ke 3 ke ilawa baaki sab ko wapas hide kar do
-                allReviews.forEach((el, index) => {
-                    if (index >= 3) {
-                        el.classList.add('hidden');
-                    }
-                });
-
-                // Count ko wapas 3 par le aao
-                visibleReviewCount = 3;
-
-                // Button ko wapas apni original halat mein kar do (Black theme maintain rakhte hue)
-                if (btnText) btnText.innerText = 'See More Reviews';
-                if (btnIcon) {
-                    btnIcon.style.display = 'inline-block';
-                    btnIcon.classList.remove('rotate-180');
-                }
-                if (btn) {
-                    btn.disabled = false;
-                    // Emerald ki jagah yahan black/gray classes laga di hain
-                    btn.classList.remove('bg-gray-100', 'text-gray-400', 'border-gray-200', 'cursor-not-allowed');
-                    btn.classList.add('bg-gray-900', 'hover:bg-black', 'text-white', 'border-gray-800', 'cursor-pointer');
-                }
-                return;
-            }
-
-            // Warna mazeed 3-3 reviews kholte jao
-            let nextLimit = visibleReviewCount + 3;
-
-            for (let i = visibleReviewCount; i < nextLimit && i < totalReviews; i++) {
-                allReviews[i].classList.remove('hidden');
-            }
-
-            visibleReviewCount = nextLimit;
-
-            // Jab aakhri reviews par pohonch jayein, to "No More Reviews" dikha do (lekin click par band hone ki capability ke sath)
-            if (visibleReviewCount >= totalReviews) {
-                if (btnText) btnText.innerText = 'No More Reviews (Click to Show Less)';
-                if (btnIcon) btnIcon.style.display = 'none';
-            }
         }
     </script>
 
