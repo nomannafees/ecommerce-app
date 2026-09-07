@@ -2,6 +2,7 @@
     @php
         $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
         $avgRating = $product->reviews->avg('rating') ?? 0;
+        $reviewsCount = $product->reviews_count ?? 0;
     @endphp
 
     <a href="{{ route('product.detail', $product->slug) }}" class="group flex">
@@ -37,43 +38,94 @@
                     <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 sm:line-clamp-1 mt-0.5">
                         {!! $product->description !!}
                     </div>
-                    <div class="flex items-center gap-1 sm:mt-1.5">
-                        <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                            @for($i = 1; $i <= 5; $i++)
-                                @if($i <= floor($avgRating))
-                                    <i class="fa-solid fa-star"></i>
-                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                    <i class="fa-solid fa-star-half-stroke"></i>
-                                @else
-                                    <i class="fa-regular fa-star text-gray-300"></i>
-                                @endif
-                            @endfor
+
+
+                    {{-- Rating & Sold Items Section --}}
+                    <div class="flex items-center justify-between gap-1 mt-0.5 sm:mt-1.5">
+                        {{-- Rating & Total Reviews Count --}}
+                        <div class="flex items-center gap-1">
+                            <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= floor($avgRating))
+                                        <i class="fa-solid fa-star"></i>
+                                    @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                        <i class="fa-solid fa-star-half-stroke"></i>
+                                    @else
+                                        <i class="fa-regular fa-star text-gray-300"></i>
+                                    @endif
+                                @endfor
+                            </div>
+                            <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
+                                ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
+                            </span>
                         </div>
-                        <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
+
+                        {{-- Sold Count --}}
+                        <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
+                            {{ $product->order_items_count ?? 0 }} Sold
+                        </span>
                     </div>
                 </div>
 
+                {{-- Price & Stock Section with Discount Percentage --}}
                 <div class="flex items-center justify-between gap-2 -mt-2">
-                    @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
+                    @php
+                        $variant = $product->mainVariant ?? $product->variants->first();
+
+                        $salePrice = $variant->price ?? 0;
+                        $originalPrice = $variant->cut_price ?? 0;
+
+                        $discountPercent = 0;
+                        if ($originalPrice > 0 && $originalPrice > $salePrice) {
+                            $discountPercent = round(
+                                (($originalPrice - $salePrice) / $originalPrice) * 100
+                            );
+                        }
+                    @endphp
+
+                    {{-- PRICE --}}
                     <div class="flex flex-col">
                         <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                            Rs {{ number_format($variant->price ?? 0) }}
+                            Rs {{ number_format($salePrice) }}
                         </span>
-                        @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                            <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                Rs {{ number_format($variant->cut_price) }}
-                            </span>
+
+                        @if($discountPercent > 0)
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                    Rs {{ number_format($originalPrice) }}
+                                </span>
+                                <span class="text-[12px] sm:text-[14px] font-medium text-gray-600 whitespace-nowrap">
+                                    -{{ $discountPercent }}%
+                                </span>
+                            </div>
                         @endif
                     </div>
+
+                    {{-- STOCK --}}
                     <div class="flex-shrink-0">
-                        @php $totalStock = $product->variants->sum('stock'); @endphp
+                        @php
+                            $totalStock = $product->variants->sum('stock');
+                        @endphp
+
                         @if($totalStock <= 0)
-                            <span class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
                                 Out of Stock
                             </span>
+                        @elseif($totalStock < 30)
+                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
+                                Only 3 left
+                            </span>
+                        @elseif($totalStock < 40)
+                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
+                                Only 5 left
+                            </span>
                         @else
-                            <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
+                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
+                                In Stock
                             </span>
                         @endif
                     </div>

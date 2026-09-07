@@ -34,8 +34,12 @@ class FrontendController extends Controller
     public function index(Request $request)
     {
         // 1. TOP 12 MOST ORDERED PRODUCTS (Bestsellers)
-        $topOrderedProducts = Product::with(['variants', 'mainVariantImage', 'reviews'])
-            ->withCount('orderItems')
+        $topOrderedProducts = Product::whereDoesntHave('flashSale', function ($query)  {
+            $query->where('start_time', '<=', now())
+                ->where('end_time', '>=', now());
+        } )
+            ->with(['variants', 'mainVariantImage', 'reviews'])
+            ->withCount(['orderItems', 'reviews'])
             ->orderBy('order_items_count', 'desc')
             ->take(12)
             ->get();
@@ -46,13 +50,19 @@ class FrontendController extends Controller
                 ->whereDate('end_time', '>=', now());
         })
             ->with(['variants', 'mainVariantImage', 'reviews', 'flashSale'])
-            ->take(6) // <--- Yahan 6 kar dein
+            ->withCount(['orderItems', 'reviews'])
+            ->take(6)
             ->get();
 
 
         // 2. TOP 12 FEATURED PRODUCTS (Based on product_type column)
         $featuredProducts = Product::where('product_type', 'featured')
+            ->whereDoesntHave('flashSale', function ($query) {
+                $query->where('start_time', '<=', now())
+                    ->where('end_time', '>=', now());
+            })
             ->with(['variants', 'mainVariantImage', 'reviews'])
+            ->withCount(['orderItems', 'reviews'])
             ->latest()
             ->take(12)
             ->get();
@@ -118,6 +128,12 @@ class FrontendController extends Controller
 
         $products = collect();
 
+        // Flash sale check condition
+        $excludeFlashSale = function ($query) {
+            $query->where('start_time', '<=', now())
+                ->where('end_time', '>=', now());
+        };
+
         if ($recentInteractions->isNotEmpty()) {
             $viewedProductIds = $recentInteractions->pluck('product_id')->filter()->unique()->toArray();
             $categoryIds = $recentInteractions->pluck('category_id')->filter()->unique()->toArray();
@@ -129,7 +145,9 @@ class FrontendController extends Controller
 
             if (!empty($viewedProductIds)) {
                 $interactedProducts = Product::whereIn('id', $viewedProductIds)
+                    ->whereDoesntHave('flashSale', $excludeFlashSale)
                     ->with(['variants', 'mainVariantImage', 'reviews'])
+                    ->withCount(['orderItems', 'reviews'])
                     ->orderByRaw("FIELD(id, $productListString)")
                     ->get();
 
@@ -137,6 +155,7 @@ class FrontendController extends Controller
             }
 
             $recommendedProducts = Product::with(['variants', 'mainVariantImage', 'reviews'])
+                ->whereDoesntHave('flashSale', $excludeFlashSale) // <--- Flash sale exclude ki
                 ->whereNotIn('id', $products->pluck('id')->toArray())
                 ->where(function ($query) use ($categoryIds, $brandIds) {
                     $query->whereIn('category_id', $categoryIds)
@@ -151,6 +170,8 @@ class FrontendController extends Controller
 
         if ($products->isEmpty()) {
             $products = Product::with(['variants', 'mainVariantImage', 'reviews'])
+                ->withCount(['orderItems', 'reviews'])
+                ->whereDoesntHave('flashSale', $excludeFlashSale) // <--- Fallback mein bhi flash sale exclude ki
                 ->latest()
                 ->get();
         }
@@ -271,6 +292,7 @@ class FrontendController extends Controller
                 );
 
                 $relatedProducts = Product::with(['images', 'variants'])
+                    ->withCount(['orderItems', 'reviews'])
                     ->whereIn('category_id', $categoryIds)
                     ->where('id', '!=', $product->id)
                     ->get();
@@ -291,7 +313,10 @@ class FrontendController extends Controller
     public function frontendProduct(Request $request)
     {
         // 1. Products with variants, images, and reviews
-        $products = Product::with(['variants', 'mainVariantImage', 'reviews'])->latest()->paginate(12);
+        $products = Product::with(['variants', 'mainVariantImage', 'reviews'])
+            ->withCount(['orderItems', 'reviews'])
+            ->latest()
+            ->paginate(12);
 
         // Agar requested page par products hi nahi hain (misal ke taur par page 3 khali hai)
         if ($request->ajax()) {
@@ -344,7 +369,9 @@ class FrontendController extends Controller
         $categories = Categorie::where('parent_id', 0)->with('children')->get();
 
         $currentCategory = null;
-        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews'])->latest();
+        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews'])
+            ->withCount(['orderItems', 'reviews'])
+            ->latest();
 
         if (!empty($category)) {
             $slugs = explode('/', $category);
@@ -424,7 +451,7 @@ class FrontendController extends Controller
             'mainVariant',
             'variant_images',
             'reviews'
-        ]);
+        ])->withCount(['orderItems', 'reviews']);
 
         // 2. Clean & Error-Free Search Filter
         if ($request->filled('search')) {
@@ -1394,11 +1421,13 @@ class FrontendController extends Controller
 
     public function moreProducts(Request $request, $type = null)
     {
-        // Agar route segment se type na mile toh request query se utha lein
         $type = $type ?? $request->get('type');
 
         $title = "Products";
-        $query = Product::with(['variants', 'mainVariantImage', 'reviews', 'flashSale']);
+
+        // Yahan 'reviews' ke sath 'withCount('reviews')' bhi laazmi add karein
+        $query = Product::with(['variants', 'mainVariantImage', 'reviews', 'flashSale'])
+            ->withCount(['orderItems', 'reviews']); // <-- Yeh change kiya hai
 
         if ($type == 'flash-sale') {
             $title = "Flash Sales Products";
@@ -1408,7 +1437,7 @@ class FrontendController extends Controller
             });
         } elseif ($type == 'bestselling') {
             $title = "Bestselling Products";
-            $query->withCount('orderItems')->orderBy('order_items_count', 'desc');
+            $query->orderBy('order_items_count', 'desc');
         } elseif ($type == 'featured') {
             $title = "Featured Products";
             $query->where('product_type', 'featured')->latest();
@@ -1416,7 +1445,6 @@ class FrontendController extends Controller
 
         $products = $query->paginate(12);
 
-        // WISHLIST IDS FETCHING (Crucial for heart icon state)
         $wishlistProductIds = [];
         if (Auth::check()) {
             $wishlistProductIds = Wishlist::where('user_id', Auth::id())
@@ -1424,7 +1452,6 @@ class FrontendController extends Controller
                 ->toArray();
         }
 
-        // AJAX ya JSON request ko handle karne ke liye strict check
         if ($request->ajax() || $request->wantsJson() || $request->has('page')) {
             return response()->json([
                 'html' => view('frontend.partials.product-list-cart', compact('products', 'wishlistProductIds'))->render(),

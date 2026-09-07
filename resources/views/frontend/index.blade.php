@@ -43,6 +43,50 @@
             bottom: -14px !important;
             margin-bottom: -16px !important;
         }
+
+        /* Active Dot Green Color */
+        .heroSwiper .swiper-pagination-bullet-active {
+            background-color: #10b981 !important; /* Emerald Green */
+            opacity: 1 !important;
+        }
+
+        /* Inactive Dots White Color */
+        .heroSwiper .swiper-pagination-bullet {
+            background-color: #ffffff !important;
+            opacity: 0.7 !important;
+        }
+
+        .brandsSwiper {
+            padding-bottom: 40px !important; /* Space for dots at the bottom */
+        }
+
+        .brands-swiper-pagination {
+            bottom: 0px !important; /* Position dots at the very bottom edge */
+        }
+
+        .brandsSwiper {
+            padding-bottom: 40px !important;
+        }
+
+        .brands-swiper-pagination {
+            bottom: 0px !important;
+        }
+
+        /* Active Dot ka Color (Emerald Green) */
+        .brands-swiper-pagination .swiper-pagination-bullet-active {
+            background-color: #10b981 !important; /* Emerald-500 */
+            opacity: 1 !important;
+        }
+
+        /* Inactive Dots ka Color (Thoda halka background) */
+        .brands-swiper-pagination .swiper-pagination-bullet {
+            background-color: #9ca3af; /* Gray-400 */
+        }
+
+        .swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal, .swiper-pagination-custom, .swiper-pagination-fraction {
+            margin-bottom: 10px;
+        }
+
     </style>
 
 
@@ -106,20 +150,6 @@
     @endif
 
 
-    <style>
-        /* Active Dot Green Color */
-        .heroSwiper .swiper-pagination-bullet-active {
-            background-color: #10b981 !important; /* Emerald Green */
-            opacity: 1 !important;
-        }
-
-        /* Inactive Dots White Color */
-        .heroSwiper .swiper-pagination-bullet {
-            background-color: #ffffff !important;
-            opacity: 0.7 !important;
-        }
-    </style>
-
     <!-- FLASH SALE SECTION -->
     <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 flex justify-between items-center">
         <div>
@@ -141,6 +171,7 @@
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
                 $avgRating = $product->reviews->avg('rating') ?? 0;
+                $reviewsCount = $product->reviews_count ?? 0; // Total review dene wale logo ki tadad
 
                 // Logic: Agar screen lg (bari screen se aik step choti) hai toh sirf pehle 5 products dikhein, baqi sab screens par 6 ke 6 dikhein.
                 if ($index < 5) {
@@ -158,7 +189,7 @@
 
                     {{-- High Contrast & Vibrant Flash Sale Badge --}}
                     @if($product->flashSale)
-                        <div class="absolute top-2 -left-1 z-20 bg-gradient-to-r from-orange-600 to-amber-500 text-white pl-3 pr-3.5 py-1 rounded-r-full text-[10px] sm:text-[11px] font-extrabold shadow-md flex items-center gap-1 tracking-wide">
+                        <div class="absolute top-2 -left-1 z-10 bg-gradient-to-r from-orange-600 to-amber-500 text-white pl-3 pr-3.5 py-1 rounded-r-full text-[10px] sm:text-[11px] font-extrabold shadow-md flex items-center gap-1 tracking-wide">
                             <i class="fa-solid fa-bolt text-yellow-200 text-[10px]"></i>
                             <span>{{ number_format($product->flashSale->discount_percentage, 0) }}% OFF</span>
                         </div>
@@ -202,20 +233,30 @@
                                 {!! $product->description !!}
                             </div>
 
-                            {{-- Rating Section --}}
-                            <div class="flex items-center gap-1 mt-0.5">
-                                <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($avgRating))
-                                            <i class="fa-solid fa-star"></i>
-                                        @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                            <i class="fa-solid fa-star-half-stroke"></i>
-                                        @else
-                                            <i class="fa-regular fa-star text-gray-300"></i>
-                                        @endif
-                                    @endfor
+                            {{-- Rating & Sold Items Section --}}
+                            <div class="flex items-center justify-between gap-1 mt-0.5 sm:mt-1.5">
+                                {{-- Left Side: Rating & Total Reviews Count --}}
+                                <div class="flex items-center gap-1">
+                                    <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= floor($avgRating))
+                                                <i class="fa-solid fa-star"></i>
+                                            @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                                <i class="fa-solid fa-star-half-stroke"></i>
+                                            @else
+                                                <i class="fa-regular fa-star text-gray-300"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
+                                    ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
+                                </span>
                                 </div>
-                                <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">({{ number_format($avgRating, 1) }})</span>
+
+                                {{-- Right Side: Sold Items --}}
+                                <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
+                                {{ $product->order_items_count ?? 0 }} Sold
+                            </span>
                             </div>
                         </div>
 
@@ -248,15 +289,34 @@
                             </div>
 
                             <div class="flex-shrink-0">
-                                @php $totalStock = $product->variants->sum('stock'); @endphp
+                                @php
+                                    $totalStock = $product->variants->sum('stock');
+                                @endphp
+
                                 @if($totalStock <= 0)
-                                    <span class="inline-block bg-red-100 text-red-700 text-[9px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    Out of Stock
-                                </span>
+                                    {{-- Out of Stock --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
+            Out of Stock
+        </span>
+                                @elseif($totalStock < 30)
+                                    {{-- Only 3 left (Blinking Red Dot) --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
+            Only 3 left
+        </span>
+                                @elseif($totalStock < 40)
+                                    {{-- Only 5 left (Blinking Orange Dot) --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
+            Only 5 left
+        </span>
                                 @else
-                                    <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                    <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                                </span>
+                                    {{-- In Stock (Blinking Green Dot) --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
+            In Stock
+        </span>
                                 @endif
                             </div>
                         </div>
@@ -280,13 +340,17 @@
                 <div class="flex items-center gap-3">
                     <!-- Icon Badge Box -->
                     <div class="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center text-green-600 border border-green-100 shadow-sm mt-2">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                     </div>
                     <!-- Heading -->
-                    <h2 class="text-xl sm:text-2xl mt-1 sm:mt-2 font-bold text-gray-900 flex items-center gap-2">Our Services</h2>
+                    <h2 class="text-xl sm:text-2xl mt-1 sm:mt-2 font-bold text-gray-900 flex items-center gap-2">Our
+                        Services</h2>
                 </div>
                 <!-- Subtitle description -->
-                <p class="text-xs sm:text-sm text-gray-500">We provide the best features and benefits for your shopping experience</p>
+                <p class="text-xs sm:text-sm text-gray-500">We provide the best features and benefits for your shopping
+                    experience</p>
             </div>
 
             <!-- Main Box: divide-y added for clean mobile row separation -->
@@ -296,7 +360,12 @@
                 <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-green-600">
                     <div class="flex items-center">
                         <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
-                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.5-2 3-2 3s1.5-.5 3-2l3-3 4-4-5-5-4 4-3 3z"/><path d="M15 9l5 5"/><path d="M16 5l3 3"/></svg>
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path d="M4.5 16.5c-1.5 1.5-2 3-2 3s1.5-.5 3-2l3-3 4-4-5-5-4 4-3 3z"/>
+                                <path d="M15 9l5 5"/>
+                                <path d="M16 5l3 3"/>
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-base font-semibold text-gray-900 mb-0.5">Free Delivery</h3>
@@ -309,7 +378,10 @@
                 <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-green-600">
                     <div class="flex items-center">
                         <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
-                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.65-5.65"/></svg>
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.65-5.65"/>
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-base font-semibold text-gray-900 mb-0.5">15 Days Return</h3>
@@ -322,7 +394,11 @@
                 <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto relative lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-green-600">
                     <div class="flex items-center">
                         <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
-                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-base font-semibold text-gray-900 mb-0.5">Secure Payment</h3>
@@ -335,7 +411,10 @@
                 <div class="flex items-center justify-start py-4 lg:py-0 pl-2 lg:pl-0 lg:justify-center flex-1 p-3 w-full lg:w-auto">
                     <div class="flex items-center">
                         <div class="mr-4 text-green-600 shrink-0 bg-green-50 p-2 lg:bg-transparent lg:p-0 rounded-lg">
-                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <svg class="w-7 h-7 lg:w-8 lg:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-base font-semibold text-gray-900 mb-0.5">24/7 Support</h3>
@@ -366,19 +445,12 @@
         </a>
     </div>
 
-    <div
-            class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
                 $avgRating = $product->reviews->avg('rating') ?? 0;
-
-                // CORRECTED ROW-BASED RESPONSIVE LOGIC:
-                // - Mobile (2 cols): 6 rows = 12 items (0 to 11)
-                // - SM (3 cols): 4 rows = 12 items (0 to 11)
-                // - MD (4 cols): 3 rows = 12 items (0 to 11) -> 4 columns x 3 rows = 12 items
-                // - LG (5 cols): 2 rows = 10 items (0 to 9) -> 5 columns x 2 rows = 10 items
-                // - XL (6 cols): 2 rows = 12 items (0 to 11) -> 6 columns x 2 rows = 12 items
+                $reviewsCount = $product->reviews_count ?? 0;
 
                 if ($index < 10) {
                     // Pehle 10 items sabhi screens par dikhenge (LG ki 2 rows pori - 5x2=10)
@@ -441,48 +513,104 @@
                                 {!! $product->description !!}
                             </div>
 
-                            {{-- Rating Section --}}
-                            <div class="flex items-center gap-1 sm:mt-1.5">
-                                <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($avgRating))
-                                            <i class="fa-solid fa-star"></i>
-                                        @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                            <i class="fa-solid fa-star-half-stroke"></i>
-                                        @else
-                                            <i class="fa-regular fa-star text-gray-300"></i>
-                                        @endif
-                                    @endfor
+                            {{-- Rating & Sold Items Section --}}
+                            <div class="flex items-center justify-between gap-1 mt-0.5 sm:mt-1.5">
+                                {{-- Rating & Total Reviews Count --}}
+                                <div class="flex items-center gap-1">
+                                    <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= floor($avgRating))
+                                                <i class="fa-solid fa-star"></i>
+                                            @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                                <i class="fa-solid fa-star-half-stroke"></i>
+                                            @else
+                                                <i class="fa-regular fa-star text-gray-300"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
+                                    ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
+                                </span>
                                 </div>
-                                <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
+
+                                {{-- Sold Count --}}
+                                <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
+                                {{ $product->order_items_count ?? 0 }} Sold
+                            </span>
                             </div>
                         </div>
 
                         {{-- Price & Stock Section --}}
                         <div class="flex items-center justify-between gap-2 -mt-1">
-                            @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
+                            @php
+                                $variant = $product->mainVariant ?? $product->variants->first();
+
+                                $salePrice = $variant->price ?? 0;
+                                $originalPrice = $variant->cut_price ?? 0;
+
+                                $discountPercent = 0;
+
+                                if ($originalPrice > 0 && $originalPrice > $salePrice) {
+                                    $discountPercent = round(
+                                        (($originalPrice - $salePrice) / $originalPrice) * 100
+                                    );
+                                }
+                            @endphp
+
                             <div class="flex flex-col">
-                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                            Rs {{ number_format($variant->price ?? 0) }}
-                        </span>
-                                @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                    <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                Rs {{ number_format($variant->cut_price) }}
-                            </span>
+
+                                {{-- Current/Sale Price --}}
+                                <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                                    Rs {{ number_format($salePrice) }}
+                                </span>
+
+                                {{-- Original Price + Discount --}}
+                                @if($originalPrice > $salePrice && $discountPercent > 0)
+                                    <div class="flex items-center gap-1.5">
+
+                                        {{-- Original Price --}}
+                                        <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                            Rs {{ number_format($originalPrice) }}
+                                        </span>
+
+                                        {{-- Calculated Discount --}}
+                                        <span class="text-[12px] sm:text-[14px] font-medium text-gray-600 whitespace-nowrap">
+                                            -{{ $discountPercent }}%
+                                        </span>
+
+                                    </div>
                                 @endif
+
                             </div>
                             <div class="flex-shrink-0">
-                                @php $totalStock = $product->variants->sum('stock'); @endphp
+                                @php
+                                    $totalStock = $product->variants->sum('stock');
+                                @endphp
+
                                 @if($totalStock <= 0)
-                                    <span
-                                            class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                Out of Stock
-                            </span>
+                                    {{-- Out of Stock --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
+            Out of Stock
+        </span>
+                                @elseif($totalStock < 30)
+                                    {{-- Only 3 left (Blinking Red/Pink Gradient Dot) --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
+            Only 3 left
+        </span>
+                                @elseif($totalStock < 40)
+                                    {{-- Only 5 left (Blinking Orange Gradient Dot) --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
+            Only 5 left
+        </span>
                                 @else
-                                    <span
-                                            class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                            </span>
+                                    {{-- In Stock (Blinking Green Gradient Dot) --}}
+                                    <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
+            In Stock
+        </span>
                                 @endif
                             </div>
                         </div>
@@ -653,13 +781,7 @@
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
                     $avgRating = $product->reviews->avg('rating') ?? 0;
-
-                    // EXACT ROW-BASED RESPONSIVE LOGIC FOR FEATURED PRODUCTS:
-                    // - Mobile (2 cols): 6 rows = 12 items (0 to 11)
-                    // - SM (3 cols): 4 rows = 12 items (0 to 11)
-                    // - MD (4 cols): 3 rows = 12 items (0 to 11)
-                    // - LG (5 cols): 2 rows = 10 items (0 to 9)
-                    // - XL (6 cols): 2 rows = 12 items (0 to 11)
+                    $reviewsCount = $product->reviews_count ?? 0;
 
                     if ($index < 10) {
                         // Pehle 10 items sabhi screens par dikhenge (LG ki 2 rows pori - 5x2=10)
@@ -678,10 +800,10 @@
                     <div
                             class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
-    <span
-            class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
-        Featured
-    </span>
+                            <span
+                                    class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+                                Featured
+                            </span>
 
                         {{-- IMAGE CONTAINER --}}
                         <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
@@ -719,51 +841,108 @@
                                     {!! $product->description !!}
                                 </div>
 
-                                {{-- Rating Section --}}
-                                <div class="flex items-center gap-1 sm:mt-1.5">
-                                    <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            @if($i <= floor($avgRating))
-                                                <i class="fa-solid fa-star"></i>
-                                            @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                                <i class="fa-solid fa-star-half-stroke"></i>
-                                            @else
-                                                <i class="fa-regular fa-star text-gray-300"></i>
-                                            @endif
-                                        @endfor
+                                {{-- Rating & Sold Items Section --}}
+                                <div class="flex items-center justify-between gap-1 mt-0.5 sm:mt-1.5">
+                                    {{-- Rating & Total Reviews Count --}}
+                                    <div class="flex items-center gap-1">
+                                        <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= floor($avgRating))
+                                                    <i class="fa-solid fa-star"></i>
+                                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                                @else
+                                                    <i class="fa-regular fa-star text-gray-300"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
+                                        ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
+                                    </span>
                                     </div>
-                                    <span class="text-[10px] sm:text-xs text-gray-500 font-medium">({{ number_format($avgRating, 1) }})</span>
+
+                                    {{-- Sold Count --}}
+                                    <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
+                                    {{ $product->order_items_count ?? 0 }} Sold
+                                </span>
                                 </div>
                             </div>
 
                             {{-- Price & Stock Section --}}
                             <div class="flex items-center justify-between gap-2 -mt-2">
-                                @php $variant = $product->mainVariant ?? $product->variants->first(); @endphp
+
+                                @php
+                                    $variant = $product->mainVariant ?? $product->variants->first();
+
+                                    $salePrice = $variant->price ?? 0;
+                                    $originalPrice = $variant->cut_price ?? 0;
+
+                                    // Discount percentage calculate
+                                    $discountPercent = 0;
+
+                                    if ($originalPrice > 0 && $originalPrice > $salePrice) {
+                                        $discountPercent = round(
+                                            (($originalPrice - $salePrice) / $originalPrice) * 100
+                                        );
+                                    }
+                                @endphp
+
+                                {{-- PRICE --}}
                                 <div class="flex flex-col">
-                <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                    Rs {{ number_format($variant->price ?? 0) }}
-                </span>
-                                    @if(!empty($variant->cut_price) && $variant->cut_price > $variant->price)
-                                        <span
-                                                class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                        Rs {{ number_format($variant->cut_price) }}
-                    </span>
+
+                                    {{-- Current / Sale Price --}}
+                                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                                            Rs {{ number_format($salePrice) }}
+                                        </span>
+
+                                    {{-- Original Price + Discount --}}
+                                    @if($discountPercent > 0)
+                                        <div class="flex items-center gap-1.5">
+
+                                            {{-- Original/Cut Price --}}
+                                            <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                                Rs {{ number_format($originalPrice) }}
+                                            </span>
+
+                                            {{-- Calculated Discount --}}
+                                            <span class="text-[12px] sm:text-[14px] font-medium text-gray-600 whitespace-nowrap">
+                                                -{{ $discountPercent }}%
+                                            </span>
+
+                                        </div>
                                     @endif
+
                                 </div>
+
+                                {{-- STOCK --}}
                                 <div class="flex-shrink-0">
-                                    @php $totalStock = $product->variants->sum('stock'); @endphp
+                                    @php
+                                        $totalStock = $product->variants->sum('stock');
+                                    @endphp
+
                                     @if($totalStock <= 0)
-                                        <span
-                                                class="inline-block bg-red-100 text-red-600 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                        Out of Stock
-                    </span>
+                                        <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
+                                        Out of Stock
+                                    </span>
+                                    @elseif($totalStock < 30)
+                                        <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
+                                        Only 3 left
+                                    </span>
+                                    @elseif($totalStock < 40)
+                                        <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
+                                        Only 5 left
+                                    </span>
                                     @else
-                                        <span
-                                                class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                        <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                    </span>
+                                        <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
+                                        In Stock
+                                    </span>
                                     @endif
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -875,40 +1054,6 @@
         @endif
     </div>
 
-    <!-- Custom CSS to push pagination below cards -->
-    <style>
-        .brandsSwiper {
-            padding-bottom: 40px !important; /* Space for dots at the bottom */
-        }
-
-        .brands-swiper-pagination {
-            bottom: 0px !important; /* Position dots at the very bottom edge */
-        }
-
-        .brandsSwiper {
-            padding-bottom: 40px !important;
-        }
-
-        .brands-swiper-pagination {
-            bottom: 0px !important;
-        }
-
-        /* Active Dot ka Color (Emerald Green) */
-        .brands-swiper-pagination .swiper-pagination-bullet-active {
-            background-color: #10b981 !important; /* Emerald-500 */
-            opacity: 1 !important;
-        }
-
-        /* Inactive Dots ka Color (Thoda halka background) */
-        .brands-swiper-pagination .swiper-pagination-bullet {
-            background-color: #9ca3af; /* Gray-400 */
-        }
-
-        .swiper-horizontal > .swiper-pagination-bullets, .swiper-pagination-bullets.swiper-pagination-horizontal, .swiper-pagination-custom, .swiper-pagination-fraction {
-            margin-bottom: 10px;
-        }
-
-    </style>
 
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
     @if(isset($setting) && $setting->show_brand_banner == 1)
