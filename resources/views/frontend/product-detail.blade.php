@@ -618,7 +618,7 @@
                                         <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
                                             Rs {{ number_format($originalPrice) }}
                                         </span>
-                                                <span class="text-[12px] sm:text-[14px] font-medium text-gray-600 whitespace-nowrap">
+                                                <span class="ext-[12px] sm:text-[14px] font-medium text-emerald-700 whitespace-nowrap">
                                             -{{ $calculatedDiscount }}%
                                         </span>
                                             </div>
@@ -630,24 +630,36 @@
                                         @php $totalStock = $relatedProduct->variants->sum('stock'); @endphp
                                         @if($totalStock <= 0)
                                             <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
-                                        Out of Stock
-                                    </span>
-                                        @elseif($totalStock < 30)
-                                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
-                                        Only 3 left
-                                    </span>
-                                        @elseif($totalStock < 40)
-                                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
-                                        Only 5 left
-                                    </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
-                                        In Stock
-                                    </span>
+                                                <span class="relative flex h-2.5 w-2.5">
+                                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
+                                                </span>
+                                                Out of Stock
+                                            </span>
+                                                                            @elseif($totalStock < 30)
+                                                                                <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                                <span class="relative flex h-2.5 w-2.5">
+                                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
+                                                </span>
+                                                Only 3 left
+                                            </span>
+                                                                            @elseif($totalStock < 40)
+                                                                                <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                                <span class="relative flex h-2.5 w-2.5">
+                                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
+                                                </span>
+                                                Only 5 left
+                                            </span>
+                                                                            @else
+                                                                                <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
+                                                <span class="relative flex h-2.5 w-2.5">
+                                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
+                                                </span>
+                                                In Stock
+                                            </span>
                                         @endif
                                     </div>
                                 </div>

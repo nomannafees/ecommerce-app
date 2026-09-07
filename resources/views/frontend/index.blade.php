@@ -294,29 +294,41 @@
                                 @endphp
 
                                 @if($totalStock <= 0)
-                                    {{-- Out of Stock --}}
+                                    {{-- Out of Stock (Red Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
-            Out of Stock
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                                    </span>
+                                    Out of Stock
+                                </span>
                                 @elseif($totalStock < 30)
-                                    {{-- Only 3 left (Blinking Red Dot) --}}
+                                    {{-- Only 3 left (Rose/Red Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
-            Only 3 left
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
+                                    </span>
+                                    Only 3 left
+                                </span>
                                 @elseif($totalStock < 40)
-                                    {{-- Only 5 left (Blinking Orange Dot) --}}
+                                    {{-- Only 5 left (Orange Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
-            Only 5 left
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                    </span>
+                                    Only 5 left
+                                </span>
                                 @else
-                                    {{-- In Stock (Blinking Green Dot) --}}
+                                    {{-- In Stock (Green Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
-            In Stock
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    In Stock
+                                </span>
                                 @endif
                             </div>
                         </div>
@@ -574,7 +586,7 @@
                                         </span>
 
                                         {{-- Calculated Discount --}}
-                                        <span class="text-[12px] sm:text-[14px] font-medium text-gray-600 whitespace-nowrap">
+                                        <span class="text-[12px] sm:text-[14px] font-medium text-emerald-700 whitespace-nowrap">
                                             -{{ $discountPercent }}%
                                         </span>
 
@@ -590,25 +602,37 @@
                                 @if($totalStock <= 0)
                                     {{-- Out of Stock --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
+            </span>
             Out of Stock
         </span>
                                 @elseif($totalStock < 30)
-                                    {{-- Only 3 left (Blinking Red/Pink Gradient Dot) --}}
+                                    {{-- Only 3 left (Pink/Red Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
+            </span>
             Only 3 left
         </span>
                                 @elseif($totalStock < 40)
-                                    {{-- Only 5 left (Blinking Orange Gradient Dot) --}}
+                                    {{-- Only 5 left (Orange Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
+            </span>
             Only 5 left
         </span>
                                 @else
-                                    {{-- In Stock (Blinking Green Gradient Dot) --}}
+                                    {{-- In Stock (Green Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
+            </span>
             In Stock
         </span>
                                 @endif
@@ -905,7 +929,7 @@
                                             </span>
 
                                             {{-- Calculated Discount --}}
-                                            <span class="text-[12px] sm:text-[14px] font-medium text-gray-600 whitespace-nowrap">
+                                            <span class="ext-[12px] sm:text-[14px] font-medium text-emerald-700 whitespace-nowrap">
                                                 -{{ $discountPercent }}%
                                             </span>
 
@@ -922,24 +946,36 @@
 
                                     @if($totalStock <= 0)
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50 animate-pulse"></span>
-                                        Out of Stock
-                                    </span>
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
+            </span>
+            Out of Stock
+        </span>
                                     @elseif($totalStock < 30)
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50 animate-pulse"></span>
-                                        Only 3 left
-                                    </span>
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
+            </span>
+            Only 3 left
+        </span>
                                     @elseif($totalStock < 40)
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50 animate-pulse"></span>
-                                        Only 5 left
-                                    </span>
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
+            </span>
+            Only 5 left
+        </span>
                                     @else
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
-                                        In Stock
-                                    </span>
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
+            </span>
+            In Stock
+        </span>
                                     @endif
                                 </div>
 
