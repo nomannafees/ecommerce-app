@@ -3,14 +3,46 @@
         $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
         $avgRating = $product->reviews->avg('rating') ?? 0;
         $reviewsCount = $product->reviews_count ?? 0;
+
+        // Product ki saari variant images ka array tayar karna
+        $allImages = [];
+        if ($product->mainVariantImage) {
+            $allImages[] = asset('storage/' . $product->mainVariantImage->image_path);
+        }
+        foreach ($product->variantImages as $vImg) {
+            $imgPath = asset('storage/' . $vImg->image_path);
+            // Duplicate images avoid karne ke liye check
+            if (!in_array($imgPath, $allImages)) {
+                $allImages[] = $imgPath;
+            }
+        }
+        // Agar koi image na ho toh default no-image lagayein
+        if (empty($allImages)) {
+            $allImages[] = asset('upload/no-image.jpg');
+        }
     @endphp
 
     <a href="{{ route('product.detail', $product->slug) }}" class="group flex">
         <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
-            {{-- IMAGE CONTAINER --}}
-            <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-47 lg:h-50">
-                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
+            {{-- IMAGE CONTAINER with Alpine.js Multiple Images Hover/MouseMove Cycle --}}
+            <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-47 lg:h-50"
+                 x-data="{
+                    images: {{ json_encode($allImages) }},
+                    currentIndex: 0,
+                    updateImage(event) {
+                        if (this.images.length <= 1) return;
+                        let rect = event.currentTarget.getBoundingClientRect();
+                        let xPos = event.clientX - rect.left;
+                        let width = rect.width;
+                        let index = Math.floor((xPos / width) * this.images.length);
+                        this.currentIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+                    }
+                 }"
+                 @mousemove="updateImage(event)"
+                 @mouseleave="currentIndex = 0">
+
+                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <button type="submit"
@@ -20,13 +52,11 @@
                         <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                     </button>
                 </form>
-                @if($product->mainVariantImage)
-                    <img class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
-                         src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
-                         alt="{{ $product->name }}">
-                @else
-                    <img class="w-full h-full object-cover" src="{{ asset('upload/no-image.jpg') }}" alt="No Image Available">
-                @endif
+
+                {{-- Dynamic Image based on mouse position --}}
+                <img :src="images[currentIndex]"
+                     alt="{{ $product->name }}"
+                     class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
             </div>
 
             {{-- CARD CONTENT --}}

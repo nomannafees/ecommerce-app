@@ -94,6 +94,11 @@ class Product extends Model
         return $this->hasOne(FlashSale::class, 'product_id');
     }
 
+    public function variantImages()
+    {
+        return $this->hasMany(VariantImage::class, 'product_id', 'id');
+    }
+
 
 
 

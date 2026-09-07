@@ -181,6 +181,23 @@
                 } else {
                     $displayClass = 'hidden';
                 }
+
+                // Product ki saari variant images ka array tayar karna
+                $allImages = [];
+                if ($product->mainVariantImage) {
+                    $allImages[] = asset('storage/' . $product->mainVariantImage->image_path);
+                }
+                foreach ($product->variantImages as $vImg) {
+                    $imgPath = asset('storage/' . $vImg->image_path);
+                    // Duplicate images avoid karne ke liye check
+                    if (!in_array($imgPath, $allImages)) {
+                        $allImages[] = $imgPath;
+                    }
+                }
+                // Agar koi image na ho toh default no-image lagayein
+                if (empty($allImages)) {
+                    $allImages[] = asset('upload/no-image.jpg');
+                }
             @endphp
 
             <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
@@ -195,29 +212,39 @@
                         </div>
                     @endif
 
-                    {{-- IMAGE CONTAINER --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
-                        <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
+                    {{-- IMAGE CONTAINER with Alpine.js Multiple Images Hover/MouseMove Cycle --}}
+                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50"
+                         x-data="{
+                        images: {{ json_encode($allImages) }},
+                        currentIndex: 0,
+                        updateImage(event) {
+                            if (this.images.length <= 1) return;
+                            let rect = event.currentTarget.getBoundingClientRect();
+                            let xPos = event.clientX - rect.left;
+                            let width = rect.width;
+                            let index = Math.floor((xPos / width) * this.images.length);
+                            this.currentIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+                        }
+                     }"
+                         @mousemove="updateImage(event)"
+                         @mouseleave="currentIndex = 0">
+
+                        <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                             <button type="submit"
                                     class="wishlistBtn  absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
                                     style="padding: 4px 9px 4px 9px !important;
-                                    cursor: pointer;">
+                                cursor: pointer;">
                                 <i class="wishlistIcon  fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
                             </button>
                         </form>
 
-                        @if($product->mainVariantImage)
-                            <img src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
-                                 alt="{{ $product->name }}"
-                                 class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
-                        @else
-                            <img src="{{ asset('upload/no-image.jpg') }}"
-                                 alt="No Image Available"
-                                 class="w-full h-full object-cover">
-                        @endif
+                        {{-- Dynamic Image based on mouse position --}}
+                        <img :src="images[currentIndex]"
+                             alt="{{ $product->name }}"
+                             class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
                     </div>
 
                     {{-- CARD CONTENT --}}
@@ -249,14 +276,14 @@
                                         @endfor
                                     </div>
                                     <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
-                                    ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
-                                </span>
+                                ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
+                            </span>
                                 </div>
 
                                 {{-- Right Side: Sold Items --}}
                                 <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
-                                {{ $product->order_items_count ?? 0 }} Sold
-                            </span>
+                            {{ $product->order_items_count ?? 0 }} Sold
+                        </span>
                             </div>
                         </div>
 
@@ -277,14 +304,14 @@
                             <div class="flex flex-col">
                                 {{-- Discounted / Main Sale Price --}}
                                 <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                                Rs {{ number_format($discountedPrice) }}
-                            </span>
+                            Rs {{ number_format($discountedPrice) }}
+                        </span>
 
                                 {{-- Original / Cut Price --}}
                                 @if($discountPercent > 0 && !empty($variant->cut_price) && $variant->cut_price > $discountedPrice)
                                     <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                    Rs {{ number_format($variant->cut_price) }}
-                                </span>
+                                Rs {{ number_format($variant->cut_price) }}
+                            </span>
                                 @endif
                             </div>
 
@@ -294,7 +321,7 @@
                                 @endphp
 
                                 @if($totalStock <= 0)
-                                    {{-- Out of Stock (Red Ping Dot) --}}
+                                    {{-- Out of Stock (Red Ping Dot) --5>
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
                                     <span class="relative flex h-2 w-2">
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -305,30 +332,30 @@
                                 @elseif($totalStock < 30)
                                     {{-- Only 3 left (Rose/Red Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                    <span class="relative flex h-2 w-2">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
-                                    </span>
-                                    Only 3 left
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-600"></span>
                                 </span>
+                                Only 3 left
+                            </span>
                                 @elseif($totalStock < 40)
                                     {{-- Only 5 left (Orange Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                    <span class="relative flex h-2 w-2">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-                                    </span>
-                                    Only 5 left
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                                 </span>
+                                Only 5 left
+                            </span>
                                 @else
                                     {{-- In Stock (Green Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-                                    <span class="relative flex h-2 w-2">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                    </span>
-                                    In Stock
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
+                                In Stock
+                            </span>
                                 @endif
                             </div>
                         </div>
@@ -465,51 +492,77 @@
                 $reviewsCount = $product->reviews_count ?? 0;
 
                 if ($index < 10) {
-                    // Pehle 10 items sabhi screens par dikhenge (LG ki 2 rows pori - 5x2=10)
                     $displayClass = 'flex';
                 } elseif ($index >= 10 && $index < 12) {
-                    // 11th aur 12th items: LG screen par hidden rahenge (kyunki LG ko sirf 10 chahiye),
-                    // lekin Mobile, SM, MD aur XL par visible honge taake unki rows pori ho sakein.
                     $displayClass = 'flex sm:flex md:flex lg:hidden xl:flex';
                 } else {
-                    // 13th item aur uske baad sabhi hidden
                     $displayClass = 'hidden';
+                }
+
+                // Default image
+                $defaultImage = $product->mainVariantImage ? asset('storage/' . $product->mainVariantImage->image_path) : asset('upload/no-image.jpg');
+
+                // Product ki saari variant images ka array tayar karna
+                $allImages = [];
+                if ($product->mainVariantImage) {
+                    $allImages[] = asset('storage/' . $product->mainVariantImage->image_path);
+                }
+                foreach ($product->variantImages as $vImg) {
+                    $imgPath = asset('storage/' . $vImg->image_path);
+                    // Duplicate images avoid karne ke liye check
+                    if (!in_array($imgPath, $allImages)) {
+                        $allImages[] = $imgPath;
+                    }
+                }
+                // Agar koi image na ho toh default no-image lagayein
+                if (empty($allImages)) {
+                    $allImages[] = asset('upload/no-image.jpg');
                 }
             @endphp
 
-            <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
+            <a href="{{ route('product.detail', $product->slug) }}"
+               class="group {{ $displayClass }}">
+
                 {{-- Card Container --}}
-                <div
-                        class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
+                <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
-            <span
-                    class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
-                Top Seller
-            </span>
+                <span class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-rose-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+                    Top Seller
+                </span>
 
-                    {{-- IMAGE CONTAINER --}}
-                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 testing">
-                        <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
+                    {{-- IMAGE CONTAINER with Alpine.js Multiple Images Hover/MouseMove Cycle --}}
+                    <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 testing"
+                         x-data="{
+                        images: {{ json_encode($allImages) }},
+                        currentIndex: 0,
+                        updateImage(event) {
+                            if (this.images.length <= 1) return;
+                            let rect = event.currentTarget.getBoundingClientRect();
+                            let xPos = event.clientX - rect.left; // Mouse ki X position image ke andar
+                            let width = rect.width;
+                            // Mouse ki position ke hisaab se image array ka index calculate karna
+                            let index = Math.floor((xPos / width) * this.images.length);
+                            this.currentIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+                        }
+                     }"
+                         @mousemove="updateImage(event)"
+                         @mouseleave="currentIndex = 0">
+
+                        <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                             <button type="submit"
                                     class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
-                                    style="padding: 4px 9px 4px 9px !important;
-                                        cursor: pointer;">
+                                    style="padding: 4px 9px 4px 9px !important; cursor: pointer;">
                                 <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                             </button>
                         </form>
 
-                        @if($product->mainVariantImage)
-                            <img src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
-                                 alt="{{ $product->name }}"
-                                 class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
-                        @else
-                            <img src="{{ asset('upload/no-image.jpg') }}"
-                                 alt="No Image Available"
-                                 class="w-full h-full object-cover">
-                        @endif
+                        {{-- Dynamic Image based on mouse position --}}
+                        <img :src="images[currentIndex]"
+                             alt="{{ $product->name }}"
+                             class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
                     </div>
 
                     {{-- CARD CONTENT --}}
@@ -527,7 +580,6 @@
 
                             {{-- Rating & Sold Items Section --}}
                             <div class="flex items-center justify-between gap-1 mt-0.5 sm:mt-1.5">
-                                {{-- Rating & Total Reviews Count --}}
                                 <div class="flex items-center gap-1">
                                     <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
                                         @for($i = 1; $i <= 5; $i++)
@@ -545,7 +597,6 @@
                                 </span>
                                 </div>
 
-                                {{-- Sold Count --}}
                                 <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
                                 {{ $product->order_items_count ?? 0 }} Sold
                             </span>
@@ -570,71 +621,59 @@
                             @endphp
 
                             <div class="flex flex-col">
+                            <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                                Rs {{ number_format($salePrice) }}
+                            </span>
 
-                                {{-- Current/Sale Price --}}
-                                <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                                    Rs {{ number_format($salePrice) }}
-                                </span>
-
-                                {{-- Original Price + Discount --}}
                                 @if($originalPrice > $salePrice && $discountPercent > 0)
                                     <div class="flex items-center gap-1.5">
-
-                                        {{-- Original Price --}}
-                                        <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                            Rs {{ number_format($originalPrice) }}
-                                        </span>
-
-                                        {{-- Calculated Discount --}}
+                                    <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
+                                        Rs {{ number_format($originalPrice) }}
+                                    </span>
                                         <span class="text-[12px] sm:text-[14px] font-medium text-emerald-700 whitespace-nowrap">
-                                            -{{ $discountPercent }}%
-                                        </span>
-
+                                        -{{ $discountPercent }}%
+                                    </span>
                                     </div>
                                 @endif
-
                             </div>
+
                             <div class="flex-shrink-0">
                                 @php
                                     $totalStock = $product->variants->sum('stock');
                                 @endphp
 
                                 @if($totalStock <= 0)
-                                    {{-- Out of Stock --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
-            </span>
-            Out of Stock
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
+                                    </span>
+                                    Out of Stock
+                                </span>
                                 @elseif($totalStock < 30)
-                                    {{-- Only 3 left (Pink/Red Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
-            </span>
-            Only 3 left
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
+                                    </span>
+                                    Only 3 left
+                                </span>
                                 @elseif($totalStock < 40)
-                                    {{-- Only 5 left (Orange Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
-            </span>
-            Only 5 left
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
+                                    </span>
+                                    Only 5 left
+                                </span>
                                 @else
-                                    {{-- In Stock (Green Ping Dot) --}}
                                     <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
-            </span>
-            In Stock
-        </span>
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
+                                    </span>
+                                    In Stock
+                                </span>
                                 @endif
                             </div>
                         </div>
@@ -799,8 +838,7 @@
             </a>
         </div>
 
-        <div
-                class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
+        <div class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -817,6 +855,23 @@
                         // Baaki sabhi items hidden
                         $displayClass = 'hidden';
                     }
+
+                    // Product ki saari variant images ka array tayar karna
+                    $allImages = [];
+                    if ($product->mainVariantImage) {
+                        $allImages[] = asset('storage/' . $product->mainVariantImage->image_path);
+                    }
+                    foreach ($product->variantImages as $vImg) {
+                        $imgPath = asset('storage/' . $vImg->image_path);
+                        // Duplicate images avoid karne ke liye check
+                        if (!in_array($imgPath, $allImages)) {
+                            $allImages[] = $imgPath;
+                        }
+                    }
+                    // Agar koi image na ho toh default no-image lagayein
+                    if (empty($allImages)) {
+                        $allImages[] = asset('upload/no-image.jpg');
+                    }
                 @endphp
 
                 <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
@@ -824,32 +879,43 @@
                     <div
                             class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
-                            <span
-                                    class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
-                                Featured
-                            </span>
+                    <span
+                            class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+                        Featured
+                    </span>
 
-                        {{-- IMAGE CONTAINER --}}
-                        <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
-                            <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm">
+                        {{-- IMAGE CONTAINER with Alpine.js Multiple Images Hover/MouseMove Cycle --}}
+                        <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50"
+                             x-data="{
+                        images: {{ json_encode($allImages) }},
+                        currentIndex: 0,
+                        updateImage(event) {
+                            if (this.images.length <= 1) return;
+                            let rect = event.currentTarget.getBoundingClientRect();
+                            let xPos = event.clientX - rect.left;
+                            let width = rect.width;
+                            let index = Math.floor((xPos / width) * this.images.length);
+                            this.currentIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+                        }
+                     }"
+                             @mousemove="updateImage(event)"
+                             @mouseleave="currentIndex = 0">
+
+                            <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
                                         class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10"
                                         style="padding: 4px 9px 4px 9px !important;
-                                            cursor: pointer;">
+                                    cursor: pointer;">
                                     <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
                                 </button>
                             </form>
-                            @if($product->mainVariantImage)
-                                <img
-                                        class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300"
-                                        src="{{ asset('storage/' . $product->mainVariantImage->image_path) }}"
-                                        alt="{{ $product->name }}">
-                            @else
-                                <img class="w-full h-full object-cover" src="{{ asset('upload/no-image.jpg') }}"
-                                     alt="No Image Available">
-                            @endif
+
+                            {{-- Dynamic Image based on mouse position --}}
+                            <img :src="images[currentIndex]"
+                                 alt="{{ $product->name }}"
+                                 class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
                         </div>
 
                         {{-- CARD CONTENT --}}
@@ -881,14 +947,14 @@
                                             @endfor
                                         </div>
                                         <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
-                                        ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
-                                    </span>
+                                ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
+                            </span>
                                     </div>
 
                                     {{-- Sold Count --}}
                                     <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
-                                    {{ $product->order_items_count ?? 0 }} Sold
-                                </span>
+                            {{ $product->order_items_count ?? 0 }} Sold
+                        </span>
                                 </div>
                             </div>
 
@@ -915,9 +981,9 @@
                                 <div class="flex flex-col">
 
                                     {{-- Current / Sale Price --}}
-                                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                                            Rs {{ number_format($salePrice) }}
-                                        </span>
+                                    <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
+                                    Rs {{ number_format($salePrice) }}
+                                </span>
 
                                     {{-- Original Price + Discount --}}
                                     @if($discountPercent > 0)
@@ -925,13 +991,13 @@
 
                                             {{-- Original/Cut Price --}}
                                             <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                                Rs {{ number_format($originalPrice) }}
-                                            </span>
+                                        Rs {{ number_format($originalPrice) }}
+                                    </span>
 
                                             {{-- Calculated Discount --}}
                                             <span class="ext-[12px] sm:text-[14px] font-medium text-emerald-700 whitespace-nowrap">
-                                                -{{ $discountPercent }}%
-                                            </span>
+                                        -{{ $discountPercent }}%
+                                    </span>
 
                                         </div>
                                     @endif
@@ -946,36 +1012,36 @@
 
                                     @if($totalStock <= 0)
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
-            </span>
-            Out of Stock
-        </span>
+    <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
+    </span>
+    Out of Stock
+</span>
                                     @elseif($totalStock < 30)
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
-            </span>
-            Only 3 left
-        </span>
+    <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
+    </span>
+    Only 3 left
+</span>
                                     @elseif($totalStock < 40)
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
-            </span>
-            Only 5 left
-        </span>
+    <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
+    </span>
+    Only 5 left
+</span>
                                     @else
                                         <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
-            </span>
-            In Stock
-        </span>
+    <span class="relative flex h-2.5 w-2.5">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
+    </span>
+    In Stock
+</span>
                                     @endif
                                 </div>
 

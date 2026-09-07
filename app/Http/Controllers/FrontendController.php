@@ -38,7 +38,7 @@ class FrontendController extends Controller
             $query->where('start_time', '<=', now())
                 ->where('end_time', '>=', now());
         } )
-            ->with(['variants', 'mainVariantImage', 'reviews'])
+            ->with(['variants', 'variantImages', 'mainVariantImage', 'reviews'])
             ->withCount(['orderItems', 'reviews'])
             ->orderBy('order_items_count', 'desc')
             ->take(12)
@@ -49,7 +49,7 @@ class FrontendController extends Controller
             $query->whereDate('start_time', '<=', now())
                 ->whereDate('end_time', '>=', now());
         })
-            ->with(['variants', 'mainVariantImage', 'reviews', 'flashSale'])
+            ->with(['variants',  'mainVariantImage', 'mainVariantImage', 'reviews', 'flashSale'])
             ->withCount(['orderItems', 'reviews'])
             ->take(6)
             ->get();
@@ -61,7 +61,7 @@ class FrontendController extends Controller
                 $query->where('start_time', '<=', now())
                     ->where('end_time', '>=', now());
             })
-            ->with(['variants', 'mainVariantImage', 'reviews'])
+            ->with(['variants', 'mainVariantImage', 'mainVariantImage', 'reviews'])
             ->withCount(['orderItems', 'reviews'])
             ->latest()
             ->take(12)
