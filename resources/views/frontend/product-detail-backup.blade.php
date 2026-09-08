@@ -74,7 +74,8 @@
                                         <!-- Mobile ke liye Tap Indicator -->
                                         <div class="absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full lg:hidden pointer-events-none shadow-md">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                                             </svg>
                                         </div>
                                     </div>
@@ -127,13 +128,16 @@
             </div>
 
             <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS & TOUCH SWIPE -->
-            <div id="mobileZoomModal" class="fixed inset-0 z-[999] bg-black/90 hidden flex-col justify-center items-center px-4"
+            <div id="mobileZoomModal"
+                 class="fixed inset-0 z-[999] bg-black/90 hidden flex-col justify-center items-center px-4"
                  ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
 
                 <!-- Top Bar: Counter & Close Button -->
                 <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-white px-2 z-50">
-                    <span id="mobileImageCounter" class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
-                    <button onclick="closeMobileZoom()" class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">
+                    <span id="mobileImageCounter"
+                          class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
+                    <button onclick="closeMobileZoom()"
+                            class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">
                         ✕
                     </button>
                 </div>
@@ -141,15 +145,18 @@
                 <!-- Main Image Container with Arrows -->
                 <div class="relative w-full max-w-lg flex items-center justify-center">
                     <!-- Left Arrow -->
-                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
+                    <button onclick="changeMobileModalImage(-1)"
+                            class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
                         ❮
                     </button>
 
                     <!-- Modal Image -->
-                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image" class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
+                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image"
+                         class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
 
                     <!-- Right Arrow -->
-                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
+                    <button onclick="changeMobileModalImage(1)"
+                            class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
                         ❯
                     </button>
                 </div>
@@ -316,7 +323,8 @@
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
                             <i class="fa-solid fa-align-left text-sm"></i>
                         </div>
-                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product Description</h2>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product
+                            Description</h2>
                     </div>
                     <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
                 Overview
@@ -465,7 +473,8 @@
                                             onclick="loadMoreReviews()"
                                             class="inline-flex items-center gap-2 px-5 py-2.5 bg-black hover:bg-black text-white text-xs font-semibold rounded-xl transition-all duration-200 ease-in-out border cursor-pointer shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
                                         <span id="seeMoreBtnText">See More Reviews</span>
-                                        <i id="seeMoreBtnIcon" class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
+                                        <i id="seeMoreBtnIcon"
+                                           class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200"></i>
                                     </button>
                                 </div>
                             @endif
@@ -476,7 +485,8 @@
                 <!-- Empty Review State -->
                     <div class="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200">
                         <i class="fa-regular fa-comment-dots text-3xl text-gray-300 mb-2 block"></i>
-                        <p class="text-gray-500 font-medium text-xs">There are currently no reviews for this product.</p>
+                        <p class="text-gray-500 font-medium text-xs">There are currently no reviews for this
+                            product.</p>
                     </div>
                 @endif
             </div>
@@ -497,122 +507,51 @@
                 </div>
 
                 <!-- Responsive Grid Setup -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
-                    @foreach($relatedProducts as $index => $product)
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
+                    @foreach($relatedProducts as $index => $relatedProduct)
                         {{-- 12 Products ki limit --}}
                         @if($index >= 12)
                             @break
                         @endif
 
                         @php
-                            $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
-                            $avgRating = $product->reviews->avg('rating') ?? 0;
+                            $isWishlisted = in_array($relatedProduct->id, $wishlistProductIds ?? []);
+                            $avgRating = $relatedProduct->reviews->avg('rating') ?? 0;
+                            $reviewsCount = $relatedProduct->reviews_count ?? $relatedProduct->reviews->count();
+
+                            $variant = $relatedProduct->mainVariant ?? $relatedProduct->variants->first();
+                            $salePrice = $variant->price ?? ($relatedProduct->base_price ?? 0);
+                            $originalPrice = $variant->cut_price ?? 0;
+
+                            $calculatedDiscount = 0;
+                            if ($originalPrice > 0 && $originalPrice > $salePrice) {
+                                $calculatedDiscount = round((($originalPrice - $salePrice) / $originalPrice) * 100);
+                            }
+
+                            // Product ki saari variant images ka array tayar karna ($relatedProduct ke sath)
+                            $allImages = [];
+                            if ($relatedProduct->mainVariantImage) {
+                                $allImages[] = asset('storage/' . $relatedProduct->mainVariantImage->image_path);
+                            }
+                            foreach ($relatedProduct->variantImages as $vImg) {
+                                $imgPath = asset('storage/' . $vImg->image_path);
+                                if (!in_array($imgPath, $allImages)) {
+                                    $allImages[] = $imgPath;
+                                }
+                            }
+                            if (empty($allImages)) {
+                                $allImages[] = asset('upload/no-image.jpg');
+                            }
                         @endphp
 
                         {{-- Card Container --}}
                         <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full group">
 
-                            {{-- IMAGE CONTAINER --}}
-                            <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-38 sm:h-43 2xl:h-43 md:h-43 lg:h-43">
-
-                                {{-- Wishlist Form Button (Ab yeh anchor tag ke bahar mehfooz hai) --}}
-                                <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" onclick="event.stopPropagation();">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <button type="submit"
-                                            class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
-                                            style="padding: 4px 9px 4px 9px !important; cursor: pointer;">
-                                        <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
-                                    </button>
-                                </form>
-
-                                {{-- Product Image with Link --}}
-                                <a href="{{ route('product.detail', $product->slug) }}" class="block w-full h-full">
-                                    @php
-                                        $mainImage = $product->mainVariantImage ?? ($product->images->first()->image_path ?? null);
-                                    @endphp
-
-                                    @if($mainImage)
-                                        <img src="{{ asset('storage/' . ($product->mainVariantImage->image_path ?? $product->images->first()->image_path)) }}"
-                                             alt="{{ $product->name }}"
-                                             class="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300">
-                                    @else
-                                        <img src="{{ asset('upload/no-image.jpg') }}"
-                                             alt="No Image Available"
-                                             class="w-full h-full object-cover">
-                                    @endif
-                                </a>
-                            </div>
+                            {{-- Image Card Include with Variables Passed --}}
+                            @include('frontend.partials.product-images-card', ['product' => $relatedProduct, 'allImages' => $allImages, 'isWishlisted' => $isWishlisted])
 
                             {{-- CARD CONTENT --}}
-                            <div class="p-1.5 sm:p-2.5 xs:p-2.5 md:p-2.5 lg:p-2.5 xl:p-2.5 2xl:p-2.5 flex-grow flex flex-col justify-between gap-2">
-                                <div>
-                                    {{-- Product Name with Link --}}
-                                    <a href="{{ route('product.detail', $product->slug) }}">
-                                        <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
-                                            {{ $product->name }}
-                                        </h4>
-                                    </a>
-
-                                    {{-- Description Snippet --}}
-                                    <div class="text-[11px] sm:text-xs text-gray-600 line-clamp-1 mt-0.5">
-                                        {!! $product->description !!}
-                                    </div>
-
-                                    {{-- Rating Section --}}
-                                    <div class="flex items-center gap-1 mt-0.5">
-                                        <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= floor($avgRating))
-                                                    <i class="fa-solid fa-star"></i>
-                                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                                    <i class="fa-solid fa-star-half-stroke"></i>
-                                                @else
-                                                    <i class="fa-regular fa-star text-gray-300"></i>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                        <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">({{ number_format($avgRating, 1) }})</span>
-                                    </div>
-                                </div>
-
-                                {{-- Price & Stock Section --}}
-                                <div class="flex items-center justify-between gap-2 -mt-1">
-                                    @php
-                                        $variant = $product->mainVariant ?? $product->variants->first();
-                                        $price = $variant->price ?? $product->price ?? 0;
-                                        $cutPrice = $variant->cut_price ?? null;
-                                    @endphp
-
-                                    <div class="flex flex-col">
-                                        {{-- Main Price --}}
-                                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                                        Rs {{ number_format($price) }}
-                                    </span>
-
-                                        {{-- Cut Price --}}
-                                        @if(!empty($cutPrice) && $cutPrice > $price)
-                                            <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                            Rs {{ number_format($cutPrice) }}
-                                        </span>
-                                        @endif
-                                    </div>
-
-                                    {{-- Stock Badge --}}
-                                    <div class="flex-shrink-0">
-                                        @php $totalStock = $product->variants->sum('stock'); @endphp
-                                        @if($totalStock <= 0)
-                                            <span class="inline-block bg-red-100 text-red-700 text-[9px] sm:text-[11px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                            Out of Stock
-                                        </span>
-                                        @else
-                                            <span class="inline-block bg-emerald-100 text-emerald-700 text-[9px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-full whitespace-nowrap">
-                                            <span class="text-emerald-800 font-bold text-[10px]">{{ $totalStock }}</span> In Stock
-                                        </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+                            @include('frontend.partials.product-content-card', ['product' => $relatedProduct, 'salePrice' => $salePrice, 'originalPrice' => $originalPrice, 'calculatedDiscount' => $calculatedDiscount, 'avgRating' => $avgRating, 'reviewsCount' => $reviewsCount])
                         </div>
                     @endforeach
                 </div>
@@ -1323,7 +1262,7 @@
             });
         }
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             refreshMobileImages();
         });
 
@@ -1483,9 +1422,9 @@
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Thoda delay taake browser element ki actual height ko theek se measure kar le
-            setTimeout(function() {
+            setTimeout(function () {
                 const content = document.getElementById("fullDescriptionContent");
                 const toggleWrapper = document.getElementById("descToggleWrapper");
 
@@ -1500,6 +1439,7 @@
         });
 
         let isExpanded = false;
+
         function toggleFullDescription() {
             const content = document.getElementById("fullDescriptionContent");
             const toggleText = document.getElementById("descToggleText");

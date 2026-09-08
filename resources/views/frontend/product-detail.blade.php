@@ -26,21 +26,69 @@
         .swiper-button-prev, .swiper-rtl .swiper-button-next {
             padding: 30px 30px;
         }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #000 !important;
+        }
+
+        .reviewModalSwiper .swiper-pagination-bullet-active {
+            background: #fff !important;
+        }
+
+
+        /* Review Modal */
+        .reviewModalSwiper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .reviewModalSwiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .review-modal-slide {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .review-modal-image {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin: auto;
+        }
+
     </style>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-7 py-4 pb-16 sm:py-6">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-4 pb-16 sm:py-6">
 
         <div class="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-500 truncate">
             Home / Products / <span class="text-black font-medium">{{ $product->name }}</span>
         </div>
 
-        <!-- Grid: Left column ka size kam (max width constraint ke sath) aur right column ko bara kar diya hai -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+        <!-- Main Grid: 4 (Image) + 5 (Details) + 3 (Sticky Action Box) = 12 Columns -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
 
-            <!-- LEFT COLUMN: Image & Swiper -->
-            <div class="lg:col-span-5">
+            <!-- 1. LEFT COLUMN: Image & Swiper (lg:col-span-4) -->
+            <div class="lg:col-span-4">
                 <!-- SWIPER MAIN SLIDER WITH ZOOM CONTAINER -->
                 <div class="relative flex gap-4">
 
@@ -57,8 +105,6 @@
                                          data-color="{{ $v->color_name }}"
                                          data-image-url="{{ asset('storage/' . $v->variantImage->image_path) }}"
                                     >
-
-
                                         <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
                                         <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
                                              class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image cursor-zoom-in"
@@ -66,7 +112,6 @@
                                              onmousemove="zoomIn(event)"
                                              onmouseenter="zoomEnter(event)"
                                              onclick="openMobileZoom()">
-
 
                                         <!-- Magnifier Lens (Green Theme) -->
                                         <div class="magnifier-lens hidden lg:block absolute border-2 border-emerald-500 bg-emerald-500/20 pointer-events-none w-28 h-28 rounded-md"></div>
@@ -127,122 +172,93 @@
                 </div>
             </div>
 
-            <!-- MOBILE FULLSCREEN ZOOM MODAL WITH SLIDER BUTTONS & TOUCH SWIPE -->
+            <!-- MOBILE FULLSCREEN ZOOM MODAL -->
             <div id="mobileZoomModal"
                  class="fixed inset-0 z-[999] bg-black/90 hidden flex-col justify-center items-center px-4"
                  ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">
-
-                <!-- Top Bar: Counter & Close Button -->
                 <div class="absolute top-4 left-4 right-4 flex justify-between items-center text-white px-2 z-50">
-                    <span id="mobileImageCounter"
-                          class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
-                    <button onclick="closeMobileZoom()"
-                            class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">
-                        ✕
-                    </button>
+                    <span id="mobileImageCounter" class="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">1 / 1</span>
+                    <button onclick="closeMobileZoom()" class="w-10 h-10 bg-white/25 hover:bg-white/40 rounded-full flex items-center justify-center text-white text-xl font-bold transition">✕</button>
                 </div>
-
-                <!-- Main Image Container with Arrows -->
                 <div class="relative w-full max-w-lg flex items-center justify-center">
-                    <!-- Left Arrow -->
-                    <button onclick="changeMobileModalImage(-1)"
-                            class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
-                        ❮
-                    </button>
-
-                    <!-- Modal Image -->
-                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image"
-                         class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
-
-                    <!-- Right Arrow -->
-                    <button onclick="changeMobileModalImage(1)"
-                            class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">
-                        ❯
-                    </button>
+                    <button onclick="changeMobileModalImage(-1)" class="absolute left-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">❮</button>
+                    <img id="mobileZoomModalImg" src="" alt="Zoomed Product Image" class="max-h-[75vh] w-auto max-w-full object-contain rounded-lg shadow-2xl select-none pointer-events-none">
+                    <button onclick="changeMobileModalImage(1)" class="absolute right-2 z-10 w-11 h-11 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center shadow-lg transition">❯</button>
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN: Product Details (Expanded to lg:col-span-7) -->
-            <div class="lg:col-span-7">
+            <!-- 2. MIDDLE COLUMN: Product Details, Title, Colors, Sizes & Description (lg:col-span-5) -->
+            <div class="lg:col-span-5 space-y-4">
+                <div>
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 capitalize">
+                        {{ $product->name }}
+                    </h1>
 
-                <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 capitalize">
-                    {{ $product->name }}
-                </h1>
+                    <p class="mt-1 text-xs text-gray-600 font-medium">
+                        Brand: <span class="font-bold text-gray-900">{{ ucfirst($product->prod_brand->name ?? 'Generic') }}</span>
+                    </p>
 
-                <p class="mt-1 text-xs text-gray-500">
-                    Brand: <span
-                            class="font-medium text-black">{{ ucfirst($product->prod_brand->name ?? 'Generic') }}</span>
-                </p>
-
-                <!-- DYNAMIC TOP RATING STARS -->
-                <div class="flex items-center gap-2 mt-2">
-                    <div class="flex text-yellow-500 text-xs">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= floor($avgRating))
-                                <i class="fa-solid fa-star"></i>
-                            @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                <i class="fa-solid fa-star-half-stroke"></i>
-                            @else
-                                <i class="fa-regular fa-star text-gray-300"></i>
-                            @endif
-                        @endfor
+                    <!-- DYNAMIC TOP RATING STARS -->
+                    <div class="flex items-center gap-2 mt-2">
+                        <div class="flex text-yellow-500 text-xs">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= floor($avgRating))
+                                    <i class="fa-solid fa-star"></i>
+                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                                    <i class="fa-solid fa-star-half-stroke"></i>
+                                @else
+                                    <i class="fa-regular fa-star text-gray-300"></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <span class="text-gray-600 text-xs font-medium">({{ number_format($avgRating, 1) }} - {{ $totalReviews }} {{ Str::plural('Review', $totalReviews) }})</span>
                     </div>
-                    <span
-                            class="text-gray-500 text-xs">({{ number_format($avgRating, 1) }} - {{ $totalReviews }} {{ Str::plural('Review', $totalReviews) }})</span>
-                </div>
 
-                @php
-                    $defaultVariant = $product->mainVariant ?? $product->variants->first();
+                    @php
+                        $defaultVariant = $product->mainVariant ?? $product->variants->first();
 
-                    // Flash Sale Check & Calculation (Card section ki tarah)
-                    $hasFlashSale = $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
-                    $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
+                        $hasFlashSale = $product->flashSale && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+                        $discountPercent = $hasFlashSale ? $product->flashSale->discount_percentage : 0;
 
-                    $originalPrice = $defaultVariant ? ($defaultVariant->cut_price ?? $defaultVariant->price) : ($product->base_price ?? 0);
+                        $originalPrice = $defaultVariant ? ($defaultVariant->cut_price ?? $defaultVariant->price) : ($product->base_price ?? 0);
 
-                    if ($hasFlashSale && $discountPercent > 0) {
-                        $initialPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
-                        $initialCutPrice = $originalPrice;
-                    } else {
-                        $initialPrice = $defaultVariant ? $defaultVariant->price : ($product->base_price ?? 0);
-                        $initialCutPrice = $defaultVariant ? $defaultVariant->cut_price : null;
-                    }
+                        if ($hasFlashSale && $discountPercent > 0) {
+                            $initialPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                            $initialCutPrice = $originalPrice;
+                        } else {
+                            $initialPrice = $defaultVariant ? $defaultVariant->price : ($product->base_price ?? 0);
+                            $initialCutPrice = $defaultVariant ? $defaultVariant->cut_price : null;
+                        }
 
-                    $initialStock = $defaultVariant ? $defaultVariant->stock : 0;
-                @endphp
+                        $initialStock = $defaultVariant ? $defaultVariant->stock : 0;
+                    @endphp
 
-                <div class="mt-3 flex items-center gap-3">
-    <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-green-600">
-        Rs {{ number_format($initialPrice) }}
-    </span>
+                    <div class="mt-3 flex items-center gap-3">
+                <span id="displayPrice" class="text-xl sm:text-2xl font-bold text-emerald-700">
+                    Rs {{ number_format($initialPrice) }}
+                </span>
 
-                    <span id="displayCutPrice"
-                          class="text-xs sm:text-base text-gray-400 line-through {{ $initialCutPrice && $initialCutPrice > $initialPrice ? '' : 'hidden' }}">
-        Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
-    </span>
+                        <span id="displayCutPrice"
+                              class="text-xs sm:text-base text-gray-500 line-through font-medium {{ $initialCutPrice && $initialCutPrice > $initialPrice ? '' : 'hidden' }}">
+                    Rs {{ $initialCutPrice ? number_format($initialCutPrice) : 0 }}
+                </span>
 
-                    @if($hasFlashSale && $discountPercent > 0)
-                        <span id="discountBadge"
-                              class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-            {{ number_format($discountPercent, 0) }}% OFF
-        </span>
-                    @else
-                        <span id="discountBadge"
-                              class="hidden bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"></span>
-                    @endif
-                </div>
+                        @if($hasFlashSale && $discountPercent > 0)
+                            <span id="discountBadge"
+                                  class="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                        {{ number_format($discountPercent, 0) }}% OFF
+                    </span>
+                        @else
+                            <span id="discountBadge"
+                                  class="hidden bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider"></span>
+                        @endif
+                    </div>
 
-                <div class="mt-2">
-            <span id="stockBadge"
-                  class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
-            </span>
-                </div>
-
-                <div class="mt-4">
-                    <h3 class="font-semibold text-sm sm:text-base mb-1">Description</h3>
-                    <div class=" text-gray-600 text-xs sm:text-sm leading-5 sm:leading-6 prose prose-sm line-clamp-2">
-                        {!! $product->description !!}
+                    <div class="mt-2">
+                <span id="stockBadge"
+                      class="px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $initialStock > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                    {{ $initialStock > 0 ? $initialStock . ' Items In Stock' : 'Out of Stock' }}
+                </span>
                     </div>
                 </div>
 
@@ -250,9 +266,10 @@
                 <input type="hidden" id="selectedVariantId" value="{{ $defaultVariant->id ?? '' }}">
                 <input type="hidden" id="selectedVariantStock" value="{{ $initialStock }}">
 
+                {{-- COLOR SELECTION --}}
                 @if($product->variants && $product->variants->count() > 0)
-                    <div class="mt-4">
-                        <h3 class="font-semibold mb-1.5 text-xs sm:text-sm text-gray-800">Select Color</h3>
+                    <div>
+                        <h3 class="font-bold mb-1.5 text-xs sm:text-sm text-gray-900">Select Color</h3>
                         <div class="flex flex-wrap gap-2">
                             @foreach($product->variants->unique('color_name') as $variant)
                                 @php
@@ -262,7 +279,7 @@
                                 <button type="button"
                                         onclick="selectColor(this, '{{ $variant->color_name }}')"
                                         data-image="{{ $colorImg }}"
-                                        class="color-btn border cursor-pointer rounded-lg p-1 flex items-center gap-1.5 text-xs font-medium transition duration-200 hover:border-gray-400 {{ $isDefaultColor ? 'border-gray-300 bg-black/5 ring-1 ring-black/10' : 'border-gray-200' }}">
+                                        class="color-btn border cursor-pointer rounded-lg p-1 flex items-center gap-1.5 text-xs font-semibold transition duration-200 hover:border-gray-400 {{ $isDefaultColor ? 'border-gray-400 bg-black/5 ring-1 ring-black/10 text-gray-900' : 'border-gray-200 text-gray-700' }}">
                                     @if($colorImg)
                                         <img src="{{ $colorImg }}" class="w-7 h-7 sm:w-8 sm:h-8 rounded object-cover">
                                     @endif
@@ -272,13 +289,21 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <h3 class="font-semibold mb-1.5 text-xs sm:text-sm text-gray-800">Select Size</h3>
-                        <div id="sizeContainer" class="flex flex-wrap gap-2">
-                        </div>
+                    <div>
+                        <h3 class="font-bold mb-1.5 text-xs sm:text-sm text-gray-900">Select Size</h3>
+                        <div id="sizeContainer" class="flex flex-wrap gap-2"></div>
                     </div>
-                @endif
+            @endif
 
+            <!-- Description (1 Line Clamped) -->
+                <div>
+                    <h3 class="font-bold text-xs sm:text-sm mb-1 text-gray-900">Description</h3>
+                    <div class="text-gray-700 font-medium text-xs sm:text-sm leading-5 sm:leading-6 line-clamp-1">
+                        {!! $product->description !!}
+                    </div>
+                </div>
+
+                <!-- QUANTITY SELECTOR -->
                 <div class="mt-4">
                     <h3 class="font-semibold text-xs sm:text-sm mb-1.5">Quantity</h3>
                     <div class="flex items-center border border-gray-400 rounded-lg w-fit overflow-hidden bg-gray-50">
@@ -296,25 +321,167 @@
                     </div>
                 </div>
 
-                <div class="flex flex-row gap-2 sm:gap-3 mt-5">
-
+                <!-- ACTION BUTTONS (Side-by-Side Row) -->
+                <div class="flex items-center gap-3 pt-1">
                     <button type="button" id="addToCartBtn"
                             class="flex-1 sm:flex-none bg-black text-white px-2 sm:px-7 py-2.5 cursor-pointer rounded-lg text-xs sm:text-sm font-semibold hover:bg-gray-800 transition shadow-sm whitespace-nowrap">
-                        Add To Cart
+                        <i class="fa-solid fa-cart-shopping"></i> Add To Cart
                     </button>
 
                     <button type="button" id="buyNowBtn"
                             class="flex-1 sm:flex-none bg-[#ff4d2d] text-white px-2 sm:px-7 py-2.5 rounded-lg text-xs sm:text-sm font-semibold hover:bg-[#e63e20] transition cursor-pointer shadow-sm whitespace-nowrap">
-                        <i class="fa-solid fa-bolt mr-1"></i>
-                        Buy Now
+                        <i class="fa-solid fa-bolt"></i> Buy Now
                     </button>
+                </div>
+            </div>
+
+
+            <!-- 3. RIGHT COLUMN: Action & Info Box (lg:col-span-3) -->
+            <div class="lg:col-span-3">
+                <div class="bg-gray-200/20 border border-gray-200 rounded-xl p-4 shadow-sm sticky top-24 space-y-4 text-left">
+
+                    <!-- STORE & SERVICE TRUST HEADER (AliExpress/Alibaba Style) -->
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-900">Top Brand</h4>
+                                <p class="text-[10px] text-gray-600 font-medium">Verified Merchant</p>
+                            </div>
+                        </div>
+                        <span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded">Official</span>
+                    </div>
+
+                    <!-- 1. DELIVERY OPTIONS SECTION -->
+                    <div class="border-b border-gray-100 pb-3">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-800 mb-2">
+                            <span>Delivery Options</span>
+                            <!-- Fixed Blinking Dot Position -->
+                            <div class="relative inline-flex items-center justify-center p-1">
+                    <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5">
+                        <span class="animate-ping inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+
+                    </span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2.5">
+                            <!-- Standard Delivery -->
+                            <div class="flex items-start justify-between text-xs py-1">
+                                <div class="flex items-start gap-2">
+                                    <i class="fa-solid fa-truck-fast text-emerald-600 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-900 font-semibold">Standard Delivery</p>
+                                        <p class="text-gray-600 text-[10px] font-medium">Delivered in 5-7 business days</p>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-emerald-600 text-xs">FREE</span>
+                            </div>
+
+                            <!-- Express Delivery (3 Days) -->
+                            <div class="flex items-start justify-between text-xs py-1">
+                                <div class="flex items-start gap-2">
+                                    <i class="fa-solid fa-bolt text-emerald-600 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-900 font-semibold">Express Delivery (3 Days)</p>
+                                        <p class="text-gray-600 text-[10px] font-medium">Fast delivery within 3 working days</p>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-gray-900 text-xs">Rs. 250</span>
+                            </div>
+
+                            <!-- Same Day Delivery -->
+                            <div class="flex items-start justify-between text-xs py-1">
+                                <div class="flex items-start gap-2">
+                                    <i class="fa-solid fa-clock text-emerald-600 mt-0.5"></i>
+                                    <div>
+                                        <p class="text-gray-900 font-semibold">Same Day Delivery</p>
+                                        <p class="text-gray-600 text-[10px] font-medium">Get your parcel delivered today</p>
+                                    </div>
+                                </div>
+                                <span class="font-bold text-gray-900 text-xs">Rs. 500</span>
+                            </div>
+                        </div>
+
+                        <!-- Cash on Delivery -->
+                        <div class="flex items-center gap-2 text-xs text-gray-800 pt-3 border-t border-gray-100 mt-2 font-medium">
+                            <i class="fa-solid fa-money-bill-wave text-emerald-600"></i>
+                            <span>Cash on Delivery Available</span>
+                        </div>
+                    </div>
+
+                    <!-- 2. RETURN & WARRANTY SECTION -->
+                    <div class="border-b border-gray-100 pb-3">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-800 mb-2">
+                            <span>Return & Warranty</span>
+                            <!-- Fixed Blinking Dot Position -->
+                            <div class="relative inline-flex items-center justify-center p-1">
+                    <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5">
+                        <span class="animate-ping inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        
+                    </span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-xs text-gray-800 font-medium">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-rotate-left text-emerald-600"></i>
+                                <span>14 days easy local return</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 text-center"><i class="fa-solid fa-shield text-emerald-600 text-xs"></i></div>
+                                <span class="text-gray-700">100% Authentic & Verified</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. PROTECTION / SERVICES (Daraz/AliExpress Style Addition) -->
+                    <div class="border-b border-gray-100 pb-3">
+                        <span class="text-xs font-bold text-gray-800 block mb-2">Service Protection</span>
+                        <div class="space-y-1.5 text-xs text-gray-800 font-medium">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-lock text-emerald-600 text-xs"></i>
+                                <span>Secure Payments</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-headphones-simple text-emerald-600 text-xs"></i>
+                                <span>24/7 Dedicated Support</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. SELLER INFORMATION SECTION -->
+                    <div class="pt-1 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] text-gray-600 font-medium block">Sold by</span>
+                            <span class="font-bold text-xs text-gray-900">{{ ucfirst($product->prod_brand->name ?? 'Stylish Mall') }}</span>
+                        </div>
+
+                        <!-- Seller Ratings Grid Bar -->
+                        <div class="grid grid-cols-3 gap-1 pt-2 bg-gray-50 p-2 rounded-lg text-center text-[10px]">
+                            <div>
+                                <span class="text-gray-600 block text-[9px] font-medium">Positive Seller</span>
+                                <span class="font-bold text-gray-900">88%</span>
+                            </div>
+                            <div class="border-x border-gray-200">
+                                <span class="text-gray-600 block text-[9px] font-medium">Ship on Time</span>
+                                <span class="font-bold text-gray-900">95%</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600 block text-[9px] font-medium">Chat Response</span>
+                                <span class="font-bold text-gray-900">92%</span>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
-
             </div>
+
         </div>
 
-        <!-- ================= PRODUCT DESCRIPTION SECTION ================= -->
+        <!-- Full Product Description Section Below Grid -->
         <div class="mt-5 sm:mt-6 pt-2">
             <div class="rounded-lg transition-all duration-300">
 
@@ -333,7 +500,7 @@
 
                 <div class="relative">
                     <div id="fullDescriptionContent"
-                         class="product-description text-gray-600 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out"
+                         class="product-description text-gray-700 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out font-medium"
                          @if(strlen(strip_tags($product->description)) > 350) style="max-height: 160px;" @endif>
                         {!! $product->description !!}
                     </div>
@@ -350,13 +517,21 @@
 
                             <span class="w-5 h-5 rounded-full bg-gray-800 text-gray-300 group-hover:bg-gray-700 group-hover:text-white flex items-center justify-center shadow-sm transition-all duration-300"
                                   id="descToggleIconWrapper">
-                             <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
-                            </span>
+                        <i id="descToggleIcon" class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </span>
                         </button>
                     </div>
                 @endif
             </div>
         </div>
+
+
+
+
+
+
+
+
 
         <!-- ================= COMPLETE CUSTOMER REVIEWS SECTION ================= -->
         @if($totalReviews > 0)
@@ -507,7 +682,7 @@
                 </div>
 
                 <!-- Responsive Grid Setup -->
-                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
                     @foreach($relatedProducts as $index => $relatedProduct)
                         {{-- 12 Products ki limit --}}
                         @if($index >= 12)
@@ -559,6 +734,8 @@
         @endif
 
     </div>
+    <!-- ================= PRODUCT DESCRIPTION SECTION ================= -->
+
 
 
     <!-- REVIEW IMAGE POPUP / LIGHTBOX MODAL -->
@@ -1141,57 +1318,6 @@
             }
         }
     </script>
-
-    <style>
-
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        .swiper-pagination-bullet-active {
-            background: #000 !important;
-        }
-
-        .reviewModalSwiper .swiper-pagination-bullet-active {
-            background: #fff !important;
-        }
-
-
-        /* Review Modal */
-        .reviewModalSwiper {
-            width: 100%;
-            height: 100%;
-        }
-
-        .reviewModalSwiper .swiper-slide {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .review-modal-slide {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
-        .review-modal-image {
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            margin: auto;
-        }
-
-    </style>
 
     <script>
         let isExpanded = false;
