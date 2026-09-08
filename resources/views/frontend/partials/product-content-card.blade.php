@@ -44,20 +44,31 @@
         @php
             $variant = $product->mainVariant ?? $product->variants->first();
 
-            $salePrice = $variant->price ?? 0;
-            $originalPrice = $variant->cut_price ?? 0;
+            $originalPrice = $variant->cut_price ?? $variant->price ?? 0;
+            $basePrice = $variant->price ?? 0;
+
+            // FIX: Check karein ke active flash sale hai ya nahi
+            $hasActiveFlashSale = $product->flashSale
+                && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
 
             $discountPercent = 0;
 
-            // Agar product par Flash Sale hai, toh Flash Sale ki exact percentage use karein
-            if (isset($product->flashSale) && $product->flashSale->discount_percentage > 0) {
+            if ($hasActiveFlashSale && $product->flashSale->discount_percentage > 0) {
+                // Flash sale ki exact percentage
                 $discountPercent = round($product->flashSale->discount_percentage);
-            }
-            // Warna normal product ke liye calculated percentage nikal lein
-            elseif ($originalPrice > 0 && $originalPrice > $salePrice) {
-                $discountPercent = round(
-                    (($originalPrice - $salePrice) / $originalPrice) * 100
-                );
+
+                // Agar cut price mojood hai toh us par percentage minus kar ke sale price nikalein
+                if ($originalPrice > 0) {
+                    $salePrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                } else {
+                    $salePrice = $basePrice;
+                }
+            } else {
+                // Normal product pricing
+                $salePrice = $basePrice;
+                if ($originalPrice > 0 && $originalPrice > $salePrice) {
+                    $discountPercent = round((($originalPrice - $salePrice) / $originalPrice) * 100);
+                }
             }
         @endphp
 

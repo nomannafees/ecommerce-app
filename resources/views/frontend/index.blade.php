@@ -169,22 +169,34 @@
     <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
         @forelse($flashSaleProducts as $index => $product)
             @php
-
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
                 $avgRating = $product->reviews->avg('rating') ?? 0;
-                $reviewsCount = $product->reviews_count ?? 0; // Total review dene wale logo ki tadad
+                $reviewsCount = $product->reviews_count ?? 0;
+                $variant = $product->mainVariant ?? $product->variants->first();
 
-                // Logic: Agar screen lg (bari screen se aik step choti) hai toh sirf pehle 5 products dikhein, baqi sab screens par 6 ke 6 dikhein.
+                // FIX: Product-based active flash sale check (date ke hisaab se)
+                $hasActiveFlashSale = $product->flashSale
+                    && \Carbon\Carbon::now()->between($product->flashSale->start_time, $product->flashSale->end_time);
+
+                $discountPercent = $hasActiveFlashSale ? $product->flashSale->discount_percentage : 0;
+
+                $originalPrice = $variant->cut_price ?? $variant->price ?? 0;
+
+                // Selling price calculation for flash sale
+                if ($hasActiveFlashSale && $discountPercent > 0 && !empty($variant->cut_price)) {
+                    $sellingPrice = $originalPrice - ($originalPrice * ($discountPercent / 100));
+                } else {
+                    $sellingPrice = $variant->price ?? 0;
+                }
+
+                // Screen responsive display class logic
                 if ($index < 5) {
                     $displayClass = 'flex';
                 } elseif ($index == 5) {
-                    $displayClass = 'flex lg:hidden xl:flex'; // LG par 5 dikhane ke liye 6th product ko hide kar diya hai
+                    $displayClass = 'flex lg:hidden xl:flex';
                 } else {
                     $displayClass = 'hidden';
                 }
-
-
-
             @endphp
 
             <a href="{{ route('product.detail', $product->slug) }}" class="group {{ @$displayClass }}">
@@ -192,17 +204,17 @@
                 <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
                     {{-- High Contrast & Vibrant Flash Sale Badge --}}
-                    @if($product->flashSale)
+                    @if($hasActiveFlashSale)
                         <div class="absolute top-2 -left-1 z-10 bg-gradient-to-r from-orange-600 to-amber-500 text-white pl-3 pr-3.5 py-1 rounded-r-full text-[10px] sm:text-[11px] font-extrabold shadow-md flex items-center gap-1 tracking-wide">
                             <i class="fa-solid fa-bolt text-yellow-200 text-[10px]"></i>
-                            <span>{{ number_format($product->flashSale->discount_percentage, 0) }}% OFF</span>
+                            <span>{{ number_format($discountPercent, 0) }}% OFF</span>
                         </div>
                     @endif
 
-                   @include('frontend.partials.product-images-card')
+                    @include('frontend.partials.product-images-card')
 
                     {{-- CARD CONTENT --}}
-                   @include('frontend.partials.product-content-card')
+                    @include('frontend.partials.product-content-card')
                 </div>
             </a>
         @empty
