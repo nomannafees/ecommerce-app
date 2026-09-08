@@ -16,6 +16,21 @@
         if ($originalPrice > 0 && $originalPrice > $salePrice) {
             $calculatedDiscount = round((($originalPrice - $salePrice) / $originalPrice) * 100);
         }
+
+      // Product ki saari variant images ka array tayar karna (Smooth Animation ke liye)
+        $allImages = [];
+        if ($product->mainVariantImage) {
+            $allImages[] = asset('storage/' . $product->mainVariantImage->image_path);
+        }
+        foreach ($product->variantImages as $vImg) {
+            $imgPath = asset('storage/' . $vImg->image_path);
+            if (!in_array($imgPath, $allImages)) {
+                $allImages[] = $imgPath;
+            }
+        }
+        if (empty($allImages)) {
+            $allImages[] = asset('upload/no-image.jpg');
+        }
     @endphp
 
     <div class="relative bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-xl transition duration-300 group flex flex-col h-full w-full">
@@ -37,108 +52,10 @@
         @endphp
         <a href="{{ route('product.detail', $product->slug) }}{{ $selectedColorForLink ? '?color='.$selectedColorForLink : '' }}"
            class="block z-10 flex flex-col h-full">
-            <div class="bg-gray-100 overflow-hidden relative h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50">
-                @if(!empty($imagePath))
-                    <img src="{{ asset('storage/'.$imagePath) }}"
-                         class="w-full h-full object-cover group-hover:scale-104 transition duration-300"
-                         alt="{{ $product->name }}">
-                @else
-                    <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs sm:text-base">
-                        No Image
-                    </div>
-                @endif
-            </div>
+            @include('frontend.partials.product-images-card')
 
-            <div class="p-1.5 sm:p-2.5 xs:p-2.5 md-p-2.5 lg-p-2.5 xl-p-2.5 2xl-p-2.5 flex-grow flex flex-col justify-between gap-2">
-                <div>
-                    <h4 class="font-medium text-[12px] md:text-[16px] text-gray-800 truncate group-hover:text-black capitalize">
-                        {{ $product->name }}
-                    </h4>
-                    <div class="text-[11px] sm:text-xs text-gray-500 line-clamp-1 mt-0.5">
-                        {!! Str::limit(strip_tags($product->description), 150) !!}
-                    </div>
-                </div>
-
-                {{-- Rating, Reviews Count & Sold Count Section --}}
-                <div class="flex items-center justify-between gap-1 -mt-1">
-                    <div class="flex items-center gap-1">
-                        <div class="flex text-yellow-400 text-[10px] sm:text-xs gap-0.5">
-                            @for($i = 1; $i <= 5; $i++)
-                                @if($i <= floor($avgRating))
-                                    <i class="fa-solid fa-star"></i>
-                                @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                    <i class="fa-solid fa-star-half-stroke"></i>
-                                @else
-                                    <i class="fa-regular fa-star text-gray-300"></i>
-                                @endif
-                            @endfor
-                        </div>
-                        <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
-                            ({{ number_format($avgRating, 1) }}) <span class="text-gray-400 font-normal">({{ $reviewsCount }})</span>
-                        </span>
-                    </div>
-
-                    {{-- Sold Count --}}
-                    <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
-                        {{ $product->order_items_count ?? 0 }} Sold
-                    </span>
-                </div>
-
-                {{-- Price & Stock Section --}}
-                <div class="flex items-center justify-between gap-2 -mt-1">
-                    <div class="flex flex-col">
-                        <span class="text-xs sm:text-base font-bold text-emerald-700 whitespace-nowrap">
-                            Rs {{ number_format($salePrice) }}
-                        </span>
-                        @if($originalPrice > $salePrice && $calculatedDiscount > 0)
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
-                                    Rs {{ number_format($originalPrice) }}
-                                </span>
-                                <span class="ext-[12px] sm:text-[14px] font-medium text-emerald-700 whitespace-nowrap">
-                                    -{{ $calculatedDiscount }}%
-                                </span>
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="flex-shrink-0">
-                        @if($totalStock <= 0)
-                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-red-600 shadow-sm shadow-red-500/50"></span>
-            </span>
-            Out of Stock
-        </span>
-                        @elseif($totalStock < 30)
-                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-rose-300 to-rose-600 shadow-sm shadow-rose-500/50"></span>
-            </span>
-            Only 3 left
-        </span>
-                        @elseif($totalStock < 40)
-                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-amber-300 to-orange-500 shadow-sm shadow-orange-500/50"></span>
-            </span>
-            Only 5 left
-        </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold text-gray-800 whitespace-nowrap">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-br from-emerald-300 to-emerald-600 shadow-sm shadow-emerald-500/50"></span>
-            </span>
-            In Stock
-        </span>
-                        @endif
-                    </div>
-                </div>
-            </div>
+            {{-- CARD CONTENT --}}
+            @include('frontend.partials.product-content-card')
         </a>
     </div>
 @endforeach
