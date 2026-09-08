@@ -34,12 +34,12 @@
 
             {{-- Right Side: Sold Items --}}
             <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
-                    {{ $product->order_items_count ?? 0 }} Sold
+                    {{ $product->order_items_count ?? 0 }} sold
                 </span>
         </div>
     </div>
 
-    {{-- Price & Stock Section (Fixed for Top Seller / Normal Products) --}}
+    {{-- Price & Stock Section --}}
     <div class="flex items-center justify-between gap-1.4 -mt-2">
         @php
             $variant = $product->mainVariant ?? $product->variants->first();
@@ -49,7 +49,12 @@
 
             $discountPercent = 0;
 
-            if ($originalPrice > 0 && $originalPrice > $salePrice) {
+            // Agar product par Flash Sale hai, toh Flash Sale ki exact percentage use karein
+            if (isset($product->flashSale) && $product->flashSale->discount_percentage > 0) {
+                $discountPercent = round($product->flashSale->discount_percentage);
+            }
+            // Warna normal product ke liye calculated percentage nikal lein
+            elseif ($originalPrice > 0 && $originalPrice > $salePrice) {
                 $discountPercent = round(
                     (($originalPrice - $salePrice) / $originalPrice) * 100
                 );
@@ -64,11 +69,11 @@
 
             {{-- Original / Cut Price & Percentage --}}
             @if($originalPrice > $salePrice && $discountPercent > 0)
-                <div class="flex items-center gap-1.5">
+                <div class="flex items-center flex-wrap gap-1">
                     <span class="text-[10px] sm:text-xs text-gray-400 line-through whitespace-nowrap">
                         Rs {{ number_format($originalPrice) }}
                     </span>
-                    <span class="text-[11px] sm:text-[13px] font-medium text-red-700 whitespace-nowrap">
+                    <span class="text-[10px] sm:text-[13px] font-bold text-red-600 whitespace-nowrap px-1 py-0.5 rounded">
                         -{{ $discountPercent }}%
                     </span>
                 </div>

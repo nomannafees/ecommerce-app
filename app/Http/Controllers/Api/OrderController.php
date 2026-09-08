@@ -112,13 +112,11 @@ class OrderController extends Controller
     /**
      * Order Details Fetch karne ke liye API
      */
-    /**
-     * Order Details Fetch karne ke liye API
-     */
+
     public function orderDetail(Request $request, $id)
     {
         // 1. User ID check (Token support + Query Param support - FIXED)
-        $user_id =  $request->user_id;
+        $user_id = $request->user_id;
 
         if (!$user_id) {
             return response()->json([
@@ -127,9 +125,10 @@ class OrderController extends Controller
             ], 401);
         }
 
-        // 2. Fetch order with items, product, images, and variant details
+        // 2. Fetch order with items, product, images, and variant details (FIXED HERE)
         $order = Order::with([
-            'items.product.images'              // Variant details
+            'items.product.images',
+            'items.variant' // Yeh line add ki gayi hai taake variant ki details bhi JSON mein aayein
         ])
             ->where('user_id', $user_id)
             ->find($id);
@@ -142,7 +141,7 @@ class OrderController extends Controller
             ], 404);
         }
 
-        // 4. Return complete response with images
+        // 4. Return complete response with images and variants
         return response()->json([
             'status'  => true,
             'message' => 'Order details retrieved successfully.',

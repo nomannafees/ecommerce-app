@@ -17,23 +17,32 @@
     }
 @endphp
 
-{{-- IMAGE CONTAINER with Desktop Hover & Mobile Touch Support --}}
+{{-- IMAGE CONTAINER with Auto-Slide, Hover & Touch Support --}}
 <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 select-none"
      x-data="{
         images: {{ json_encode(@$allImages) }},
         currentIndex: 0,
         nextIndex: null,
         isFading: false,
+        timer: null,
 
-        // Common function jo mouse aur touch dono ke liye position calculate karega
-        handleMove(clientX) {
+        // Auto slide start karne ka function (har 3 seconds baad)
+        startAutoSlide() {
             if (this.images.length <= 1) return;
-            let rect = this.$el.getBoundingClientRect();
-            let xPos = clientX - rect.left;
-            let width = rect.width;
-            let index = Math.floor((xPos / width) * this.images.length);
-            let targetIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+            this.timer = setInterval(() => {
+                let targetIndex = (this.currentIndex + 1) % this.images.length;
+                this.changeImage(targetIndex);
+            }, 3000);
+        },
 
+        // Auto slide rokne ka function
+        stopAutoSlide() {
+            clearInterval(this.timer);
+            this.timer = null;
+        },
+
+        // Image change aur fade effect handle karne ka core function
+        changeImage(targetIndex) {
             if (targetIndex !== this.currentIndex && !this.isFading) {
                 this.nextIndex = targetIndex;
                 this.isFading = true;
@@ -44,21 +53,28 @@
             }
         },
 
+        // Mouse ya Touch move par position calculate karne ke liye
+        handleMove(clientX) {
+            if (this.images.length <= 1) return;
+            let rect = this.$el.getBoundingClientRect();
+            let xPos = clientX - rect.left;
+            let width = rect.width;
+            let index = Math.floor((xPos / width) * this.images.length);
+            let targetIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+            this.changeImage(targetIndex);
+        },
+
         resetImage() {
-            if (this.currentIndex !== 0 && !this.isFading) {
-                this.nextIndex = 0;
-                this.isFading = true;
-                setTimeout(() => {
-                    this.currentIndex = 0;
-                    this.isFading = false;
-                }, 300);
-            }
+            this.changeImage(0);
         }
      }"
-     @mousemove="handleMove($event.clientX)"
-     @mouseleave="resetImage()"
-     @touchstart="handleMove($event.touches[0].clientX)"
-     @touchmove="handleMove($event.touches[0].clientX)">
+     x-init="startAutoSlide()"
+     @mouseenter="stopAutoSlide()"
+     @mouseleave="stopAutoSlide(); resetImage(); startAutoSlide()"
+     @touchstart="stopAutoSlide(); handleMove($event.touches[0].clientX)"
+     @touchmove="handleMove($event.touches[0].clientX)"
+     @touchend="startAutoSlide()"
+     @mousemove="handleMove($event.clientX)">
 
     <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
         @csrf
@@ -76,7 +92,7 @@
          alt="{{ $product->name }}"
          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-104 pointer-events-none">
 
-    {{-- Overlay Image for Smooth Fade Transition Effect --}}
+    {{-- Overlay Image for Smooth Fade Transition Effect (Fixed typo 'logic') --}}
     <template x-if="isFading && nextIndex !== null">
         <img :src="images[nextIndex]"
              alt="{{ $product->name }}"
