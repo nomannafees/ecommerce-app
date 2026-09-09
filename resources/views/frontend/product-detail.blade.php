@@ -455,7 +455,7 @@
                     <!-- 4. SELLER INFORMATION SECTION -->
                     <div class="pt-1 space-y-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-[11px] text-gray-600 font-medium block">Sold by</span>
+                            <span class="text-[12px] text-gray-600 font-medium block">Sold by</span>
                             <span class="font-bold text-xs text-gray-900">{{ ucfirst($product->prod_brand->name ?? 'Stylish Mall') }}</span>
                         </div>
 
@@ -607,14 +607,14 @@
                                             </div>
 
                                             <span
-                                                    class="bg-green-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-green-200 flex items-center gap-1 shrink-0">
+                                                    class="bg-emerald-50 text-green-700 text-[9px] font-medium px-1.5 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1 shrink-0">
                             <i class="fa-solid fa-circle-check text-[8px]"></i> Verified
                         </span>
                                         </div>
 
                                         <!-- Comment Content -->
                                         @if($review->comment)
-                                            <p class="mt-2 text-gray-600 text-xs leading-normal">
+                                            <p class="mt-2 text-gray-600 text-sm leading-normal">
                                                 {{ $review->comment }}
                                             </p>
                                         @endif
