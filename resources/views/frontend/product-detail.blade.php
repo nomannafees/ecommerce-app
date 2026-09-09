@@ -298,7 +298,7 @@
             <!-- Description (1 Line Clamped) -->
                 <div>
                     <h3 class="font-bold text-xs sm:text-sm mb-1 text-gray-900">Description</h3>
-                    <div class="text-gray-700 font-medium text-xs sm:text-sm leading-5 sm:leading-6 line-clamp-1">
+                    <div class="text-gray-700 font-medium text-xs sm:text-sm leading-5 sm:leading-6 line-clamp-2">
                         {!! $product->description !!}
                     </div>
                 </div>
@@ -420,7 +420,7 @@
                             <div class="relative inline-flex items-center justify-center p-1">
                     <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5">
                         <span class="animate-ping inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        
+
                     </span>
                             </div>
                         </div>
