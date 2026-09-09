@@ -343,7 +343,7 @@
                     <!-- STORE & SERVICE TRUST HEADER (AliExpress/Alibaba Style) -->
                     <div class="flex items-center justify-between pb-3 border-b border-gray-100">
                         <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">
+                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">
                                 <i class="fa-solid fa-shield-halved"></i>
                             </div>
                             <div>
@@ -351,7 +351,7 @@
                                 <p class="text-[10px] text-gray-600 font-medium">Verified Merchant</p>
                             </div>
                         </div>
-                        <span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded">Official</span>
+                        <span class="bg-emerald-100/80 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded">Official</span>
                     </div>
 
                     <!-- 1. DELIVERY OPTIONS SECTION -->
@@ -462,16 +462,16 @@
                         <!-- Seller Ratings Grid Bar -->
                         <div class="grid grid-cols-3 gap-1 pt-2 bg-gray-50 p-2 rounded-lg text-center text-[10px]">
                             <div>
-                                <span class="text-gray-600 block text-[9px] font-medium">Positive Seller</span>
-                                <span class="font-bold text-gray-900">88%</span>
+                                <span class="text-gray-600 block text-[12px] font-medium">Positive Seller</span>
+                                <span class="font-bold text-gray-900 text-[12px]">88%</span>
                             </div>
                             <div class="border-x border-gray-200">
-                                <span class="text-gray-600 block text-[9px] font-medium">Ship on Time</span>
-                                <span class="font-bold text-gray-900">95%</span>
+                                <span class="text-gray-600 block text-[12px] font-medium">Ship on Time</span>
+                                <span class="font-bold text-gray-900 text-[12px]">95%</span>
                             </div>
                             <div>
-                                <span class="text-gray-600 block text-[9px] font-medium">Chat Response</span>
-                                <span class="font-bold text-gray-900">92%</span>
+                                <span class="text-gray-600 block text-[12px] font-medium">Chat Response</span>
+                                <span class="font-bold text-gray-900 text-[12px]">92%</span>
                             </div>
                         </div>
                     </div>
@@ -490,17 +490,15 @@
                         <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
                             <i class="fa-solid fa-align-left text-sm"></i>
                         </div>
-                        <h2 class="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Product
+                        <h2 class="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Product
                             Description</h2>
                     </div>
-                    <span class="hidden sm:inline-block text-[11px] font-semibold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
-                Overview
-            </span>
+
                 </div>
 
                 <div class="relative">
                     <div id="fullDescriptionContent"
-                         class="product-description text-gray-700 text-sm sm:text-[15px] leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out font-medium"
+                         class="product-description text-gray-700 font-medium text-xs sm:text-sm leading-relaxed prose prose-sm max-w-none overflow-hidden transition-all duration-500 ease-in-out font-medium"
                          @if(strlen(strip_tags($product->description)) > 350) style="max-height: 160px;" @endif>
                         {!! $product->description !!}
                     </div>
