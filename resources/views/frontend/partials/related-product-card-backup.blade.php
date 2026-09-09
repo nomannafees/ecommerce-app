@@ -1,3 +1,5 @@
+// auto image change effect removed kiya ha is ka backup ya ha is sa image change hoti ha auto
+
 @php
     // Product ki saari variant images ka array tayar karna
     $allImages = [];
@@ -17,13 +19,29 @@
     }
 @endphp
 
-{{-- IMAGE CONTAINER with Hover & Touch Scrub Support (Auto-slide removed) --}}
+{{-- IMAGE CONTAINER with Auto-Slide, Hover & Touch Support --}}
 <div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 select-none"
      x-data="{
         images: {{ json_encode(@$allImages) }},
         currentIndex: 0,
         nextIndex: null,
         isFading: false,
+        timer: null,
+
+        // Auto slide start karne ka function (har 3 seconds baad)
+        startAutoSlide() {
+            if (this.images.length <= 1) return;
+            this.timer = setInterval(() => {
+                let targetIndex = (this.currentIndex + 1) % this.images.length;
+                this.changeImage(targetIndex);
+            }, 3000);
+        },
+
+        // Auto slide rokne ka function
+        stopAutoSlide() {
+            clearInterval(this.timer);
+            this.timer = null;
+        },
 
         // Image change aur fade effect handle karne ka core function
         changeImage(targetIndex) {
@@ -52,9 +70,12 @@
             this.changeImage(0);
         }
      }"
-     @mouseleave="resetImage()"
-     @touchstart="handleMove($event.touches[0].clientX)"
+     x-init="startAutoSlide()"
+     @mouseenter="stopAutoSlide()"
+     @mouseleave="stopAutoSlide(); resetImage(); startAutoSlide()"
+     @touchstart="stopAutoSlide(); handleMove($event.touches[0].clientX)"
      @touchmove="handleMove($event.touches[0].clientX)"
+     @touchend="startAutoSlide()"
      @mousemove="handleMove($event.clientX)">
 
     <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
@@ -73,7 +94,7 @@
          alt="{{ $product->name }}"
          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-104 pointer-events-none">
 
-    {{-- Overlay Image for Smooth Fade Transition Effect --}}
+    {{-- Overlay Image for Smooth Fade Transition Effect (Fixed typo 'logic') --}}
     <template x-if="isFading && nextIndex !== null">
         <img :src="images[nextIndex]"
              alt="{{ $product->name }}"

@@ -107,7 +107,7 @@
                                     >
                                         <!-- Image par onmouseleave, onmousemove aur onmouseenter direct laga diye hain -->
                                         <img src="{{ asset('storage/' . $v->variantImage->image_path) }}"
-                                             class="w-full h-[350px] sm:h-[420px] lg:h-[490px] object-cover main-product-image cursor-zoom-in"
+                                             class="w-full h-[350px] sm:h-[380px] lg:h-[430px] object-cover main-product-image cursor-zoom-in"
                                              alt="{{ $product->name }}"
                                              onmousemove="zoomIn(event)"
                                              onmouseenter="zoomEnter(event)"
@@ -298,14 +298,14 @@
             <!-- Description (1 Line Clamped) -->
                 <div>
                     <h3 class="font-bold text-xs sm:text-sm mb-1 text-gray-900">Description</h3>
-                    <div class="text-gray-700 font-medium text-xs sm:text-sm leading-5 sm:leading-6 line-clamp-2">
+                    <div class="text-gray-700 font-medium text-xs sm:text-sm leading-5 sm:leading-6 line-clamp-1">
                         {!! $product->description !!}
                     </div>
                 </div>
 
                 <!-- QUANTITY SELECTOR -->
-                <div class="mt-4">
-                    <h3 class="font-semibold text-xs sm:text-sm mb-1.5">Quantity</h3>
+                <div class="-mt-2">
+                    <h3 class="font-bold text-xs sm:text-sm mb-2 text-gray-900">Quantity</h3>
                     <div class="flex items-center border border-gray-400 rounded-lg w-fit overflow-hidden bg-gray-50">
                         <button type="button" onclick="qty(-1)"
                                 class="px-3 py-1.5 text-sm sm:text-base hover:bg-gray-100 cursor-pointer font-bold text-gray-600">
@@ -340,19 +340,19 @@
             <div class="lg:col-span-3">
                 <div class="bg-gray-200/20 border border-gray-200 rounded-xl p-4 shadow-sm sticky top-24 space-y-4 text-left">
 
-                    <!-- STORE & SERVICE TRUST HEADER (AliExpress/Alibaba Style) -->
-                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
-                        <div class="flex items-center gap-2">
-                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">
-                                <i class="fa-solid fa-shield-halved"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-gray-900">Top Brand</h4>
-                                <p class="text-[10px] text-gray-600 font-medium">Verified Merchant</p>
-                            </div>
-                        </div>
-                        <span class="bg-emerald-100/80 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded">Official</span>
-                    </div>
+{{--                    <!-- STORE & SERVICE TRUST HEADER (AliExpress/Alibaba Style) -->--}}
+{{--                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">--}}
+{{--                        <div class="flex items-center gap-2">--}}
+{{--                            <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs">--}}
+{{--                                <i class="fa-solid fa-shield-halved"></i>--}}
+{{--                            </div>--}}
+{{--                            <div>--}}
+{{--                                <h4 class="text-xs font-bold text-gray-900">Top Brand</h4>--}}
+{{--                                <p class="text-[10px] text-gray-600 font-medium">Verified Merchant</p>--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <span class="bg-emerald-100/80 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded">Official</span>--}}
+{{--                    </div>--}}
 
                     <!-- 1. DELIVERY OPTIONS SECTION -->
                     <div class="border-b border-gray-100 pb-3">
@@ -438,7 +438,7 @@
                     </div>
 
                     <!-- 3. PROTECTION / SERVICES (Daraz/AliExpress Style Addition) -->
-                    <div class="border-b border-gray-100 pb-3">
+                    <div class="border-b border-gray-100 pb-1">
                         <span class="text-xs font-bold text-gray-800 block mb-2">Service Protection</span>
                         <div class="space-y-1.5 text-xs text-gray-800 font-medium">
                             <div class="flex items-center gap-2">
@@ -453,25 +453,25 @@
                     </div>
 
                     <!-- 4. SELLER INFORMATION SECTION -->
-                    <div class="pt-1 space-y-2">
+                    <div class=" space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-[12px] text-gray-600 font-medium block">Sold by</span>
                             <span class="font-bold text-xs text-gray-900">{{ ucfirst($product->prod_brand->name ?? 'Stylish Mall') }}</span>
                         </div>
 
                         <!-- Seller Ratings Grid Bar -->
-                        <div class="grid grid-cols-3 gap-1 pt-2 bg-gray-50 p-2 rounded-lg text-center text-[10px]">
+                        <div class="grid grid-cols-3 gap-1 pt-2 bg-gray-50 p-1.5 sm:p-2 rounded-lg text-center">
                             <div>
-                                <span class="text-gray-600 block text-[12px] font-medium">Positive Seller</span>
-                                <span class="font-bold text-gray-900 text-[12px]">88%</span>
+                                <span class="text-gray-600 block text-[9px] xs:text-[10px] sm:text-[11px] font-medium leading-tight">Positive Seller</span>
+                                <span class="font-bold text-gray-900 text-[10px] xs:text-[11px] sm:text-xs">88%</span>
                             </div>
-                            <div class="border-x border-gray-200">
-                                <span class="text-gray-600 block text-[12px] font-medium">Ship on Time</span>
-                                <span class="font-bold text-gray-900 text-[12px]">95%</span>
+                            <div class="border-x border-gray-200 px-0.5">
+                                <span class="text-gray-600 block text-[9px] xs:text-[10px] sm:text-[11px] font-medium leading-tight">Ship on Time</span>
+                                <span class="font-bold text-gray-900 text-[10px] xs:text-[11px] sm:text-xs">95%</span>
                             </div>
                             <div>
-                                <span class="text-gray-600 block text-[12px] font-medium">Chat Response</span>
-                                <span class="font-bold text-gray-900 text-[12px]">92%</span>
+                                <span class="text-gray-600 block text-[9px] xs:text-[10px] sm:text-[11px] font-medium leading-tight">Chat Response</span>
+                                <span class="font-bold text-gray-900 text-[10px] xs:text-[11px] sm:text-xs">92%</span>
                             </div>
                         </div>
                     </div>
