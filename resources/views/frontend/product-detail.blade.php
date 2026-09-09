@@ -190,7 +190,7 @@
             <!-- 2. MIDDLE COLUMN: Product Details, Title, Colors, Sizes & Description (lg:col-span-5) -->
             <div class="lg:col-span-5 space-y-4">
                 <div>
-                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 capitalize">
+                    <h1 class="text-[#212121] text-[22px] font-bold break-words capitalize">
                         {{ $product->name }}
                     </h1>
 
@@ -591,7 +591,7 @@
                                             <div class="flex items-center gap-2.5">
                                                 <!-- Dynamic Avatar -->
                                                 <div
-                                                        class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
+                                                        class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[11px] shrink-0">
                                                     {{ strtoupper(substr($review->user->name ?? ' ', 0, 1)) }}
                                                 </div>
                                                 <div>
@@ -667,7 +667,7 @@
             </div>
         @endif
 
-        @if($relatedProducts->count() > 0)
+    @if($relatedProducts->total() > 0)
         <!-- ================= RELATED PRODUCTS SECTION ================= -->
             <div class="mt-2 sm:mt-4 pt-2">
 
@@ -681,55 +681,45 @@
                     </div>
                 </div>
 
-                <!-- Responsive Grid Setup -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
-                    @foreach($relatedProducts as $index => $relatedProduct)
-                        {{-- 12 Products ki limit --}}
-                        @if($index >= 12)
-                            @break
-                        @endif
-
-                        @php
-                            $isWishlisted = in_array($relatedProduct->id, $wishlistProductIds ?? []);
-                            $avgRating = $relatedProduct->reviews->avg('rating') ?? 0;
-                            $reviewsCount = $relatedProduct->reviews_count ?? $relatedProduct->reviews->count();
-
-                            $variant = $relatedProduct->mainVariant ?? $relatedProduct->variants->first();
-                            $salePrice = $variant->price ?? ($relatedProduct->base_price ?? 0);
-                            $originalPrice = $variant->cut_price ?? 0;
-
-                            $calculatedDiscount = 0;
-                            if ($originalPrice > 0 && $originalPrice > $salePrice) {
-                                $calculatedDiscount = round((($originalPrice - $salePrice) / $originalPrice) * 100);
-                            }
-
-                            // Product ki saari variant images ka array tayar karna ($relatedProduct ke sath)
-                            $allImages = [];
-                            if ($relatedProduct->mainVariantImage) {
-                                $allImages[] = asset('storage/' . $relatedProduct->mainVariantImage->image_path);
-                            }
-                            foreach ($relatedProduct->variantImages as $vImg) {
-                                $imgPath = asset('storage/' . $vImg->image_path);
-                                if (!in_array($imgPath, $allImages)) {
-                                    $allImages[] = $imgPath;
-                                }
-                            }
-                            if (empty($allImages)) {
-                                $allImages[] = asset('upload/no-image.jpg');
-                            }
-                        @endphp
-
-                        {{-- Card Container --}}
-                        <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full group">
-
-                            {{-- Image Card Include with Variables Passed --}}
-                            @include('frontend.partials.product-images-card', ['product' => $relatedProduct, 'allImages' => $allImages, 'isWishlisted' => $isWishlisted])
-
-                            {{-- CARD CONTENT --}}
-                            @include('frontend.partials.product-content-card', ['product' => $relatedProduct, 'salePrice' => $salePrice, 'originalPrice' => $originalPrice, 'calculatedDiscount' => $calculatedDiscount, 'avgRating' => $avgRating, 'reviewsCount' => $reviewsCount])
-                        </div>
-                    @endforeach
+                <!-- Responsive Grid Setup with ID -->
+                <div id="related-products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
+                    @include('frontend.partials.related-products-cards')
                 </div>
+
+                <!-- Shimmer Effect Loader (Matching Actual Card Structure) -->
+                <div id="related-shimmer" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3">
+                    @for($i = 0; $i < 6; $i++)
+                        <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
+
+                            {{-- Shimmer Image Box (Matches exact card image height) --}}
+                            <div class="bg-gray-200 h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 w-full"></div>
+
+                            {{-- Shimmer Content Area --}}
+                            <div class="p-1.5 sm:p-2.5 flex flex-col justify-between gap-2 flex-grow">
+                                <div class="space-y-1.5">
+                                    {{-- Title Shimmer --}}
+                                    <div class="bg-gray-200 h-4 rounded w-4/5"></div>
+                                    {{-- Description Shimmer --}}
+                                    <div class="bg-gray-200 h-3 rounded w-3/5"></div>
+                                </div>
+
+                                {{-- Rating & Sold Shimmer Row --}}
+                                <div class="flex items-center justify-between gap-1 mt-1">
+                                    <div class="bg-gray-200 h-3 rounded w-16"></div>
+                                    <div class="bg-gray-200 h-3 rounded w-10"></div>
+                                </div>
+
+                                {{-- Price & Stock Shimmer Row --}}
+                                <div class="flex items-center justify-between gap-1 mt-1">
+                                    <div class="bg-gray-200 h-5 rounded w-20"></div>
+                                    <div class="bg-gray-200 h-4 rounded w-16"></div>
+                                </div>
+                            </div>
+
+                        </div>
+                    @endfor
+                </div>
+
             </div>
         @endif
 
@@ -1196,7 +1186,7 @@
             let stockBadge = document.getElementById('stockBadge');
             if (stock > 0) {
                 stockBadge.innerHTML = stock + ' Items In Stock';
-                stockBadge.className = "px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-700";
+                stockBadge.className = "px-3 py-1 rounded-full text-sm font-semibold bg-emerald-100 text-emerald-700";
             } else {
                 stockBadge.innerHTML = 'Out of Stock';
                 stockBadge.className = "px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-700";
@@ -1636,6 +1626,83 @@
                 if (btnText) btnText.innerText = 'No More Reviews (Click to Show Less)';
                 if (btnIcon) btnIcon.style.display = 'none';
             }
+        }
+    </script>
+
+    <script>
+        let relatedPage = {{ $relatedProducts->currentPage() }};
+        let lastPage = {{ $relatedProducts->lastPage() }};
+        let isRelatedLoading = false;
+        let hasMoreRelated = {{ $relatedProducts->hasMorePages() ? 'true' : 'false' }};
+
+        // ✅ Aapka main scrollable container check
+        const mainScrollContainer = document.querySelector('main');
+
+        function checkRelatedScrollPosition() {
+            if (!mainScrollContainer) return;
+
+            // Agar products khatam ho chuki hain toh function yahin rok dein
+            if (!hasMoreRelated || relatedPage >= lastPage) return;
+
+            const scrollTop = mainScrollContainer.scrollTop;
+            const innerHeight = mainScrollContainer.clientHeight;
+            const scrollHeight = mainScrollContainer.scrollHeight;
+
+            if (scrollTop + innerHeight >= scrollHeight - 600) {
+                if (!isRelatedLoading && hasMoreRelated) {
+                    loadMoreRelatedProducts();
+                }
+            }
+        }
+
+        if (mainScrollContainer) {
+            mainScrollContainer.addEventListener('scroll', checkRelatedScrollPosition);
+        }
+
+        // Fallback window scroll
+        window.addEventListener('scroll', () => {
+            if (!hasMoreRelated || relatedPage >= lastPage) return;
+
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 600) {
+                if (!isRelatedLoading && hasMoreRelated) {
+                    loadMoreRelatedProducts();
+                }
+            }
+        });
+
+        function loadMoreRelatedProducts() {
+            // Double check taake aakhri page ke baad request ya shimmer na chale
+            if (!hasMoreRelated || relatedPage >= lastPage) return;
+
+            isRelatedLoading = true;
+            relatedPage++;
+
+            // Shimmer sirf tab chalega jab wakayi mazeed products baqi hongi
+            document.getElementById('related-shimmer').classList.remove('hidden');
+
+            fetch(`{{ url()->current() }}?page=` + relatedPage, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                }
+            })
+                .then(response => response.text())
+                .then(html => {
+                    // Shimmer hide karein
+                    document.getElementById('related-shimmer').classList.add('hidden');
+
+                    if (html.trim() !== '') {
+                        document.getElementById('related-products-grid').insertAdjacentHTML('beforeend', html);
+                        isRelatedLoading = false;
+                    } else {
+                        hasMoreRelated = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading more products:', error);
+                    document.getElementById('related-shimmer').classList.add('hidden');
+                    isRelatedLoading = false;
+                });
         }
     </script>
 

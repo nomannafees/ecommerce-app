@@ -217,7 +217,7 @@ class FrontendController extends Controller
         ));
     }
 
-    public function productDetail($slug)
+    public function productDetail(Request $request, $slug)
     {
         $product = Product::with([
             'images',
@@ -263,48 +263,71 @@ class FrontendController extends Controller
         $avgRating = round($product->reviews->avg('rating'), 1) ?: 0;
         $totalReviews = $product->reviews->count();
 
-        // --- RELATED PRODUCTS BY SUB-CATEGORY (Main -> Sub -> Child hierarchy) ---
-        $relatedProducts = collect(); // Default empty collection
+        // --- RELATED PRODUCTS: MAIN CATEGORY + ALL ITS SUB-CATEGORIES & CHILDREN ---
+        $relatedProducts = collect();
 
         if ($product->category_id) {
             $currentCategory = Categorie::find($product->category_id);
 
             if ($currentCategory) {
-
-                $subCategory = $currentCategory;
-
-                if ($currentCategory->parent_id != 0) {
-                    $parent = Categorie::find($currentCategory->parent_id);
-
-                    if ($parent && $parent->parent_id != 0) {
-                        // Current category CHILD hai (uska parent khud kisi Main ka child hai) -> parent hi sub-category hai
-                        $subCategory = $parent;
+                // 1. Root Parent (Main Category) tak jana
+                $mainCategory = $currentCategory;
+                while ($mainCategory->parent_id != 0) {
+                    $parent = Categorie::find($mainCategory->parent_id);
+                    if ($parent) {
+                        $mainCategory = $parent;
                     } else {
-                        // Current category khud SUB-category hai (uska parent Main hai, parent_id == 0)
-                        $subCategory = $currentCategory;
+                        break;
                     }
                 }
 
-                // Sub-category + uske sab children (sibling child-categories) ke IDs nikalo
-                $categoryIds = array_merge(
-                    [$subCategory->id],
-                    Categorie::where('parent_id', $subCategory->id)->pluck('id')->toArray()
-                );
+                // 2. Main Category aur uski saari sub-categories/children ki IDs ikathi karna
+                $subCategoryIds = Categorie::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
 
+                $grandChildIds = [];
+                if (!empty($subCategoryIds)) {
+                    $grandChildIds = Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
+                }
+
+                // Saari category IDs ko mila dena (Main + Sub + Child)
+                $categoryIds = array_merge([$mainCategory->id], $subCategoryIds, $grandChildIds);
+
+                // 3. Products fetch karna
                 $relatedProducts = Product::with(['images', 'variants'])
                     ->withCount(['orderItems', 'reviews'])
-                    ->whereIn('category_id', $categoryIds)
+                    ->whereIn('category_id', array_unique($categoryIds))
                     ->where('id', '!=', $product->id)
                     ->get();
             }
         }
 
-// --- WISHLIST IDS ---
+        // --- WISHLIST IDS ---
         $wishlistProductIds = [];
         if (Auth::check()) {
             $wishlistProductIds = Wishlist::where('user_id', Auth::id())
                 ->pluck('product_id')
                 ->toArray();
+        }
+
+        // --- COLLECTION TO PAGINATOR CONVERSION FOR AJAX SCROLLING (Jaise index mein kiya hai) ---
+        $page = $request->get('page', 1);
+        $perPage = 6; // Aap 6 ya 12 rakh sakte hain (Aapne 6 kaha hai)
+        $offset = ($page * $perPage) - $perPage;
+
+        $paginatedRelatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $relatedProducts->slice($offset, $perPage)->values(),
+            $relatedProducts->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Variable ko assign kar diya
+        $relatedProducts = $paginatedRelatedProducts;
+
+        // Agar AJAX request ho toh sirf partial view return karein (Infinite Scroll ke liye)
+        if ($request->ajax()) {
+            return view('frontend.partials.related-products-cards', compact('relatedProducts', 'wishlistProductIds'))->render();
         }
 
         return view('frontend.product-detail', compact('product', 'avgRating', 'totalReviews', 'relatedProducts', 'wishlistProductIds'));

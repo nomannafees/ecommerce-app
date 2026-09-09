@@ -135,7 +135,7 @@
             @endif
 
             {{-- Free Delivery --}}
-            <span class="inline-flex items-center gap-1 text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap mt-0.5">
+            <span class="inline-flex items-center gap-1 text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap mt-1.5">
                 <i class="fa-solid fa-truck text-gray-500 text-[10px]"></i>
                 Free Delivery
             </span>
