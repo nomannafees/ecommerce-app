@@ -117,7 +117,7 @@
     </div>
 
     {{-- Rating & Sold Items Section --}}
-    <div class="flex items-center justify-between gap-1 -mt-1.5">
+    <div class="flex items-center justify-between gap-1 -mt-1.5 pb-0">
         {{-- Left Side: Rating & Total Reviews Count --}}
         <div class="flex items-center gap-1">
             <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
