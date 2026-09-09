@@ -163,7 +163,11 @@
             <span>More Products</span>
             <i class="fa-solid fa-arrow-right text-[10px]"></i>
         </a>
+
+
     </div>
+
+
 
     <!-- Responsive Grid Setup -->
     <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">

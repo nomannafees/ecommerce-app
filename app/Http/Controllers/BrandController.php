@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -29,7 +30,7 @@ class BrandController extends Controller
         return view('brand.create_edit');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageService $imageService)
     {
         $request->validate([
             'name'           => 'required|string|max:255',
@@ -44,17 +45,9 @@ class BrandController extends Controller
 
         $imagePath = null;
 
+        // Image service call karein agar file mojood hai
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $folder = storage_path('app/public/brands');
-
-            if (!file_exists($folder)) {
-                mkdir($folder, 0777, true);
-            }
-
-            $file->move($folder, $filename);
-            $imagePath = 'brands/' . $filename;
+            $imagePath = $imageService->processAndStoreWithoutCrop($request->file('image'), 'brands', 350, 350, 80);
         }
 
         $slug = Str::slug($request->name);
@@ -90,7 +83,7 @@ class BrandController extends Controller
         return view('brand.create_edit', compact('brand'));
     }
 
-    public function update(Request $request, Brand $brand)
+    public function update(Request $request, Brand $brand, ImageService $imageService)
     {
         $request->validate([
             'name'           => 'required|string|max:255',
@@ -113,18 +106,11 @@ class BrandController extends Controller
                     unlink($oldImage);
                 }
             }
-
-            // Upload new image
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $folder = storage_path('app/public/brands');
-
-            if (!file_exists($folder)) {
-                mkdir($folder, 0777, true);
+            // Image service call karein agar file mojood hai
+            if ($request->hasFile('image')) {
+                $imagePath = $imageService->processAndStoreWithoutCrop($request->file('image'), 'brands', 350, 350, 80);
             }
 
-            $file->move($folder, $filename);
-            $imagePath = 'brands/' . $filename;
         }
 
         $slug = Str::slug($request->name);

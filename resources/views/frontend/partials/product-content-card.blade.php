@@ -6,37 +6,11 @@
         </h4>
 
         {{-- Description --}}
-        <div class=" text-[11px] sm:text-xs text-gray-600 line-clamp-1 sm:line-clamp-1 ">
-            {!! $product->description !!}
-        </div>
+{{--        <div class=" text-[11px] sm:text-xs text-gray-600 line-clamp-1 sm:line-clamp-1 ">--}}
+{{--            {!! $product->description !!}--}}
+{{--        </div>--}}
 
-        {{-- Rating & Sold Items Section --}}
-        <div class="flex items-center justify-between gap-1 mt-0.5 sm:mt-1.5">
-            {{-- Left Side: Rating & Total Reviews Count --}}
-            <div class="flex items-center gap-1">
-                <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
 
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= floor(@$avgRating))
-                                <i class="fa-solid fa-star"></i>
-                            @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
-                                <i class="fa-solid fa-star-half-stroke"></i>
-                            @else
-                                <i class="fa-regular fa-star text-gray-300"></i>
-                            @endif
-                        @endfor
-
-                </div>
-                <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
-                        {{ number_format(@$avgRating, 1) }} <span class="text-gray-500 font-normal">({{ @$reviewsCount }})</span>
-                    </span>
-            </div>
-
-            {{-- Right Side: Sold Items --}}
-            <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
-                    {{ $product->order_items_count ?? 0 }} sold
-                </span>
-        </div>
     </div>
 
     {{-- Price & Stock Section --}}
@@ -140,5 +114,33 @@
                 Free Delivery
             </span>
         </div>
+    </div>
+
+    {{-- Rating & Sold Items Section --}}
+    <div class="flex items-center justify-between gap-1 -mt-1.5">
+        {{-- Left Side: Rating & Total Reviews Count --}}
+        <div class="flex items-center gap-1">
+            <div class="flex text-yellow-500 text-[10px] sm:text-xs gap-0.5">
+
+                @for($i = 1; $i <= 5; $i++)
+                    @if($i <= floor(@$avgRating))
+                        <i class="fa-solid fa-star"></i>
+                    @elseif($i - $avgRating < 1 && $i - $avgRating > 0)
+                        <i class="fa-solid fa-star-half-stroke"></i>
+                    @else
+                        <i class="fa-regular fa-star text-gray-300"></i>
+                    @endif
+                @endfor
+
+            </div>
+            <span class="text-[10px] sm:text-xs text-gray-700 font-semibold">
+                        {{ number_format(@$avgRating, 1) }} <span class="text-gray-500 font-normal">({{ @$reviewsCount }})</span>
+                    </span>
+        </div>
+
+        {{-- Right Side: Sold Items --}}
+        <span class="text-[10px] sm:text-xs text-gray-500 font-medium whitespace-nowrap">
+                    {{ $product->order_items_count ?? 0 }} sold
+                </span>
     </div>
 </div>

@@ -8,6 +8,7 @@ use App\Models\ProductImage;
 use App\Models\Brand;
 use App\Models\ProductVariant;
 use App\Models\VariantImage;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -48,12 +49,11 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, ImageService $imageService)
     {
         $request->validate([
             'category_id'  => 'required',
             'name'         => 'required|string|max:255',
-            // Is line ko update karein:
             'product_type' => 'required|string|in:normal,featured,trending,bestseller,new_arrival,hot_deal,special_offer,top_rated,limited_edition,upcoming',
         ]);
 
@@ -87,27 +87,25 @@ class ProductController extends Controller
 
                 $variantImageId = null;
 
-                // Variant Image Upload
+                // Variant Image Upload using ImageService
                 if ($request->hasFile("variants_group.{$index}.color_image")) {
 
                     $vImage = $request->file("variants_group.{$index}.color_image");
 
-                    $filename = time() . "_variant_{$index}_" .
-                        preg_replace('/[^A-Za-z0-9\-.]/', '_', $vImage->getClientOriginalName());
-
-                    $folder = storage_path('app/public/products/variants');
-
-                    if (!file_exists($folder)) {
-                        mkdir($folder, 0777, true);
-                    }
-
-                    $vImage->move($folder, $filename);
+                    // ImageService ke zariye process aur store karein (WebP + Resize + Compression)
+                    $imagePath = $imageService->processAndStore(
+                        $vImage,
+                        'products/variants', // Folder ka naam
+                        350,                 // Width
+                        350,                 // Height
+                        80                   // Quality
+                    );
 
                     $isMainImage = ($mainVariantIndex !== null && (int)$mainVariantIndex === (int)$index) ? 1 : 0;
 
                     $variantImage = VariantImage::create([
                         'product_id' => $product->id,
-                        'image_path' => 'products/variants/' . $filename,
+                        'image_path' => $imagePath, // Service ka return kiya hua clean path
                         'is_main'    => $isMainImage,
                     ]);
 
@@ -129,9 +127,9 @@ class ProductController extends Controller
                             'color_name'       => $group['color'] ?? 'Default',
                             'size_system'      => $group['size_system'] ?? null,
                             'size'             => $item['size'],
-                            'cut_price'        => $item['cut_price'],
-                            'price'            => $item['price'],
-                            'stock'            => $item['quantity'],
+                            'cut_price'        => $item['cut_price'] ?? 0,
+                            'price'            => $item['price'] ?? 0,
+                            'stock'            => $item['quantity'] ?? 0,
                             'sku'              => $sku,
                         ]);
                     }
@@ -175,7 +173,7 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product, ImageService $imageService)
     {
         $request->validate([
             'category_id'  => 'required',
@@ -294,45 +292,44 @@ class ProductController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                if (
-                $request->hasFile(
-                    "variants_group.{$index}.color_image"
-                )
-                ) {
+                if ($request->hasFile("variants_group.{$index}.color_image")) {
 
                     $vImage = $request->file(
                         "variants_group.{$index}.color_image"
                     );
+                    // ImageService ke zariye process aur store karein
+                    // (Yeh automatic WebP, compression aur resize/crop kar dega)
+                    $vImageName = $imageService->processAndStore($vImage, 'products/variants', 350, 350, 80);
 
 
-                    $vImageName =
-                        time()
-                        . '_variant_'
-                        . $index
-                        . '_'
-                        . preg_replace(
-                            '/[^A-Za-z0-9\-.]/',
-                            '_',
-                            $vImage->getClientOriginalName()
-                        );
-
-
-                    $folder = storage_path(
-                        'app/public/products/variants'
-                    );
-
-
-                    if (!file_exists($folder)) {
-
-                        mkdir($folder, 0777, true);
-
-                    }
-
-
-                    $vImage->move(
-                        $folder,
-                        $vImageName
-                    );
+//                    $vImageName =
+//                        time()
+//                        . '_variant_'
+//                        . $index
+//                        . '_'
+//                        . preg_replace(
+//                            '/[^A-Za-z0-9\-.]/',
+//                            '_',
+//                            $vImage->getClientOriginalName()
+//                        );
+//
+//
+//                    $folder = storage_path(
+//                        'app/public/products/variants'
+//                    );
+//
+//
+//                    if (!file_exists($folder)) {
+//
+//                        mkdir($folder, 0777, true);
+//
+//                    }
+//
+//
+//                    $vImage->move(
+//                        $folder,
+//                        $vImageName
+//                    );
 
 
                     /*
@@ -345,8 +342,7 @@ class ProductController extends Controller
 
                         'product_id' => $product->id,
 
-                        'image_path' =>
-                            'products/variants/' . $vImageName,
+                        'image_path' =>  $vImageName,
 
                         'is_main' => 0,
 
