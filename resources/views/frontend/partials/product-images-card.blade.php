@@ -18,7 +18,7 @@
 @endphp
 
 {{-- IMAGE CONTAINER with Hover & Touch Scrub Support --}}
-<div class="relative bg-gray-100 overflow-hidden h-40 xs:h-44 sm:h-50 2xl:h-50 md:h-50 lg:h-50 select-none"
+<div class="relative bg-gray-100 overflow-hidden aspect-square select-none"
      x-data="{
         images: {{ json_encode(@$allImages) }},
         currentIndex: 0,
@@ -29,6 +29,7 @@
             if (targetIndex !== this.currentIndex && !this.isFading) {
                 this.nextIndex = targetIndex;
                 this.isFading = true;
+
                 setTimeout(() => {
                     this.currentIndex = this.nextIndex;
                     this.isFading = false;
@@ -38,11 +39,18 @@
 
         handleMove(clientX) {
             if (this.images.length <= 1) return;
+
             let rect = this.$el.getBoundingClientRect();
             let xPos = clientX - rect.left;
             let width = rect.width;
+
             let index = Math.floor((xPos / width) * this.images.length);
-            let targetIndex = Math.min(Math.max(index, 0), this.images.length - 1);
+
+            let targetIndex = Math.min(
+                Math.max(index, 0),
+                this.images.length - 1
+            );
+
             this.changeImage(targetIndex);
         },
 
@@ -55,28 +63,36 @@
      @touchmove="handleMove($event.touches[0].clientX)"
      @mousemove="handleMove($event.clientX)">
 
-    <form action="{{ route('wishlists.store') }}" method="POST" class="wishlistForm" @click.stop>
+    <form action="{{ route('wishlists.store') }}"
+          method="POST"
+          class="wishlistForm"
+          @click.stop>
+
         @csrf
-        <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+        <input type="hidden"
+               name="product_id"
+               value="{{ $product->id }}">
 
         <button type="submit"
                 class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
                 style="padding: 4px 9px 4px 9px !important; cursor: pointer;">
+
             <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ @$isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
+
         </button>
     </form>
 
-    {{-- Base Image (Direct Blade URL di hai taake refresh par foran image nazar aaye, bad mein :src bind ho jaye) --}}
     <img src="{{ $allImages[0] }}"
          :src="images[currentIndex]"
          alt="{{ $product->name }}"
          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-104 pointer-events-none">
 
-    {{-- Overlay Image for Smooth Fade Transition Effect --}}
     <template x-if="isFading && nextIndex !== null">
         <img :src="images[nextIndex]"
              alt="{{ $product->name }}"
              class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none"
              x-init="setTimeout(() => $el.style.opacity = '1', 20)">
     </template>
+
 </div>

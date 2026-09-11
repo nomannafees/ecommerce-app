@@ -299,7 +299,7 @@ class ProductController extends Controller
                     );
                     // ImageService ke zariye process aur store karein
                     // (Yeh automatic WebP, compression aur resize/crop kar dega)
-                    $vImageName = $imageService->processAndStore($vImage, 'products/variants', 350, 350, 80);
+                    $vImageName = $imageService->processAndStore($vImage, 'products/variants', 600, 600, 80);
 
 
 //                    $vImageName =
@@ -361,10 +361,7 @@ class ProductController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                if (
-                    $variantImageId &&
-                    (string)$mainVariantValue === (string)$variantImageId
-                ) {
+                if ($variantImageId && (string)$mainVariantValue === (string)$index) {
 
                     VariantImage::where(
                         'id',

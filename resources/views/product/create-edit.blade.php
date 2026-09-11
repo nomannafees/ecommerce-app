@@ -1,5 +1,4 @@
 @extends('layouts.app')
-@extends('layouts.app')
 @section('content')
 
     <style>
@@ -605,7 +604,7 @@
                                         <input
                                                 type="radio"
                                                 name="is_main"
-                                                value="{{ isset($product) && $variantImage ? $variantImage->id : $groupIndex }}"
+                                                value="{{ $groupIndex }}"
                                                 class="main-variant-radio w-4 h-4 text-emerald-600 accent-emerald-600 focus:ring-offset-0 cursor-pointer"
                                                 {{ $variantImage && $variantImage->is_main ? 'checked' : '' }}
                                         >
