@@ -11,8 +11,15 @@ use App\Models\Slider;
 
 class BannerController extends Controller
 {
-    // 1. Sab banners aik sath get karne ke liye
+    public function getAdminStoreSetting()
+    {
+        $setting = AdminStore::latest()->first();
 
+        return response()->json([
+            'success' => true,
+            'data' => $setting
+        ], 200);
+    }
 
     // 2. Sirf Brand Banner get karne ke liye
     public function getBrandBanner()

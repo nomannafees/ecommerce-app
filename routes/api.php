@@ -37,6 +37,7 @@ Route::get('/banner/brand', [BannerController::class, 'getBrandBanner']);
 Route::get('/banner/featured', [BannerController::class, 'getFeaturedBanner']);
 Route::get('/banner/main', [BannerController::class, 'getGeneralBanners']);
 Route::get('/sliders', [BannerController::class, 'getSliders']);
+Route::get('/store-settings', [BannerController::class, 'getAdminStoreSetting']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
