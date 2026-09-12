@@ -4,41 +4,44 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminStore;
-use App\Models\Brand;
 use App\Models\Product;
-use App\Models\Slider;
-use App\Models\Wishlist;
 use App\Models\UserProductInteraction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+    // Flash sale active products ko filter karne ke liye closure
+    private function excludeFlashSale()
+    {
+        return function ($query) {
+            $query->where('start_time', '<=', now())
+                ->where('end_time', '>=', now());
+        };
+    }
+
     public function index(Request $request)
     {
-        $perPage = 12; // Aap apni marzi se items per page change kar sakte hain (jaise 12)
+        $perPage = 12;
         $page = (int) $request->get('page', 1);
 
-        // 1. Sare products with relations fetch karein
-        $products = Product::with([
-            'variants',
-            'mainVariantImage',
-            'reviews' => function ($query) {
-                $query->where('is_approved', true);
-            }
-        ])->latest()->get();
+        $products = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
+            ->with([
+                'variants.variantImage',
+                'variantImages',
+                'mainVariantImage',
+                'reviews' => function ($query) {
+                    $query->where('is_approved', true);
+                }
+            ])
+            ->withCount(['orderItems', 'reviews'])
+            ->latest()
+            ->get();
 
-        // 2. Har product ke liye average rating aur total reviews calculate karna
         $products->each(function ($product) {
             $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
-            $product->total_reviews = $product->reviews->count();
-
-            // Agar aap JSON mein reviews ki list nahi bhejna chahte to yeh line uncomment kar sakte hain:
-            // unset($product->reviews);
+            $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
         });
 
-        // 3. Manual Collection Pagination for API Response (Jaise forYouProducts mein kiya hai)
         $total = $products->count();
         $offset = ($page - 1) * $perPage;
         $paginatedItems = $products->slice($offset, $perPage)->values();
@@ -69,14 +72,16 @@ class ProductController extends Controller
         $product = Product::with([
             'images',
             'variants.variantImage',
+            'variantImages',
+            'mainVariantImage',
             'prod_brand',
             'reviews' => function ($query) {
-                // Yahan par with(['user', 'images']) add kiya hai
                 $query->where('is_approved', true)
                     ->with(['user', 'images'])
                     ->latest();
             }
         ])
+            ->withCount(['orderItems', 'reviews'])
             ->where('slug', $slug)
             ->first();
 
@@ -87,7 +92,7 @@ class ProductController extends Controller
             ], 404);
         }
 
-        // --- TRACK USER INTERACTION ---
+        // Track user interaction
         $user = auth('sanctum')->user() ?? auth()->user();
 
         if ($user) {
@@ -119,12 +124,9 @@ class ProductController extends Controller
                 );
             }
         }
-        // ------------------------------
 
-        // --- RATING & REVIEWS CALCULATION ---
         $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
-        $product->total_reviews = $product->reviews->count();
-        // ------------------------------------
+        $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
 
         return response()->json([
             'status' => true,
@@ -135,55 +137,75 @@ class ProductController extends Controller
 
     public function bestsellingProducts()
     {
-        $products = Product::with(['variants', 'mainVariantImage', 'reviews'])
-            ->withCount('orderItems')
+        $products = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
+            ->with([
+                'variants.variantImage',
+                'variantImages',
+                'mainVariantImage',
+                'reviews' => function ($query) {
+                    $query->where('is_approved', true);
+                }
+            ])
+            ->withCount(['orderItems', 'reviews'])
             ->orderBy('order_items_count', 'desc')
             ->take(12)
             ->get();
 
+        $products->each(function ($product) {
+            $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
+            $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
+        });
+
         return response()->json([
             'success' => true,
             'data' => $products
-        ]);
+        ], 200);
     }
 
     public function featuredProducts()
     {
         $products = Product::where('product_type', 'featured')
-            ->with(['variants', 'mainVariantImage', 'reviews'])
+            ->whereDoesntHave('flashSale', $this->excludeFlashSale())
+            ->with([
+                'variants.variantImage',
+                'variantImages',
+                'mainVariantImage',
+                'reviews' => function ($query) {
+                    $query->where('is_approved', true);
+                }
+            ])
+            ->withCount(['orderItems', 'reviews'])
             ->latest()
             ->take(12)
             ->get();
 
+        $products->each(function ($product) {
+            $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
+            $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
+        });
+
         return response()->json([
             'success' => true,
             'data' => $products
-        ]);
+        ], 200);
     }
 
     public function forYouProducts(Request $request)
     {
-        $perPage = 6;
+        $perPage = 12;
         $page = (int) $request->get('page', 1);
 
-        // 1. Pehle API Guard ke zariye check karein ke user logged in hai ya nahi
-        // (Agar aap Sanctum use kar rahe hain toh 'sanctum' guard dein)
         $user = auth('sanctum')->user() ?? auth()->user();
-
-        // 2. Guest token handle (Cookie ya Header se)
         $guestToken = $request->cookie('guest_unique_token') ?? $request->header('X-Guest-Token');
 
         $recentInteractions = collect();
 
-        // 3. Agar User Login hai (Bearer token ke through)
         if ($user) {
             $recentInteractions = UserProductInteraction::where('user_id', $user->id)
                 ->orderBy('weight', 'desc')
                 ->orderBy('updated_at', 'desc')
                 ->get();
-        }
-        // 4. Agar User Login nahi hai lekin Guest Token mojood hai
-        elseif ($guestToken) {
+        } elseif ($guestToken) {
             $recentInteractions = UserProductInteraction::where('session_id', $guestToken)
                 ->orderBy('weight', 'desc')
                 ->orderBy('updated_at', 'desc')
@@ -191,25 +213,35 @@ class ProductController extends Controller
         }
 
         $products = collect();
+        $relations = [
+            'variants.variantImage',
+            'variantImages',
+            'mainVariantImage',
+            'reviews' => function ($query) {
+                $query->where('is_approved', true);
+            }
+        ];
 
         if ($recentInteractions->isNotEmpty()) {
             $viewedProductIds = $recentInteractions->pluck('product_id')->filter()->unique()->toArray();
             $categoryIds = $recentInteractions->pluck('category_id')->filter()->unique()->toArray();
             $brandIds = $recentInteractions->pluck('brand_id')->filter()->unique()->toArray();
 
-            // 1. Interacted Products
             if (!empty($viewedProductIds)) {
                 $productListString = implode(',', $viewedProductIds);
                 $interactedProducts = Product::whereIn('id', $viewedProductIds)
-                    ->with(['variants', 'mainVariantImage', 'reviews'])
+                    ->whereDoesntHave('flashSale', $this->excludeFlashSale())
+                    ->with($relations)
+                    ->withCount(['orderItems', 'reviews'])
                     ->orderByRaw("FIELD(id, $productListString)")
                     ->get();
 
                 $products = $products->concat($interactedProducts);
             }
 
-            // 2. Recommended Products
-            $recommendedQuery = Product::with(['variants', 'mainVariantImage', 'reviews'])
+            $recommendedQuery = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
+                ->with($relations)
+                ->withCount(['orderItems', 'reviews'])
                 ->whereNotIn('id', $products->pluck('id')->toArray())
                 ->where(function ($query) use ($categoryIds, $brandIds) {
                     if (!empty($categoryIds)) {
@@ -233,14 +265,19 @@ class ProductController extends Controller
             $products = $products->concat($recommendedProducts);
         }
 
-        // Fallback: Agar interactions na milen
         if ($products->isEmpty()) {
-            $products = Product::with(['variants', 'mainVariantImage', 'reviews'])
+            $products = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
+                ->with($relations)
+                ->withCount(['orderItems', 'reviews'])
                 ->latest()
                 ->get();
         }
 
-        // Manual Collection Pagination for API Response
+        $products->each(function ($product) {
+            $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
+            $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
+        });
+
         $total = $products->count();
         $offset = ($page - 1) * $perPage;
         $paginatedItems = $products->slice($offset, $perPage)->values();
@@ -269,23 +306,32 @@ class ProductController extends Controller
     public function flashSaleProducts(Request $request)
     {
         $products = Product::whereHas('flashSale', function ($query) {
-            $query->whereDate('start_time', '<=', now())
-                ->whereDate('end_time', '>=', now());
+            $query->where('start_time', '<=', now())
+                ->where('end_time', '>=', now());
         })
-            ->with(['variants', 'mainVariantImage', 'reviews', 'flashSale'])
+            ->with([
+                'variants.variantImage',
+                'variantImages',
+                'mainVariantImage',
+                'flashSale',
+                'reviews' => function ($query) {
+                    $query->where('is_approved', true);
+                }
+            ])
+            ->withCount(['orderItems', 'reviews'])
+            ->take(6)
             ->latest()
             ->get();
 
-        // Har product ke liye average rating aur total reviews calculate karna
         $products->each(function ($product) {
             $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
-            $product->total_reviews = $product->reviews->count();
+            $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
         });
 
         return response()->json([
             'success' => true,
             'data' => $products
-        ]);
+        ], 200);
     }
 
     public function adminStore()
@@ -297,5 +343,4 @@ class ProductController extends Controller
             'data' => $setting
         ], 200);
     }
-
 }
