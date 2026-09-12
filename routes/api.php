@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CategoryProduct;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\BannerController;
+use App\Http\Controllers\Api\SearchController;
 
 
 Route::get('/user', function (Request $request) {
@@ -38,7 +39,7 @@ Route::get('/banner/featured', [BannerController::class, 'getFeaturedBanner']);
 Route::get('/banner/main', [BannerController::class, 'getGeneralBanners']);
 Route::get('/sliders', [BannerController::class, 'getSliders']);
 Route::get('/store-settings', [BannerController::class, 'getAdminStoreSetting']);
-
+Route::get('/live-search', [SearchController::class, 'liveSearch']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // cart auth routes
