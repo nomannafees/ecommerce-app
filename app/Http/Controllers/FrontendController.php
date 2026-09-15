@@ -1386,7 +1386,30 @@ class FrontendController extends Controller
 
     public function liveSearch(Request $request)
     {
-        $query = $request->get('query');
+        $query = trim($request->get('query', ''));
+
+        // Image search
+        if ($request->hasFile('image')) {
+
+            $image = $request->file('image');
+
+            // uploaded image ko temporary process karo
+            // phir database ke product images ke sath similarity check karo
+
+            // matching product IDs
+            $productIds = [];
+
+            // yahan image similarity logic hoga
+
+            $products = Product::with('category.parent.parent')
+                ->whereIn('id', $productIds)
+                ->get();
+
+            return response()->json([
+                'categories' => [],
+                'products' => $products,
+            ]);
+        }
 
         if (!$query) {
             return response()->json(['categories' => [], 'products' => []]);
@@ -1440,6 +1463,31 @@ class FrontendController extends Controller
             'categories' => $categories,
             'products' => $products,
         ]);
+    }
+
+    public function searchByImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+
+            // Yahan aap apna image matching algorithm ya classification logic call kar sakte hain.
+            // Filhal example ke liye products fetch kar ke IDs return kar rahe hain:
+            $matchedProductIds = \App\Models\Product::latest()->take(10)->pluck('id')->toArray();
+
+            return response()->json([
+                'status' => true,
+                'products' => $matchedProductIds, // Ya array of objects: [['id' => 1], ['id' => 2]]
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'No image uploaded.'
+        ], 400);
     }
 
     public function moreProducts(Request $request, $type = null)

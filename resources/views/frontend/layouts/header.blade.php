@@ -7,7 +7,7 @@
 
 <!-- ================= MAIN HEADER (Sticky ONLY on Mobile, Normal scroll on Desktop) ================= -->
 <div class="bg-black sticky top-0 lg:static z-[100] shadow-lg relative"
-     x-data="{ mobileSearchOpen: false }">
+     x-data="mainHeaderHandler()">
 
     <header
             class="container mx-auto flex flex-col justify-between h-13 md:h-20 text-white px-3 sm:px-4 relative">
@@ -41,34 +41,86 @@
                 @endif
             </a>
 
-            <!-- Center Search Bar (Desktop) -->
-            <div class="search-wrapper hidden lg:block flex-1 max-w-xl mx-auto relative z-[40]">
+            <div class="search-wrapper hidden lg:block flex-1 max-w-xl mx-auto relative z-[40]"
+                 @click.outside="showDropdown = false">
 
                 <form action="{{ route('categories') }}" method="GET"
+                      @submit="handleSubmit($event)"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
                     <input type="text"
                            name="search"
-                           value="{{ request('search') }}"
+                           x-model="searchQuery"
+                           @input.debounce.300ms="fetchLiveSearch()"
+                           @focus="if (searchQuery.trim() && (categoriesList.length || productsList.length)) showDropdown = true"
                            placeholder="Search products, brands and more..."
                            autocomplete="off"
                            class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
                     <button type="button"
+                            @click="isImageModalOpen = true"
                             class="px-2.5 text-gray-500 hover:text-black transition"
                             title="Search by Image">
                         <i class="fa-solid fa-qrcode text-base"></i>
                     </button>
 
+                    <button type="button"
+                            @click="handleVoiceSearch()"
+                            class="px-2 transition"
+                            :class="isListening ? 'text-red-500 animate-pulse' : 'text-gray-500 hover:text-black'"
+                            title="Search by Voice">
+                        <i class="fa-solid fa-microphone text-base"></i>
+                    </button>
+
                     <button type="submit"
-                            class="bg-black hover:bg-gray-800 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0">
+                            class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0">
                         <i class="fa-solid fa-magnifying-glass text-xs"></i>
                     </button>
                 </form>
 
                 <!-- Suggestions -->
                 <div id="search-suggestions"
-                     class="search-suggestions absolute left-0 w-full top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] hidden mt-1 max-h-96 overflow-y-auto">
+                     x-show="showDropdown"
+                     x-cloak
+                     style="display: none;"
+                     class="search-suggestions absolute left-0 w-full top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] mt-1 max-h-96 overflow-y-auto">
+
+                    <template x-if="isSearching">
+                        <div class="p-4 text-center text-xs text-gray-400">Searching...</div>
+                    </template>
+
+                    <template x-if="!isSearching && categoriesList.length === 0 && productsList.length === 0">
+                        <div class="p-4 text-center text-xs text-gray-500">
+                            No matching results found
+                        </div>
+                    </template>
+
+                    <template x-if="!isSearching && categoriesList.length > 0">
+                        <div class="py-2 border-b border-gray-100">
+                            <span class="block px-4 py-1 text-[11px] font-bold tracking-wider uppercase text-gray-400">Categories</span>
+                            <template x-for="cat in categoriesList" :key="cat.id || cat.slug">
+                                <a :href="'{{ url('/collection') }}/' + cat.slug"
+                                   class="flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition">
+                                    <i class="fa-solid fa-layer-group text-gray-400 text-xs shrink-0"></i>
+                                    <span class="truncate" x-text="cat.name || cat.title"></span>
+                                </a>
+                            </template>
+                        </div>
+                    </template>
+
+                    <template x-if="!isSearching && productsList.length > 0">
+                        <div class="py-2">
+                            <span class="block px-4 py-1 text-[11px] font-bold tracking-wider uppercase text-gray-400">Products</span>
+                            <template x-for="prod in productsList" :key="prod.id || prod.slug">
+                                <a :href="'{{ url('/product') }}/' + prod.slug"
+                                   class="flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition">
+                                    <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs shrink-0"></i>
+                                    <span class="truncate" x-text="prod.name || prod.title"></span>
+                                </a>
+                            </template>
+                        </div>
+                    </template>
+
                 </div>
 
             </div>
@@ -225,15 +277,23 @@
     <div x-show="mobileSearchOpen" x-cloak style="display: none;" x-transition
          class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
         <form action="{{ route('categories') }}" method="GET"
+              @submit="handleSubmit($event)"
               class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-0.5 shadow-sm relative h-10 z-20">
 
             <input type="text"
                    name="search"
-                   value="{{ request('search')}}"
+                   x-model="searchQuery"
+                   @input.debounce.300ms="fetchLiveSearch()"
                    placeholder="Search products, brands and more..."
                    autocomplete="off"
                    autofocus
                    class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+
+            <button type="button"
+                    @click="isImageModalOpen = true"
+                    class="px-2 text-gray-500">
+                <i class="fa-solid fa-qrcode text-sm"></i>
+            </button>
 
             <button type="submit"
                     class="bg-black hover:bg-gray-800 text-white w-8 h-8 rounded-full flex items-center justify-center transition shrink-0">
@@ -242,7 +302,12 @@
         </form>
 
         <div id="search-suggestions"
-             class="search-suggestions absolute left-3 right-3 top-[48px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-30 hidden mt-1 max-h-96 overflow-y-auto"></div>
+             x-show="showDropdown"
+             x-cloak
+             style="display: none;"
+             class="search-suggestions absolute left-3 right-3 top-[48px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-30 mt-1 max-h-96 overflow-y-auto">
+            <!-- Same categories/products template jaisa desktop wala -->
+        </div>
     </div>
     <!-- ================= END MOBILE SEARCH BAR ================= -->
 
@@ -410,6 +475,71 @@
         </div>
     </div>
 @endif
+
+<!-- ================= IMAGE SEARCH MODAL ================= -->
+<div x-show="isImageModalOpen"
+     x-cloak
+     style="display: none;"
+     class="fixed inset-0 z-[300] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+
+    <div class="bg-white text-gray-800 rounded-3xl shadow-2xl border border-gray-100 w-full max-w-lg p-6 relative"
+         @click.outside="closeImageModal()">
+
+        <!-- Close Button -->
+        <button @click="closeImageModal()"
+                type="button"
+                class="absolute top-5 right-5 text-gray-400 hover:text-gray-700 transition p-1 cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+
+        <div class="text-center mb-5">
+            <h3 class="text-xl font-bold text-gray-900 tracking-tight">Search by Image</h3>
+            <p class="text-xs text-gray-500 mt-1">
+                Upload, drag and drop, or paste (<kbd class="bg-gray-100 px-1 py-0.5 rounded text-[10px] font-mono border">Ctrl+V</kbd>) an image to find similar products
+            </p>
+        </div>
+
+        <template x-if="imageError">
+            <div class="mb-4 p-2.5 bg-red-50 border border-red-100 text-red-600 text-xs rounded-xl text-center" x-text="imageError"></div>
+        </template>
+
+        <div @dragenter.prevent="isDragActive = true"
+             @dragover.prevent="isDragActive = true"
+             @dragleave.prevent="isDragActive = false"
+             @drop.prevent="handleDrop($event)"
+             @click="$refs.imageSearchInput.click()"
+             :class="isDragActive ? 'border-emerald-500 bg-emerald-50/40' : 'border-gray-300 hover:border-gray-400 bg-gray-50/50'"
+             class="border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition min-h-[220px]">
+
+            <input type="file" x-ref="imageSearchInput" accept="image/*" class="hidden" @change="handleFileInputChange($event)">
+
+            <template x-if="isImageLoading">
+                <div class="flex flex-col items-center gap-3">
+                    <i class="fa-solid fa-spinner text-3xl text-emerald-600 animate-spin"></i>
+                    <p class="text-xs font-semibold text-gray-700">Analyzing image & finding products...</p>
+                </div>
+            </template>
+
+            <template x-if="!isImageLoading && imagePreview">
+                <div class="relative flex flex-col items-center gap-2">
+                    <img :src="imagePreview" alt="Upload preview" class="max-h-36 rounded-lg object-contain border border-gray-200 shadow-sm">
+                    <span class="text-xs text-gray-500 underline">Click or drop another image to replace</span>
+                </div>
+            </template>
+
+            <template x-if="!isImageLoading && !imagePreview">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 mb-3">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-800">Drag and drop your image here</p>
+                    <p class="text-xs text-gray-400 mt-1">or click to browse from computer</p>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+<!-- ================= END IMAGE SEARCH MODAL ================= -->
 
 <style>
     /* Custom Thin Scrollbar for Categories Dropdown */

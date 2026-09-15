@@ -932,6 +932,196 @@
     }
 </script>
 
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('mainHeaderHandler', () => ({
+            searchQuery: '{{ request('search') }}',
+            categoriesList: [],
+            productsList: [],
+            isSearching: false,
+            showDropdown: false,
+            isListening: false,
+            mobileSearchOpen: false,
+
+            // Image Modal States
+            isImageModalOpen: false,
+            isDragActive: false,
+            isImageLoading: false,
+            imagePreview: null,
+            imageError: '',
+
+            init() {
+                // Clipboard paste (Ctrl+V) listener
+                window.addEventListener('paste', (e) => {
+                    if (!this.isImageModalOpen) return;
+                    const items = e.clipboardData?.items;
+                    if (!items) return;
+
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                            const file = items[i].getAsFile();
+                            if (file) this.processImageUpload(file);
+                            break;
+                        }
+                    }
+                });
+            },
+
+            async fetchLiveSearch() {
+                const query = this.searchQuery.trim();
+                if (!query) {
+                    this.categoriesList = [];
+                    this.productsList = [];
+                    this.showDropdown = false;
+                    return;
+                }
+
+                this.isSearching = true;
+                this.showDropdown = true;
+
+                try {
+                    const res = await fetch(`{{ route('live.search') }}?query=${encodeURIComponent(query)}`);
+                    const json = await res.json();
+                    const results = json?.data || json;
+
+                    this.categoriesList = Array.isArray(results?.categories) ? results.categories : [];
+                    this.productsList = Array.isArray(results?.products) ? results.products : [];
+                    this.showDropdown = true;
+                } catch (err) {
+                    console.error("Live search error:", err);
+                } finally {
+                    this.isSearching = false;
+                }
+            },
+
+            handleSubmit(e) {
+                if (!this.searchQuery.trim()) {
+                    e.preventDefault();
+                } else {
+                    this.showDropdown = false;
+                }
+            },
+
+            handleVoiceSearch() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    alert("Voice recognition is not supported in this browser. Please try Chrome or Edge.");
+                    return;
+                }
+
+                if (this.isListening) {
+                    this.isListening = false;
+                    return;
+                }
+
+                const recognition = new SpeechRecognition();
+                recognition.lang = "en-US";
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = () => { this.isListening = true; };
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    this.searchQuery = transcript;
+                    this.isListening = false;
+                    this.showDropdown = false;
+
+                    if (transcript.trim()) {
+                        window.location.href = `{{ route('categories') }}?search=${encodeURIComponent(transcript.trim())}`;
+                    }
+                };
+
+                recognition.onerror = () => { this.isListening = false; };
+                recognition.onend = () => { this.isListening = false; };
+
+                recognition.start();
+            },
+
+            closeImageModal() {
+                this.isImageModalOpen = false;
+                this.imagePreview = null;
+                this.imageError = '';
+                this.isDragActive = false;
+                this.isImageLoading = false;
+            },
+
+            handleFileInputChange(e) {
+                if (e.target.files && e.target.files[0]) {
+                    this.processImageUpload(e.target.files[0]);
+                }
+            },
+
+            handleDrop(e) {
+                this.isDragActive = false;
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    this.processImageUpload(e.dataTransfer.files[0]);
+                }
+            },
+
+            processImageUpload(file) {
+                if (!file.type.startsWith('image/')) {
+                    this.imageError = "Please upload a valid image file (PNG, JPG, WEBP).";
+                    return;
+                }
+                this.imageError = "";
+
+                const reader = new FileReader();
+                reader.onload = (e) => { this.imagePreview = e.target.result; };
+                reader.readAsDataURL(file);
+
+                this.searchWithImage(file);
+            },
+
+            async searchWithImage(file) {
+                this.isImageLoading = true;
+                this.imageError = "";
+
+                try {
+                    const formData = new FormData();
+                    formData.append("image", file);
+
+                    const res = await fetch("{{ route('search.by.image') }}", {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        }
+                    });
+
+                    const json = await res.json();
+
+                    if (res.ok) {
+                        const rawItems = json?.data || json?.products || [];
+                        const productIds = Array.isArray(rawItems)
+                            ? rawItems.map(p => (typeof p === 'object' && p !== null ? p.id : p))
+                            : [];
+
+                        this.closeImageModal();
+
+                        if (json?.search_token) {
+                            window.location.href = `{{ route('categories') }}?image_search_token=${json.search_token}`;
+                        } else if (productIds.length > 0) {
+                            window.location.href = `{{ route('categories') }}?ids=${productIds.join(",")}`;
+                        } else {
+                            this.imageError = "No matching products found for this image.";
+                            this.isImageModalOpen = true;
+                        }
+                    } else {
+                        this.imageError = json?.message || "Failed to search using this image.";
+                    }
+                } catch (err) {
+                    console.error("Image search error:", err);
+                    this.imageError = "Network error while searching image.";
+                } finally {
+                    this.isImageLoading = false;
+                }
+            }
+        }));
+    });
+</script>
+
 @stack('scripts')
 
 </body>
