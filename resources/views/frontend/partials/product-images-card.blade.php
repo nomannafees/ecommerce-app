@@ -76,7 +76,7 @@
 
         <button type="submit"
                 class="wishlistBtn absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-white rounded-full shadow z-10 hover:bg-gray-50 transition"
-                style="padding: 4px 9px 4px 9px !important; cursor: pointer;">
+                style="padding: 3px 8px 3px 9px !important; cursor: pointer;">
 
             <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ @$isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-600' }}"></i>
 

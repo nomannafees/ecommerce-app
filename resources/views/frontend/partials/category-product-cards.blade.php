@@ -38,13 +38,13 @@
         <form action="{{ route('wishlists.store') }}" method="POST"
               class="wishlistForm absolute top-2 right-2 sm:top-2 sm:right-2 z-15">
             @csrf
-            <input type="hidden" name="product_id" value="{{ $product->id }}">
-            <button type="submit"
-                    class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition flex items-center justify-center"
-                    style="padding: 7px 7px 6px 7px !important;
-                        cursor: pointer;">
-                <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>
-            </button>
+{{--            <input type="hidden" name="product_id" value="{{ $product->id }}">--}}
+{{--            <button type="submit"--}}
+{{--                    class="wishlistBtn bg-white/90 hover:bg-white rounded-full shadow-sm transition flex items-center justify-center"--}}
+{{--                    style="padding: 7px 7px 6px 7px !important;--}}
+{{--                        cursor: pointer;">--}}
+{{--                <i class="wishlistIcon fa-heart text-xs sm:text-sm transition duration-200 {{ $isWishlisted ? 'fa-solid text-red-500' : 'fa-regular text-gray-500' }}"></i>--}}
+{{--            </button>--}}
         </form>
 
         @php

@@ -44,15 +44,15 @@
             <div class="search-wrapper hidden lg:block flex-1 max-w-xl mx-auto relative z-[40]"
                  @click.outside="showDropdown = false">
 
-                
+
                 <form action="{{ route('categories') }}" method="GET"
                       @submit="handleSubmit($event)"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
                     <!-- Search Icon added on the left side -->
                     <span class="pl-2 text-gray-400 flex items-center pointer-events-none">
-            <i class="fa-solid fa-magnifying-glass text-sm"></i>
-        </span>
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
 
                     <input type="text"
                            name="search"
@@ -286,19 +286,32 @@
               @submit="handleSubmit($event)"
               class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-0.5 shadow-sm relative h-10 z-20">
 
+    <span class="pl-1 text-gray-400 flex items-center pointer-events-none shrink-0">
+        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+    </span>
+
             <input type="text"
                    name="search"
                    x-model="searchQuery"
                    @input.debounce.300ms="fetchLiveSearch()"
-                   placeholder="Search products, brands and more..."
+                   @focus="if (searchQuery.trim() && (categoriesList.length || productsList.length)) showDropdown = true"
+                   placeholder="Search products..."
                    autocomplete="off"
-                   autofocus
-                   class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+                   class="w-full search-input pl-2 pr-1 text-sm text-gray-800 focus:outline-none bg-transparent min-w-0">
 
+            <!-- Image Search -->
             <button type="button"
                     @click="isImageModalOpen = true"
-                    class="px-2 text-gray-500">
+                    class="px-2 text-gray-500 shrink-0">
                 <i class="fa-solid fa-qrcode text-sm"></i>
+            </button>
+
+            <!-- 🎤 Voice Search -->
+            <button type="button"
+                    @click="handleVoiceSearch()"
+                    class="px-2 transition shrink-0"
+                    :class="isListening ? 'text-red-500 animate-pulse' : 'text-gray-500'">
+                <i class="fa-solid fa-microphone text-sm"></i>
             </button>
 
             <button type="submit"
@@ -481,6 +494,7 @@
         </div>
     </div>
 @endif
+
 
 <!-- ================= IMAGE SEARCH MODAL ================= -->
 <div x-show="isImageModalOpen"

@@ -941,6 +941,7 @@
             isSearching: false,
             showDropdown: false,
             isListening: false,
+            recognition: null,
             mobileSearchOpen: false,
 
             // Image Modal States
@@ -1009,12 +1010,16 @@
                     return;
                 }
 
+                // Agar pehle se sun raha hai to band kar do
                 if (this.isListening) {
+                    this.recognition?.stop();
                     this.isListening = false;
                     return;
                 }
 
                 const recognition = new SpeechRecognition();
+                this.recognition = recognition;
+
                 recognition.lang = "en-US";
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
@@ -1032,7 +1037,13 @@
                     }
                 };
 
-                recognition.onerror = () => { this.isListening = false; };
+                recognition.onerror = (e) => {
+                    this.isListening = false;
+                    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+                        alert("Microphone permission blocked hai. Browser settings mein mic allow karein.");
+                    }
+                };
+
                 recognition.onend = () => { this.isListening = false; };
 
                 recognition.start();
