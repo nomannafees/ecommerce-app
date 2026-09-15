@@ -149,7 +149,7 @@
 
                     <label for="{{ $checkboxId }}"
                            title="{{ ucfirst($colorName) }}"
-                           class="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-2 ring-offset-2 ring-black scale-110' : 'opacity-80 hover:opacity-100' }}"
+                           class="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-1 ring-offset-1 ring-gray-200 scale-110' : 'opacity-80 hover:opacity-100' }}"
                            style="{{ $inlineBg }}">
 
                         <input type="checkbox"
