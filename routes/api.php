@@ -32,7 +32,7 @@ Route::get('/categories/products/{id}', [\App\Http\Controllers\Api\CategoryContr
 Route::get('/category-sidebar/{slug?}', [CategoryProduct::class, 'getSidebarData'])->where('slug', '.*');
 Route::get('/categories-products/{slug?}', [CategoryProduct::class, 'getProducts'])->where('slug', '.*');
 Route::get('/admin-store', [\App\Http\Controllers\Api\ProductController::class, 'adminStore']);
-Route::get('products/related/{slug}', [ProductController::class, 'relatedProducts']);
+Route::get('products/related/{slug}', [\App\Http\Controllers\Api\ProductController::class, 'relatedProducts']);
 
 
 Route::get('/banner/brand', [BannerController::class, 'getBrandBanner']);
