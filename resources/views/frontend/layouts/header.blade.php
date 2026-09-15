@@ -44,6 +44,7 @@
             <div class="search-wrapper hidden lg:block flex-1 max-w-xl mx-auto relative z-[40]"
                  @click.outside="showDropdown = false">
 
+                
                 <form action="{{ route('categories') }}" method="GET"
                       @submit="handleSubmit($event)"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
