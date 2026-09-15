@@ -347,45 +347,26 @@ class ProductController extends Controller
 
     public function relatedProducts(Request $request, $slug)
     {
-        // Agar route model binding se direct product object pass ho jaye ya string aaye
-        if ($slug instanceof Product) {
-            $product = $slug;
-        } else {
-            $cleanSlug = trim(urldecode((string) $slug));
-
-            // Slug se dhoondein, agar na mile toh ID se fallback karein
-            $product = Product::where('slug', $cleanSlug)
-                ->orWhere('id', $cleanSlug)
-                ->first();
-        }
+        $product = Product::where('slug', $slug)->first();
 
         if (!$product) {
             return response()->json([
                 'status' => false,
-                'message' => 'Product not found!',
-                'searched_value' => $slug
+                'message' => 'Product not found!'
             ], 404);
         }
 
-        $perPage = (int) $request->get('per_page', 6);
-        $categoryIds = [];
+        // --- RELATED PRODUCTS: MAIN CATEGORY + ALL ITS SUB-CATEGORIES & CHILDREN ---
+        $relatedProducts = collect();
 
-        // Safe Root Category & Child Hierarchy traversal
-        if (!empty($product->category_id)) {
-            $currentCategory = \App\Models\Categorie::find($product->category_id);
+        if ($product->category_id) {
+            $currentCategory = Categorie::find($product->category_id);
 
             if ($currentCategory) {
+                // 1. Root Parent (Main Category) tak jana
                 $mainCategory = $currentCategory;
-                $visitedParents = [];
-
-                // Safe loop: checks for 0, null, and prevents infinite circular loops
-                while (!empty($mainCategory->parent_id) && $mainCategory->parent_id != 0) {
-                    if (in_array($mainCategory->parent_id, $visitedParents)) {
-                        break;
-                    }
-                    $visitedParents[] = $mainCategory->parent_id;
-
-                    $parent = \App\Models\Categorie::find($mainCategory->parent_id);
+                while ($mainCategory->parent_id != 0) {
+                    $parent = Categorie::find($mainCategory->parent_id);
                     if ($parent) {
                         $mainCategory = $parent;
                     } else {
@@ -393,55 +374,48 @@ class ProductController extends Controller
                     }
                 }
 
-                // Sub-categories and grand-children
-                $subCategoryIds = \App\Models\Categorie::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
+                // 2. Main Category aur uski saari sub-categories/children ki IDs ikathi karna
+                $subCategoryIds = Categorie::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
 
                 $grandChildIds = [];
                 if (!empty($subCategoryIds)) {
-                    $grandChildIds = \App\Models\Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
+                    $grandChildIds = Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
                 }
 
-                $categoryIds = array_filter(array_unique(array_merge([$mainCategory->id], $subCategoryIds, $grandChildIds)));
+                // Saari category IDs ko mila dena (Main + Sub + Child)
+                $categoryIds = array_merge([$mainCategory->id], $subCategoryIds, $grandChildIds);
+
+                // 3. Products fetch karna (Exact relations & conditions from web code)
+                $relatedProducts = Product::with(['images', 'variants'])
+                    ->withCount(['orderItems', 'reviews'])
+                    ->whereIn('category_id', array_unique($categoryIds))
+                    ->where('id', '!=', $product->id)
+                    ->get();
             }
         }
 
-        // Related products query
-        $query = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
-            ->with([
-                'variants.variantImage',
-                'variantImages',
-                'mainVariantImage',
-                'reviews' => function ($q) {
-                    $q->where('is_approved', true);
-                }
-            ])
-            ->withCount(['orderItems', 'reviews'])
-            ->where('id', '!=', $product->id);
+        // --- COLLECTION TO PAGINATOR CONVERSION (Same as web method) ---
+        $page = (int) $request->get('page', 1);
+        $perPage = 6;
+        $offset = ($page * $perPage) - $perPage;
 
-        if (!empty($categoryIds)) {
-            $query->whereIn('category_id', $categoryIds);
-        } else {
-            $query->latest();
-        }
-
-        $paginatedData = $query->paginate($perPage);
-
-        // Dynamic rating calculation
-        $paginatedData->getCollection()->transform(function ($item) {
-            $item->avg_rating = round($item->reviews->avg('rating'), 1) ?: 0;
-            $item->total_reviews = $item->reviews_count ?? $item->reviews->count();
-            return $item;
-        });
+        $paginatedRelatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $relatedProducts->slice($offset, $perPage)->values(),
+            $relatedProducts->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return response()->json([
             'status' => true,
-            'data' => $paginatedData->items(),
+            'data' => $paginatedRelatedProducts->items(),
             'meta' => [
-                'current_page' => $paginatedData->currentPage(),
-                'last_page'    => $paginatedData->lastPage(),
-                'per_page'     => $paginatedData->perPage(),
-                'total'        => $paginatedData->total(),
-                'has_more'     => $paginatedData->hasMorePages()
+                'current_page' => $paginatedRelatedProducts->currentPage(),
+                'last_page'    => $paginatedRelatedProducts->lastPage(),
+                'per_page'     => $paginatedRelatedProducts->perPage(),
+                'total'        => $paginatedRelatedProducts->total(),
+                'has_more'     => $paginatedRelatedProducts->hasMorePages()
             ]
         ], 200);
     }
