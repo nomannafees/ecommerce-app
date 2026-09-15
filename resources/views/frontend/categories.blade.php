@@ -17,7 +17,7 @@
             </p>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-6 pb-6 pt-3 lg:mt-0">
+        <div class="flex flex-col lg:flex-row gap-4 pb-6 pt-3 lg:mt-0">
 
         @include('frontend.partials.category-sidebar')
 
@@ -31,27 +31,27 @@
 
                     <div class="flex items-center gap-3">
                         <div class="w-40 relative h-[34px]" x-data="{
-    open: false,
-    currentSort: '{{ request('sort', 'latest') }}',
-    sortLabels: {
-        'latest': 'Latest Products',
-        'price_low_high': 'Price: Low to High',
-        'price_high_low': 'Price: High to Low'
-    },
-    changeSort(value) {
-        this.currentSort = value;
-        this.open = false;
+                                open: false,
+                                currentSort: '{{ request('sort', 'latest') }}',
+                                sortLabels: {
+                                    'latest': 'Latest Products',
+                                    'price_low_high': 'Price: Low to High',
+                                    'price_high_low': 'Price: High to Low'
+                                },
+                                changeSort(value) {
+                                    this.currentSort = value;
+                                    this.open = false;
 
-        if (typeof fetchFilteredProducts === 'function') {
-            const url = new URL(window.location.href);
-            url.searchParams.set('sort', value);
-            window.history.pushState({}, '', url);
-            fetchFilteredProducts();
-        } else {
-            window.location.href = window.location.pathname + '?' + new URLSearchParams(new FormData(document.getElementById('searchSortForm') || document.createElement('form'))).toString() + '&sort=' + value;
-        }
-    }
-}">
+                                    if (typeof fetchFilteredProducts === 'function') {
+                                        const url = new URL(window.location.href);
+                                        url.searchParams.set('sort', value);
+                                        window.history.pushState({}, '', url);
+                                        fetchFilteredProducts();
+                                    } else {
+                                        window.location.href = window.location.pathname + '?' + new URLSearchParams(new FormData(document.getElementById('searchSortForm') || document.createElement('form'))).toString() + '&sort=' + value;
+                                    }
+                                }
+                            }">
                             <button type="button"
                                     @click="open = !open"
                                     @click.away="open = false"
@@ -316,7 +316,7 @@
 
                 <!-- PRODUCTS GRID (5 columns on lg/xl) -->
                 <div id="productGrid"
-                     class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-5 sm:gap-3">
+                     class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 mb-5 sm:gap-3">
                     @include('frontend.partials.category-product-cards', ['records' => $records, 'wishlistProductIds' => $wishlistProductIds])
                 </div>
 

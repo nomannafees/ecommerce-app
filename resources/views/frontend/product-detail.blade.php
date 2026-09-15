@@ -680,7 +680,7 @@
                 </div>
 
                 <!-- Responsive Grid Setup with ID -->
-                <div id="related-products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
+                <div id="related-products-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
                     @include('frontend.partials.related-products-cards')
                 </div>
 

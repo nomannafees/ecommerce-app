@@ -21,12 +21,11 @@
             <img
                     src="{{ $bannerImage }}"
                     alt="Banner"
-                    class="w-full h-auto object-contain sm:h-52 sm:object-cover md:h-60 lg:h-65 object-center"
-            >
+                    class="w-full h-auto object-contain sm:h-52 sm:object-cover md:h-60 lg:h-65 object-center">
         </div>
 
         <!-- 1. PRODUCTS GRID SECTION -->
-        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
+        <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
             @include('frontend.partials.product-list-cart')
         </div>
 
@@ -34,7 +33,7 @@
         <div id="scroll-sentinel" style="height:1px;"></div>
 
         <!-- 3. SHIMMER SKELETON GRID -->
-        <div id="shimmer-grid" class="hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
+        <div id="shimmer-grid" class="hidden grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
             @for($i = 0; $i < 6; $i++)
                 <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full w-full">
                     <div class="shimmer h-50 xs:h-44 sm:h-40 2xl:h-50 md:h-50 lg:h-50 bg-gray-200"></div>

@@ -166,7 +166,7 @@
     </div>
 
     <!-- Responsive Grid Setup -->
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2 lg:gap-3 xl:gap-3 2xl:gap-3 md:gap-3">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2 ">
         @forelse($flashSaleProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -341,7 +341,7 @@
         </a>
     </div>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -535,7 +535,7 @@
             </a>
         </div>
 
-        <div class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
+        <div class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -660,7 +660,7 @@
                 <div class="swiper-pagination brands-swiper-pagination"></div>
             </div>
         @else
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-6">
                 @forelse($brands as $brand)
                     <a href="{{ route('categories', ['brand' => $brand->slug]) }}"
                        class="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition duration-300 group">
@@ -749,7 +749,7 @@
 
         <!-- GRID CONTAINER WITH ID -->
         <div id="for-you-grid"
-             class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-3">
+             class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-3">
             @include('frontend.partials.for-you-cards', ['products' => $products])
         </div>
 
