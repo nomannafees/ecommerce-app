@@ -48,6 +48,11 @@
                       @submit="handleSubmit($event)"
                       class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
+                    <!-- Search Icon added on the left side -->
+                    <span class="pl-2 text-gray-400 flex items-center pointer-events-none">
+            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+        </span>
+
                     <input type="text"
                            name="search"
                            x-model="searchQuery"
