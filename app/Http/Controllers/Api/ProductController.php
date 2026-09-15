@@ -347,27 +347,45 @@ class ProductController extends Controller
 
     public function relatedProducts(Request $request, $slug)
     {
-        $product = Product::where('slug', $slug)->first();
+        // Agar route model binding se direct product object pass ho jaye ya string aaye
+        if ($slug instanceof Product) {
+            $product = $slug;
+        } else {
+            $cleanSlug = trim(urldecode((string) $slug));
+
+            // Slug se dhoondein, agar na mile toh ID se fallback karein
+            $product = Product::where('slug', $cleanSlug)
+                ->orWhere('id', $cleanSlug)
+                ->first();
+        }
 
         if (!$product) {
             return response()->json([
                 'status' => false,
-                'message' => 'Product not found!'
+                'message' => 'Product not found!',
+                'searched_value' => $slug
             ], 404);
         }
 
         $perPage = (int) $request->get('per_page', 6);
         $categoryIds = [];
 
-        // Root Category aur uske saare sub-categories / children find karna
-        if ($product->category_id) {
-            $currentCategory = Categorie::find($product->category_id);
+        // Safe Root Category & Child Hierarchy traversal
+        if (!empty($product->category_id)) {
+            $currentCategory = \App\Models\Categorie::find($product->category_id);
 
             if ($currentCategory) {
-                // 1. Root Parent (Main Category) find karna
                 $mainCategory = $currentCategory;
-                while ($mainCategory->parent_id != 0) {
-                    $parent = Categorie::find($mainCategory->parent_id);
+                $visitedParents = [];
+
+                // Safe loop: checks for 0, null, and prevents infinite circular loops
+                while (!empty($mainCategory->parent_id) && $mainCategory->parent_id != 0) {
+                    if (in_array($mainCategory->parent_id, $visitedParents)) {
+                        break;
+                    }
+                    $visitedParents[] = $mainCategory->parent_id;
+
+                    $parent = \App\Models\Categorie::find($mainCategory->parent_id);
                     if ($parent) {
                         $mainCategory = $parent;
                     } else {
@@ -375,19 +393,19 @@ class ProductController extends Controller
                     }
                 }
 
-                // 2. Sub-categories aur children IDs fetch karna
-                $subCategoryIds = Categorie::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
+                // Sub-categories and grand-children
+                $subCategoryIds = \App\Models\Categorie::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
 
                 $grandChildIds = [];
                 if (!empty($subCategoryIds)) {
-                    $grandChildIds = Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
+                    $grandChildIds = \App\Models\Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
                 }
 
-                $categoryIds = array_unique(array_merge([$mainCategory->id], $subCategoryIds, $grandChildIds));
+                $categoryIds = array_filter(array_unique(array_merge([$mainCategory->id], $subCategoryIds, $grandChildIds)));
             }
         }
 
-        // Related products query with pagination
+        // Related products query
         $query = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
             ->with([
                 'variants.variantImage',
@@ -403,13 +421,12 @@ class ProductController extends Controller
         if (!empty($categoryIds)) {
             $query->whereIn('category_id', $categoryIds);
         } else {
-            // Fallback agar category match na ho
             $query->latest();
         }
 
         $paginatedData = $query->paginate($perPage);
 
-        // Rating aur review count calculation
+        // Dynamic rating calculation
         $paginatedData->getCollection()->transform(function ($item) {
             $item->avg_rating = round($item->reviews->avg('rating'), 1) ?: 0;
             $item->total_reviews = $item->reviews_count ?? $item->reviews->count();
