@@ -7,6 +7,7 @@ use App\Models\AdminStore;
 use App\Models\Product;
 use App\Models\UserProductInteraction;
 use Illuminate\Http\Request;
+use App\Models\Categorie;
 
 class ProductController extends Controller
 {
@@ -341,6 +342,90 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'data' => $setting
+        ], 200);
+    }
+
+    public function relatedProducts(Request $request, $slug)
+    {
+        $product = Product::where('slug', $slug)->first();
+
+        if (!$product) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Product not found!'
+            ], 404);
+        }
+
+        $perPage = (int) $request->get('per_page', 6);
+        $categoryIds = [];
+
+        // Root Category aur uske saare sub-categories / children find karna
+        if ($product->category_id) {
+            $currentCategory = Categorie::find($product->category_id);
+
+            if ($currentCategory) {
+                // 1. Root Parent (Main Category) find karna
+                $mainCategory = $currentCategory;
+                while ($mainCategory->parent_id != 0) {
+                    $parent = Categorie::find($mainCategory->parent_id);
+                    if ($parent) {
+                        $mainCategory = $parent;
+                    } else {
+                        break;
+                    }
+                }
+
+                // 2. Sub-categories aur children IDs fetch karna
+                $subCategoryIds = Categorie::where('parent_id', $mainCategory->id)->pluck('id')->toArray();
+
+                $grandChildIds = [];
+                if (!empty($subCategoryIds)) {
+                    $grandChildIds = Categorie::whereIn('parent_id', $subCategoryIds)->pluck('id')->toArray();
+                }
+
+                $categoryIds = array_unique(array_merge([$mainCategory->id], $subCategoryIds, $grandChildIds));
+            }
+        }
+
+        // Related products query with pagination
+        $query = Product::whereDoesntHave('flashSale', $this->excludeFlashSale())
+            ->with([
+                'variants.variantImage',
+                'variantImages',
+                'mainVariantImage',
+                'reviews' => function ($q) {
+                    $q->where('is_approved', true);
+                }
+            ])
+            ->withCount(['orderItems', 'reviews'])
+            ->where('id', '!=', $product->id);
+
+        if (!empty($categoryIds)) {
+            $query->whereIn('category_id', $categoryIds);
+        } else {
+            // Fallback agar category match na ho
+            $query->latest();
+        }
+
+        $paginatedData = $query->paginate($perPage);
+
+        // Rating aur review count calculation
+        $paginatedData->getCollection()->transform(function ($item) {
+            $item->avg_rating = round($item->reviews->avg('rating'), 1) ?: 0;
+            $item->total_reviews = $item->reviews_count ?? $item->reviews->count();
+            return $item;
+        });
+
+        return response()->json([
+            'status' => true,
+            'data' => $paginatedData->items(),
+            'meta' => [
+                'current_page' => $paginatedData->currentPage(),
+                'last_page'    => $paginatedData->lastPage(),
+                'per_page'     => $paginatedData->perPage(),
+                'total'        => $paginatedData->total(),
+                'has_more'     => $paginatedData->hasMorePages()
+            ]
         ], 200);
     }
 }
