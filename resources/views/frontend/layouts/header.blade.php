@@ -11,7 +11,6 @@
 
     <header
             class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-4 relative">
-
         <div class="flex justify-between items-center h-full w-full">
 
             <!-- Dynamic Store Logo & Title Section -->
