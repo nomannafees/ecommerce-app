@@ -71,7 +71,7 @@
 
                     <button type="button"
                             @click="handleVoiceSearch()"
-                            class="px-2 transition"
+                            class="px-2 transition me-1.5"
                             :class="isListening ? 'text-red-500 animate-pulse' : 'text-gray-500 hover:text-black'"
                             title="Search by Voice">
                         <i class="fa-solid fa-microphone text-base"></i>
