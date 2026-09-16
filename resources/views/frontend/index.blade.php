@@ -92,24 +92,25 @@
 
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
-            <div class="swiper heroSwiper w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] relative overflow-hidden">
+            <!-- Aspect ratio use karne se yeh 1900x435 ka exact box banayega jo screen ke mutabiq scale hoga -->
+            <div class="swiper heroSwiper w-full aspect-[1900/435] relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
-                        <div class="swiper-slide relative">
+                        <div class="swiper-slide relative w-full h-full">
 
-                            <!-- 1. Image Check: Agar is_image == 1 hai aur image mojood hai tabhi image dikhayein -->
+                            <!-- 1. Image Check: object-fill ya object-cover use karein taake black bars na aayein -->
                             @if($slider->is_image == 1 && $slider->image)
                                 <img src="{{ asset('storage/' . $slider->image) }}"
-                                     class="w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] object-cover">
+                                     class="w-full h-full object-fill">
                             @else
-                            <!-- Agar image off hai ya nahi hai, toh black background ya placeholder dikha sakte hain -->
-                                <div class="w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] bg-gray-900"></div>
+                            <!-- Placeholder -->
+                                <div class="w-full h-full bg-gray-900"></div>
                             @endif
 
                         <!-- Overlay Content (Heading & Description checks) -->
                             @if(($slider->is_title == 1 && !empty($slider->heading)) || ($slider->is_description == 1 && !empty($slider->description)))
-                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                    <div class="text-center text-white px-3 sm:px-6 max-w-3xl mx-auto">
+                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                    <div class="text-center text-white px-3 sm:px-6 max-w-3xl mx-auto pointer-events-auto">
 
                                         <!-- 2. Title Check -->
                                         @if($slider->is_title == 1 && !empty($slider->heading))
@@ -136,7 +137,7 @@
 
                         </div>
                     @empty
-                        <div class="swiper-slide flex items-center justify-center h-[180px] sm:h-[350px] bg-gray-900">
+                        <div class="swiper-slide flex items-center justify-center w-full h-full bg-gray-900">
                             <h2 class="text-white text-xs sm:text-lg font-medium">No Slider Found</h2>
                         </div>
                     @endforelse
@@ -151,6 +152,8 @@
 
 
     <!-- FLASH SALE SECTION -->
+
+
     <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 flex justify-between items-center">
         <div>
             <h2 class="text-xl sm:text-2xl mt-2 sm:mt-4 font-bold text-gray-900 flex items-center gap-2">

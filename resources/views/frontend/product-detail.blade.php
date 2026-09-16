@@ -665,8 +665,8 @@
             </div>
         @endif
 
-    @if($relatedProducts->total() > 0)
-        <!-- ================= RELATED PRODUCTS SECTION ================= -->
+        @if($relatedProducts->total() > 0)
+            <!-- ================= RELATED PRODUCTS SECTION ================= -->
             <div class="mt-2 sm:mt-4 pt-2">
 
                 <!-- Header Container -->
