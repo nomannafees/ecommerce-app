@@ -93,7 +93,7 @@
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
             <!-- Aspect ratio use karne se yeh 1900x435 ka exact box banayega jo screen ke mutabiq scale hoga -->
-            <div class="swiper heroSwiper w-full aspect-[1900/435] relative overflow-hidden">
+            <div class="swiper heroSwiper w-full h-auto relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
                         <div class="swiper-slide relative w-full h-full">
