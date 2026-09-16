@@ -134,38 +134,42 @@
         </div>
 
         <!-- Color Filter (Multi-Select, same pattern as Brand) -->
-        @if(isset($availableColors) && count($availableColors) > 0)
-            <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
-                <span>Color</span>
-            </h2>
-            <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
-                @foreach($availableColors as $colorName)
-                    @php
-                        $cleanColor = strtolower(trim($colorName));
-                        $isSelected = in_array($cleanColor, $selectedColors);
-                        $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
-                        $checkboxId = 'color-' . \Illuminate\Support\Str::slug($cleanColor);
-                    @endphp
+            @if(isset($availableColors) && count($availableColors) > 0)
+                <h2 class="font-bold text-sm mt-4 tracking-tight flex items-center gap-2">
+                    <span>Color</span>
+                </h2>
+                <div class="flex flex-wrap gap-2.5 my-2 pb-3 border-b border-gray-100">
+                    @foreach($availableColors as $colorName)
+                        @php
+                            $cleanColor = strtolower(trim($colorName));
+                            $isSelected = in_array($cleanColor, $selectedColors);
+                            $inlineBg = in_array($cleanColor, ['white', '#ffffff', '#fff']) ? 'background-color: #ffffff; border: 1px solid #d1d5db;' : 'background-color: '.$cleanColor.';';
+                            $checkboxId = 'color-' . \Illuminate\Support\Str::slug($cleanColor);
 
-                    <label for="{{ $checkboxId }}"
-                           title="{{ ucfirst($colorName) }}"
-                           class="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 transform hover:scale-110 flex items-center justify-center shadow-sm {{ $isSelected ? 'ring-1 ring-offset-1 ring-gray-200 scale-110' : 'opacity-80 hover:opacity-100' }}"
-                           style="{{ $inlineBg }}">
+                            // Size bara kiye baghair sirf usi color ka shadow/ring apply hoga
+                            $selectionStyle = $isSelected ? 'border: 2px solid rgba(255, 255, 255, 0.8);' : '';
 
-                        <input type="checkbox"
-                               id="{{ $checkboxId }}"
-                               name="color[]"
-                               value="{{ $cleanColor }}"
-                               {{ $isSelected ? 'checked' : '' }}
-                               class="filter-input absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        @endphp
 
-                        @if($isSelected)
-                            <i class="fa-solid fa-check text-[10px] sm:text-xs pointer-events-none {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
-                        @endif
-                    </label>
-                @endforeach
-            </div>
-        @endif
+                        <label for="{{ $checkboxId }}"
+                               title="{{ ucfirst($colorName) }}"
+                               class="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer transition-all duration-200 hover:scale-110 flex items-center justify-center shadow-sm {{ $isSelected ? '' : 'opacity-80 hover:opacity-100' }}"
+                               style="{{ $inlineBg }} {{ $selectionStyle }}">
+
+                            <input type="checkbox"
+                                   id="{{ $checkboxId }}"
+                                   name="color[]"
+                                   value="{{ $cleanColor }}"
+                                   {{ $isSelected ? 'checked' : '' }}
+                                   class="filter-input absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+
+                            @if($isSelected)
+                                <i class="fa-solid fa-check text-[15px] leading-none pointer-events-none {{ in_array($cleanColor, ['white', 'yellow', 'lightgray']) ? 'text-black' : 'text-white' }}"></i>
+                            @endif
+                        </label>
+                    @endforeach
+                </div>
+            @endif
 
     <!-- Size Filter (Multi-Select, same pattern as Brand) -->
         @if(isset($availableSizes) && count($availableSizes) > 0)

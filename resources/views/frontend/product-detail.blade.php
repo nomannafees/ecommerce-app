@@ -138,7 +138,7 @@
 
                     <!-- ZOOMED PREVIEW BOX -->
                     <div id="zoomResult"
-                         class="hidden lg:block absolute left-[102%] top-0 w-[450px] h-[490px] bg-white rounded-xl shadow-xl overflow-hidden z-50 border border-gray-200 pointer-events-none opacity-0 transition-opacity duration-200">
+                         class="hidden lg:block absolute left-[102%] top-0 w-[450px] h-[518px] bg-white rounded-xl shadow-xl overflow-hidden z-50 border border-gray-200 pointer-events-none opacity-0 transition-opacity duration-200">
                         <div id="zoomedImage" class="w-full h-full bg-no-repeat"></div>
                     </div>
                 </div>
@@ -360,7 +360,7 @@
                             <span>Delivery Options</span>
                             <!-- Fixed Blinking Dot Position -->
                             <div class="relative inline-flex items-center justify-center p-1">
-                    <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5">
+                    <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5 bg-emerald-500 rounded-full">
                         <span class="animate-ping inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
 
                     </span>
@@ -418,7 +418,7 @@
                             <span>Return & Warranty</span>
                             <!-- Fixed Blinking Dot Position -->
                             <div class="relative inline-flex items-center justify-center p-1">
-                    <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5">
+                    <span class="absolute flex h-2 w-2 -top-0.5 -right-0.5 bg-emerald-500 rounded-full">
                         <span class="animate-ping inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
 
                     </span>
@@ -1307,32 +1307,32 @@
         }
     </script>
 
-    <script>
-        let isExpanded = false;
+{{--    <script>--}}
+{{--        let isExpanded = false;--}}
 
-        function toggleFullDescription() {
-            const content = document.getElementById('fullDescriptionContent');
-            const toggleText = document.getElementById('descToggleText');
-            const icon = document.getElementById('descToggleIcon');
-            const gradientOverlay = document.getElementById('descGradientOverlay');
+{{--        function toggleFullDescription() {--}}
+{{--            const content = document.getElementById('fullDescriptionContent');--}}
+{{--            const toggleText = document.getElementById('descToggleText');--}}
+{{--            const icon = document.getElementById('descToggleIcon');--}}
+{{--            const gradientOverlay = document.getElementById('descGradientOverlay');--}}
 
-            isExpanded = !isExpanded;
+{{--            isExpanded = !isExpanded;--}}
 
-            if (isExpanded) {
-                // Expand to full scroll height
-                content.style.maxHeight = content.scrollHeight + 'px';
-                toggleText.textContent = 'Show Less';
-                icon.style.transform = 'rotate(180deg)';
-                gradientOverlay.style.opacity = '0'; // Hide gradient when fully open
-            } else {
-                // Collapse back
-                content.style.maxHeight = '160px';
-                toggleText.textContent = 'Read Full Description';
-                icon.style.transform = 'rotate(0deg)';
-                gradientOverlay.style.opacity = '1'; // Show gradient when collapsed
-            }
-        }
-    </script>
+{{--            if (isExpanded) {--}}
+{{--                // Expand to full scroll height--}}
+{{--                content.style.maxHeight = content.scrollHeight + 'px';--}}
+{{--                toggleText.textContent = 'Show Less';--}}
+{{--                icon.style.transform = 'rotate(180deg)';--}}
+{{--                gradientOverlay.style.opacity = '0'; // Hide gradient when fully open--}}
+{{--            } else {--}}
+{{--                // Collapse back--}}
+{{--                content.style.maxHeight = '160px';--}}
+{{--                toggleText.textContent = 'Read Full Description';--}}
+{{--                icon.style.transform = 'rotate(0deg)';--}}
+{{--                gradientOverlay.style.opacity = '1'; // Show gradient when collapsed--}}
+{{--            }--}}
+{{--        }--}}
+{{--    </script>--}}
 
     <script>
         let zoomLevel = 2.5;

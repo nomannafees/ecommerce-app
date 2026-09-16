@@ -18,7 +18,7 @@
 @endphp
 
 {{-- IMAGE CONTAINER with Hover & Touch Scrub Support --}}
-<div class="relative bg-gray-100 overflow-hidden aspect-square select-none"
+<div class="relative bg-gray-100 overflow-hidden aspect-square select-none group"
      x-data="{
         images: {{ json_encode(@$allImages) }},
         currentIndex: 0,
@@ -93,6 +93,17 @@
              alt="{{ $product->name }}"
              class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none"
              x-init="setTimeout(() => $el.style.opacity = '1', 20)">
+    </template>
+
+    {{-- Progress Dash Indicators (Only visible when multi-image & on hover) --}}
+    <template x-if="images.length > 1">
+        <div class="absolute bottom-2 inset-x-2 flex gap-1 z-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <template x-for="(img, i) in images" :key="i">
+                <div class="h-0.5 flex-1 rounded-full transition-all duration-150"
+                     :class="i === currentIndex ? 'bg-white shadow-md' : 'bg-white/50'">
+                </div>
+            </template>
+        </div>
     </template>
 
 </div>
