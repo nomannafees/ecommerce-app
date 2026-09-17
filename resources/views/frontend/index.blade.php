@@ -92,8 +92,8 @@
 
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
-            <!-- 1900x435 ka exact aspect ratio jo har screen par proportionally scale hoga -->
-            <div class="swiper heroSwiper w-full aspect-[1900/490] relative overflow-hidden">
+            <!-- Responsive Aspect Ratio: Mobile par height zyada hogi, Desktop par wide ho jayegi -->
+            <div class="swiper heroSwiper w-full aspect-[4/1.5] sm:aspect-[16/6] md:aspect-[1900/490] relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
                         <div class="swiper-slide relative w-full h-full overflow-hidden">
@@ -107,9 +107,9 @@
                                 <div class="w-full h-full bg-gray-900"></div>
                             @endif
 
-                        <!-- Agar slider ki apni image me text nahi hai aur aap HTML se text overlay karna chahte hain -->
+                        <!-- Overlay Content -->
                             @if(($slider->is_title == 1 && !empty($slider->heading)) || ($slider->is_description == 1 && !empty($slider->description)))
-                                <div class="absolute inset-0 bg-black/10 flex items-center justify-center pointer-events-none">
+                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
                                     <div class="text-center text-white px-3 sm:px-6 max-w-3xl mx-auto pointer-events-auto">
 
                                         @if($slider->is_title == 1 && !empty($slider->heading))
