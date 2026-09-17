@@ -589,7 +589,7 @@
         <div class="relative w-full sm:my-1 bg-fixed bg-center bg-cover h-[220px] sm:h-[350px] md:h-[400px] flex items-center justify-center"
              @if($hasFeaturedImage) style="background-image: url('{{ asset('storage/' . $featuredBanner->image) }}');" @endif>
 
-            <div class="absolute inset-0 bg-black/85"></div>
+            <div class="absolute inset-0 bg-black/70"></div>
 
             <div class="relative z-10 text-center text-white px-4 sm:px-6 max-w-3xl mx-auto">
             <span class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-1 sm:mb-3 inline-block">
