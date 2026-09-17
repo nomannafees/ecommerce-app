@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Slider;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,7 +22,7 @@ class SliderController extends Controller
                 ->orWhere('description', 'LIKE', "%{$searchTerm}%");
         }
 
-        $sliders = $query->latest()->paginate(10);
+        $sliders = $query->orderBy('sort_order', 'asc')->latest()->paginate(10);
         return view('slider.index', compact('sliders'));
     }
 
@@ -36,18 +37,19 @@ class SliderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, ImageService $imageService)
     {
         $request->validate([
             'heading'        => 'nullable|string',
             'description'    => 'nullable|string',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'sort_order'     => 'nullable|integer',
         ]);
 
         $imagePath = null;
+
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $imagePath = str_replace('\\', '/', $file->store('sliders', 'public'));
+            $imagePath = $imageService->processAndStoreWithoutCrop($request->file('image'), 'sliders', 1900, 475, 80);
         }
 
         Slider::create([
@@ -57,6 +59,8 @@ class SliderController extends Controller
             'is_title'       => $request->has('is_title') ? 1 : 0,
             'is_image'       => $request->has('is_image') ? 1 : 0,
             'is_description' => $request->has('is_description') ? 1 : 0,
+            'is_active'      => $request->has('is_active') ? 1 : 0,
+            'sort_order'     => $request->input('sort_order', 0),
         ]);
 
         return redirect()->route('sliders.index')->with('success', 'Slider created successfully.');
@@ -82,36 +86,45 @@ class SliderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, ImageService $imageService)
     {
         $slider = Slider::findOrFail($id);
 
         $request->validate([
             'heading'        => 'nullable|string',
             'description'    => 'nullable|string',
-            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'sort_order'     => 'nullable|integer',
         ]);
 
         $imagePath = $slider->image;
 
         if ($request->hasFile('image')) {
-            if (!empty($slider->image) && Storage::disk('public')->exists($slider->image)) {
-                Storage::disk('public')->delete($slider->image);
+            // Delete old image if exists
+            if (!empty($slider->image)) {
+                $oldImage = storage_path('app/public/' . $slider->image);
+                if (file_exists($oldImage)) {
+                    unlink($oldImage);
+                }
             }
-            $file = $request->file('image');
-            $imagePath = str_replace('\\', '/', $file->store('sliders', 'public'));
+            // Process new image
+            $imagePath = $imageService->processAndStoreWithoutCrop($request->file('image'), 'sliders', 1900, 475, 80);
         }
 
+        // Sirf wahi data update hoga jo form se aayega, baaki purana data secure rahega
         $slider->update([
-            'heading'        => $request->heading,
-            'description'    => $request->description,
+            'heading'        => $request->has('heading') ? $request->heading : $slider->heading,
+            'description'    => $request->has('description') ? $request->description : $slider->description,
             'image'          => $imagePath,
-            'is_title'       => $request->input('is_title', 0),
-            'is_image'       => $request->input('is_image', 0),
-            'is_description' => $request->input('is_description', 0),
+            'is_title'       => $request->has('is_title') ? $request->input('is_title') : $slider->is_title,
+            'is_image'       => $request->has('is_image') ? $request->input('is_image') : $slider->is_image,
+            'is_description' => $request->has('is_description') ? $request->input('is_description') : $slider->is_description,
+            // Yahan check lagaya hai ke agar request mein is_active mojood ho tabhi change ho, warna purana status hi rahe
+            'is_active'      => $request->has('is_active') ? $request->input('is_active') : $slider->is_active,
+            'sort_order'     => $request->has('sort_order') ? $request->input('sort_order') : $slider->sort_order,
         ]);
 
-        return redirect()->route('sliders.index')->with('success', 'Slider visibility settings updated successfully.');
+        return redirect()->route('sliders.index')->with('success', 'Slider updated successfully.');
     }
 
     /**

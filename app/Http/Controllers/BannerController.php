@@ -123,9 +123,9 @@ class BannerController extends Controller
             'name'  => $request->input('name', $banner->name),
             'description' => $request->input('description', $banner->description),
             'image' => $imagePath,
-            'is_title' => $request->input('is_title', 0),
-            'is_image' => $request->input('is_image', 0),
-            'is_description' => $request->input('is_description', 0),
+            'is_title' => $request->input('is_title', 1),
+            'is_image' => $request->input('is_image', 1),
+            'is_description' => $request->input('is_description', 1),
         ];
 
         // Agar form mein sort_order aa raha hai toh update karein warna purana rakhein

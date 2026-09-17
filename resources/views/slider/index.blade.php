@@ -46,12 +46,12 @@
                         </span>
 
                         <input
-                            type="text"
-                            name="search"
-                            id="slider_search"
-                            value="{{ request('search') }}"
-                            placeholder=" "
-                            class="peer w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
+                                type="text"
+                                name="search"
+                                id="slider_search"
+                                value="{{ request('search') }}"
+                                placeholder=" "
+                                class="peer w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
 
                         <label for="slider_search"
                                class="absolute left-11 top-3 text-gray-400 text-sm pointer-events-none transition-all duration-200 z-10
@@ -65,8 +65,8 @@
                     <div class="flex items-center gap-2">
                         <!-- Search Button -->
                         <button
-                            type="submit"
-                            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/20 transition duration-200 shadow-xs cursor-pointer active:scale-[0.98]">
+                                type="submit"
+                                class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/20 transition duration-200 shadow-xs cursor-pointer active:scale-[0.98]">
                             <i class="fa-solid fa-magnifying-glass text-xs"></i>
                             <span>Search</span>
                         </button>
@@ -95,6 +95,8 @@
                         <th class="px-4 py-3.5 border-r border-gray-200 w-28">Image</th>
                         <th class="px-4 py-3.5 border-r border-gray-200">Heading</th>
                         <th class="px-4 py-3.5 border-r border-gray-200">Description</th>
+                        <th class="px-4 py-3.5 border-r border-gray-200 text-center w-24">Order</th>
+                        <th class="px-4 py-3.5 border-r border-gray-200 text-center w-28">Status</th>
                         <th class="px-4 py-3.5 text-center w-28">Action</th>
                     </tr>
                     </thead>
@@ -125,6 +127,26 @@
 
                             <td class="px-4 py-3.5 border-r border-gray-200 text-gray-600">
                                 {{ Str::limit($slider->description ?? '-', 60) }}
+                            </td>
+
+                            <!-- Sort Order Column -->
+                            <td class="px-4 py-3.5 border-r border-gray-200 text-center font-medium text-gray-700">
+                                <span class="bg-gray-100 text-gray-800 px-2.5 py-1 rounded-lg text-xs font-bold">
+                                    {{ $slider->sort_order ?? 0 }}
+                                </span>
+                            </td>
+
+                            <!-- Status Badge Column -->
+                            <td class="px-4 py-3.5 border-r border-gray-200 text-center">
+                                @if($slider->is_active == 1)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                                        Inactive
+                                    </span>
+                                @endif
                             </td>
 
                             <td class="px-4 py-3.5">
@@ -163,7 +185,7 @@
                     @empty
 
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                            <td colspan="7" class="px-6 py-12 text-center text-gray-400">
                                 <i class="fa-solid fa-images text-3xl mb-2 block text-gray-300"></i>
                                 <span>No Slider Records Found</span>
                             </td>

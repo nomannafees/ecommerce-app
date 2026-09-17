@@ -54,9 +54,9 @@ class FeaturedBannerController extends Controller
         $data = $request->except('image');
 
         // Set default values for checkboxes if not provided
-        $data['is_title']       = $request->input('is_title', 0);
-        $data['is_image']       = $request->input('is_image', 0);
-        $data['is_description'] = $request->input('is_description', 0);
+        $data['is_title']       = $request->input('is_title', 1);
+        $data['is_image']       = $request->input('is_image', 1);
+        $data['is_description'] = $request->input('is_description', 1);
 
         // Handle Image Upload
         if ($request->hasFile('image')) {

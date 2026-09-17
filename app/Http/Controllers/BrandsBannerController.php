@@ -83,10 +83,10 @@ class BrandsBannerController extends Controller
 
         $data = $request->except('image');
 
-        $data['is_title']       = $request->input('is_title', 0);
-        $data['is_image']       = $request->input('is_image', 0);
-        $data['is_description'] = $request->input('is_description', 0);
-        $data['is_button']      = $request->input('is_button', 0);
+        $data['is_title']       = $request->input('is_title', 1);
+        $data['is_image']       = $request->input('is_image', 1);
+        $data['is_description'] = $request->input('is_description', 1);
+        $data['is_button']      = $request->input('is_button', 1);
 
         if ($request->hasFile('image')) {
             if ($brandsBanner->image && Storage::disk('public')->exists($brandsBanner->image)) {

@@ -67,8 +67,11 @@ class FrontendController extends Controller
             ->take(12)
             ->get();
 
-        // 3. SLIDERS
-        $sliders = Slider::latest()->get();
+        // 3. SLIDERS (Sirf active aur sort_order ke mutabiq fetch honge)
+        $sliders = Slider::where('is_active', 1)
+            ->orderBy('sort_order', 'asc')
+            ->latest()
+            ->get();
 
         // 4. BRANDS
         $brands = Brand::latest()->get();
@@ -214,7 +217,7 @@ class FrontendController extends Controller
             'availableBrands',
             'setting',
             'flashSaleProducts',
-        ));
+    ));
     }
 
     public function productDetail(Request $request, $slug)

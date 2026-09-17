@@ -82,9 +82,41 @@
                         @enderror
                     </div>
 
+                    <!-- Sort Order & Status Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+
+                        <!-- Sort Order -->
+                        <div class="relative w-full">
+                            <label for="sort_order" class="block mb-2 text-xs font-medium text-gray-500">Sort Order (Position Number)</label>
+                            <input type="number"
+                                   name="sort_order"
+                                   id="sort_order"
+                                   value="{{ old('sort_order', $slider->sort_order ?? 0) }}"
+                                   placeholder="0, 1, 2..."
+                                   class="w-full px-4 py-3.5 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
+                            @error('sort_order')
+                            <p class="text-red-500 text-xs mt-1.5 ml-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Active Status Checkbox -->
+                        <div class="flex items-center gap-3 pt-6">
+                            <input type="checkbox"
+                                   name="is_active"
+                                   id="is_active"
+                                   value="1"
+                                   {{ old('is_active', $slider->is_active ?? 1) == 1 ? 'checked' : '' }}
+                                   class="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 cursor-pointer">
+                            <label for="is_active" class="text-sm font-medium text-gray-700 cursor-pointer">
+                                Active Slider (Show on Website)
+                            </label>
+                        </div>
+
+                    </div>
+
                     <!-- Image Upload & Live Preview -->
                     <div>
-                        <label class="block mb-2 text-xs font-medium text-gray-500">Slider Image</label>
+                        <label class="block mb-2 text-xs font-medium text-gray-500">Slider Image (Recommended Ratio 1900x475)</label>
                         <input type="file"
                                name="image"
                                id="slider_image_input"

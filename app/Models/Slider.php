@@ -13,6 +13,8 @@ class Slider extends Model
         'is_title',
         'is_image',
         'is_description',
+        'is_active',
+        'sort_order',
     ];
 
 }

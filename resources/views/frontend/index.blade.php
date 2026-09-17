@@ -91,62 +91,64 @@
 
 
     @if(isset($setting) && $setting->is_sliders  == 1)
-        <div class="w-full">
-            <!-- Responsive Aspect Ratio: Mobile par height zyada hogi, Desktop par wide ho jayegi -->
-            <div class="swiper heroSwiper w-full aspect-[4/1.5] sm:aspect-[16/6] md:aspect-[4/1] relative overflow-hidden">
-                <div class="swiper-wrapper">
-                    @forelse($sliders as $slider)
-                        <div class="swiper-slide relative w-full h-full overflow-hidden">
+        @php
+            // Sirf active sliders ko filter karne ke liye
+            $activeSliders = $sliders->where('is_active', 1);
+        @endphp
 
-                            <!-- Image: aspect ratio ke mutabiq fit hogi -->
-                            @if($slider->is_image == 1 && $slider->image)
-                                <img src="{{ asset('storage/' . $slider->image) }}"
-                                     class="w-full h-full object-cover">
-                            @else
-                            <!-- Placeholder -->
-                                <div class="w-full h-full bg-gray-900"></div>
-                            @endif
+        @if($activeSliders->count() > 0)
+            <div class="w-full">
+                <!-- Responsive Aspect Ratio -->
+                <div class="swiper heroSwiper w-full aspect-[4/1.5] sm:aspect-[16/6] md:aspect-[4/1] relative overflow-hidden">
+                    <div class="swiper-wrapper">
+                        @foreach($activeSliders->sortBy('sort_order') as $slider)
+                            <div class="swiper-slide relative w-full h-full overflow-hidden">
 
-                        <!-- Overlay Content -->
-                            @if(($slider->is_title == 1 && !empty($slider->heading)) || ($slider->is_description == 1 && !empty($slider->description)))
-                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
-                                    <div class="text-center text-white px-3 sm:px-6 max-w-3xl mx-auto pointer-events-auto">
+                                <!-- Image Check -->
+                                @if($slider->is_image == 1 && $slider->image)
+                                    <img src="{{ asset('storage/' . $slider->image) }}"
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-gray-900"></div>
+                                @endif
 
-                                        @if($slider->is_title == 1 && !empty($slider->heading))
-                                            <h1 class="text-sm xs:text-base sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-3 drop-shadow-md">
-                                                {{ $slider->heading }}
-                                            </h1>
-                                        @endif
+                            <!-- Overlay Content -->
+                                @if(($slider->is_title == 1 && !empty($slider->heading)) || ($slider->is_description == 1 && !empty($slider->description)))
+                                    <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                        <div class="text-center text-white px-3 sm:px-6 max-w-3xl mx-auto pointer-events-auto">
 
-                                        @if($slider->is_description == 1 && !empty($slider->description))
-                                            <p class="text-[10px] xs:text-xs sm:text-sm md:text-base max-w-xs sm:max-w-xl mx-auto mb-2 sm:mb-5 line-clamp-2 sm:line-clamp-none opacity-90">
-                                                {{ $slider->description }}
-                                            </p>
-                                        @endif
+                                            @if($slider->is_title == 1 && !empty($slider->heading))
+                                                <h1 class="text-sm xs:text-base sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-3 drop-shadow-md">
+                                                    {{ $slider->heading }}
+                                                </h1>
+                                            @endif
 
-                                        <a href="{{ route('frontendProduct') }}"
-                                           class="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-black text-[10px] sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition group shadow-lg">
-                                            <i class="fa-solid fa-bag-shopping text-[10px] sm:text-sm group-hover:scale-105 transition-transform"></i>
-                                            <span>Shop Now</span>
-                                        </a>
+                                            @if($slider->is_description == 1 && !empty($slider->description))
+                                                <p class="text-[10px] xs:text-xs sm:text-sm md:text-base max-w-xs sm:max-w-xl mx-auto mb-2 sm:mb-5 line-clamp-2 sm:line-clamp-none opacity-90">
+                                                    {{ $slider->description }}
+                                                </p>
+                                            @endif
+
+                                            <a href="{{ route('frontendProduct') }}"
+                                               class="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-black text-[10px] sm:text-sm px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition group shadow-lg">
+                                                <i class="fa-solid fa-bag-shopping text-[10px] sm:text-sm group-hover:scale-105 transition-transform"></i>
+                                                <span>Shop Now</span>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            @endif
+                                @endif
 
-                        </div>
-                    @empty
-                        <div class="swiper-slide flex items-center justify-center w-full h-full bg-gray-900">
-                            <h2 class="text-white text-xs sm:text-lg font-medium">No Slider Found</h2>
-                        </div>
-                    @endforelse
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Swiper Navigation & Pagination -->
+                    <div class="swiper-button-next !text-white !w-6 !h-6 sm:!w-10 sm:!h-10 after:!text-xs sm:after:!text-lg !right-1 sm:!right-3"></div>
+                    <div class="swiper-button-prev !text-white !w-6 !h-6 sm:!w-10 sm:!h-10 after:!text-xs sm:after:!text-lg !left-1 sm:!left-3"></div>
+                    <div class="swiper-pagination !bottom-1 sm:!bottom-3"></div>
                 </div>
-
-                <!-- Swiper Navigation & Pagination -->
-                <div class="swiper-button-next !text-white !w-6 !h-6 sm:!w-10 sm:!h-10 after:!text-xs sm:after:!text-lg !right-1 sm:!right-3"></div>
-                <div class="swiper-button-prev !text-white !w-6 !h-6 sm:!w-10 sm:!h-10 after:!text-xs sm:after:!text-lg !left-1 sm:!left-3"></div>
-                <div class="swiper-pagination !bottom-1 sm:!bottom-3"></div>
             </div>
-        </div>
+        @endif
     @endif
 
 
