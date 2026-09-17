@@ -104,6 +104,7 @@
                                      class="w-full h-full object-fill">
                             @else
                             <!-- Placeholder -->
+                            
                                 <div class="w-full h-full bg-gray-900"></div>
                             @endif
 
