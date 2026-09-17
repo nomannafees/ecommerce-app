@@ -92,34 +92,32 @@
 
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
-            <!-- Aspect ratio use karne se yeh 1900x435 ka exact box banayega jo screen ke mutabiq scale hoga -->
-            <div class="swiper heroSwiper w-full h-[430px]  relative overflow-hidden">
+            <!-- 1900x435 ka exact aspect ratio jo har screen par proportionally scale hoga -->
+            <div class="swiper heroSwiper w-full aspect-[1900/435] relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
-                        <div class="swiper-slide relative w-full h-[485px] overflow-hidden">
+                        <div class="swiper-slide relative w-full h-full overflow-hidden">
 
-                            <!-- 1. Image Check: object-fill ya object-cover use karein taake black bars na aayein -->
+                            <!-- Image: aspect ratio ke mutabiq fit hogi -->
                             @if($slider->is_image == 1 && $slider->image)
                                 <img src="{{ asset('storage/' . $slider->image) }}"
-                                     class="w-full h-[430px]  object-cover">
+                                     class="w-full h-full object-cover">
                             @else
                             <!-- Placeholder -->
-                                <div class="w-full bg-gray-900"></div>
+                                <div class="w-full h-full bg-gray-900"></div>
                             @endif
 
-                        <!-- Overlay Content (Heading & Description checks) -->
+                        <!-- Agar slider ki apni image me text nahi hai aur aap HTML se text overlay karna chahte hain -->
                             @if(($slider->is_title == 1 && !empty($slider->heading)) || ($slider->is_description == 1 && !empty($slider->description)))
-                                <div class="absolute inset-0 bg-black/20 flex items-center justify-center pointer-events-none">
+                                <div class="absolute inset-0 bg-black/10 flex items-center justify-center pointer-events-none">
                                     <div class="text-center text-white px-3 sm:px-6 max-w-3xl mx-auto pointer-events-auto">
 
-                                        <!-- 2. Title Check -->
                                         @if($slider->is_title == 1 && !empty($slider->heading))
                                             <h1 class="text-sm xs:text-base sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-1 sm:mb-3 drop-shadow-md">
                                                 {{ $slider->heading }}
                                             </h1>
                                         @endif
 
-                                    <!-- 3. Description Check -->
                                         @if($slider->is_description == 1 && !empty($slider->description))
                                             <p class="text-[10px] xs:text-xs sm:text-sm md:text-base max-w-xs sm:max-w-xl mx-auto mb-2 sm:mb-5 line-clamp-2 sm:line-clamp-none opacity-90">
                                                 {{ $slider->description }}
@@ -143,6 +141,7 @@
                     @endforelse
                 </div>
 
+                <!-- Swiper Navigation & Pagination -->
                 <div class="swiper-button-next !text-white !w-6 !h-6 sm:!w-10 sm:!h-10 after:!text-xs sm:after:!text-lg !right-1 sm:!right-3"></div>
                 <div class="swiper-button-prev !text-white !w-6 !h-6 sm:!w-10 sm:!h-10 after:!text-xs sm:after:!text-lg !left-1 sm:!left-3"></div>
                 <div class="swiper-pagination !bottom-1 sm:!bottom-3"></div>
