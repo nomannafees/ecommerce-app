@@ -93,7 +93,7 @@
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
             <!-- Responsive Aspect Ratio: Mobile par height zyada hogi, Desktop par wide ho jayegi -->
-            <div class="swiper heroSwiper w-full aspect-[4/1.5] sm:aspect-[16/6] md:aspect-[1900/490] relative overflow-hidden">
+            <div class="swiper heroSwiper w-full aspect-[4/1.5] sm:aspect-[16/6] md:aspect-[4/1] relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
                         <div class="swiper-slide relative w-full h-full overflow-hidden">
