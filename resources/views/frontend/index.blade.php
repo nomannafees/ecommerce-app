@@ -93,7 +93,7 @@
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
             <!-- Aspect ratio use karne se yeh 1900x435 ka exact box banayega jo screen ke mutabiq scale hoga -->
-            <div class="swiper heroSwiper w-full h-auto relative overflow-hidden">
+            <div class="swiper heroSwiper w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] object-cover relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
                         <div class="swiper-slide relative w-full h-full">
@@ -589,7 +589,7 @@
         <div class="relative w-full sm:my-1 bg-fixed bg-center bg-cover h-[220px] sm:h-[350px] md:h-[400px] flex items-center justify-center"
              @if($hasFeaturedImage) style="background-image: url('{{ asset('storage/' . $featuredBanner->image) }}');" @endif>
 
-            <div class="absolute inset-0 bg-black/70"></div>
+            <div class="absolute inset-0 bg-black/60"></div>
 
             <div class="relative z-10 text-center text-white px-4 sm:px-6 max-w-3xl mx-auto">
             <span class="bg-amber-500 text-black text-[10px] sm:text-xs font-bold uppercase px-3 py-1 rounded-full tracking-wider mb-1 sm:mb-3 inline-block">
@@ -729,7 +729,7 @@
                     @if($hasBrandBannerImage)
                         <div class="absolute inset-0 bg-scroll sm:bg-fixed bg-center bg-cover"
                              style="background-image: url('{{ asset('storage/' . $brandBanner->image) }}');">
-                            <div class="absolute inset-0 bg-black/65 lg:bg-gradient-to-r lg:from-gray-900 lg:via-black/50 lg:to-black/60"></div>
+                            <div class="absolute inset-0 bg-black/40 lg:bg-gradient-to-r lg:from-gray-900 lg:via-black/50 lg:to-black/60"></div>
                         </div>
                     @endif
                 </div>
