@@ -112,6 +112,7 @@ class SliderController extends Controller
         }
 
         // Sirf wahi data update hoga jo form se aayega, baaki purana data secure rahega
+        // Sirf wahi data update hoga jo form se aayega, baaki purana data secure rahega
         $slider->update([
             'heading'        => $request->has('heading') ? $request->heading : $slider->heading,
             'description'    => $request->has('description') ? $request->description : $slider->description,
@@ -119,8 +120,10 @@ class SliderController extends Controller
             'is_title'       => $request->has('is_title') ? $request->input('is_title') : $slider->is_title,
             'is_image'       => $request->has('is_image') ? $request->input('is_image') : $slider->is_image,
             'is_description' => $request->has('is_description') ? $request->input('is_description') : $slider->is_description,
-            // Yahan check lagaya hai ke agar request mein is_active mojood ho tabhi change ho, warna purana status hi rahe
-            'is_active'      => $request->has('is_active') ? $request->input('is_active') : $slider->is_active,
+
+            // Yahan badlaav kiya hai: Checkbox ke liye boolean method use karein
+            'is_active'      => $request->boolean('is_active') ? 1 : 0,
+
             'sort_order'     => $request->has('sort_order') ? $request->input('sort_order') : $slider->sort_order,
         ]);
 

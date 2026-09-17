@@ -11,7 +11,7 @@
             <div class="flex items-center justify-between mb-8">
 
                 <h2 class="text-2xl font-bold text-gray-800">
-                    {{ !empty($slider) ? 'Edit Slider' : 'Create Slider' }}
+                    {{ isset($slider) ? 'Edit Slider' : 'Create Slider' }}
                 </h2>
 
                 <!-- List Sliders Button -->
@@ -24,12 +24,12 @@
             </div>
 
             <!-- Form -->
-            <form action="{{ !empty($slider) ? route('sliders.update', $slider->id) : route('sliders.store') }}"
+            <form action="{{ isset($slider) ? route('sliders.update', $slider->id) : route('sliders.store') }}"
                   method="POST"
                   enctype="multipart/form-data">
 
                 @csrf
-                @if(!empty($slider))
+                @if(isset($slider))
                     @method('PUT')
                 @endif
 
@@ -44,7 +44,7 @@
                         <input type="text"
                                name="heading"
                                id="slider_heading"
-                               value="{{ old('heading', $slider->heading ?? '') }}"
+                               value="{{ old('heading', isset($slider) ? $slider->heading : '') }}"
                                placeholder=" "
                                class="peer w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
 
@@ -70,7 +70,7 @@
                                   id="slider_description"
                                   rows="5"
                                   placeholder=" "
-                                  class="peer w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">{{ old('description', $slider->description ?? '') }}</textarea>
+                                  class="peer w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">{{ old('description', isset($slider) ? $slider->description : '') }}</textarea>
 
                         <label for="slider_description"
                                class="absolute left-3 -top-2.5 bg-white px-1.5 text-xs text-gray-500 peer-focus:text-emerald-600 font-medium pointer-events-none z-20 transition-colors duration-200">
@@ -91,7 +91,7 @@
                             <input type="number"
                                    name="sort_order"
                                    id="sort_order"
-                                   value="{{ old('sort_order', $slider->sort_order ?? 0) }}"
+                                   value="{{ old('sort_order', isset($slider) ? $slider->sort_order : 0) }}"
                                    placeholder="0, 1, 2..."
                                    class="w-full px-4 py-3.5 border border-gray-200 rounded-xl bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all duration-200">
                             @error('sort_order')
@@ -101,11 +101,14 @@
 
                         <!-- Active Status Checkbox -->
                         <div class="flex items-center gap-3 pt-6">
+                            <!-- Hidden input taake uncheck hone par 0 pass ho -->
+                            <input type="hidden" name="is_active" value="0">
+
                             <input type="checkbox"
                                    name="is_active"
                                    id="is_active"
                                    value="1"
-                                   {{ old('is_active', $slider->is_active ?? 1) == 1 ? 'checked' : '' }}
+                                   {{ old('is_active', isset($slider) ? $slider->is_active : 1) == 1 ? 'checked' : '' }}
                                    class="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500 cursor-pointer">
                             <label for="is_active" class="text-sm font-medium text-gray-700 cursor-pointer">
                                 Active Slider (Show on Website)
@@ -124,13 +127,13 @@
                                class="w-full text-sm text-gray-600 border border-gray-200 rounded-xl bg-white p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition duration-200 cursor-pointer">
 
                         <!-- Image Preview Box -->
-                        <div id="image_preview_container" class="{{ (!empty($slider) && !empty($slider->image)) ? '' : 'hidden' }} mt-4">
+                        <div id="image_preview_container" class="{{ (isset($slider) && !empty($slider->image)) ? '' : 'hidden' }} mt-4">
                             <span id="preview_label" class="text-xs font-semibold text-gray-500 block mb-2">
-                                {{ (!empty($slider) && !empty($slider->image)) ? 'Current Saved Image:' : 'Selected Image Preview:' }}
+                                {{ (isset($slider) && !empty($slider->image)) ? 'Current Saved Image:' : 'Selected Image Preview:' }}
                             </span>
                             <div class="relative group inline-block">
                                 <img id="slider_image_preview"
-                                     src="{{ (!empty($slider) && !empty($slider->image)) ? asset('storage/' . $slider->image) : '#' }}"
+                                     src="{{ (isset($slider) && !empty($slider->image)) ? asset('storage/' . $slider->image) : '#' }}"
                                      alt="Slider Image Preview"
                                      class="w-44 h-28 object-cover rounded-xl border border-gray-200 shadow-xs bg-gray-50">
                             </div>
@@ -155,7 +158,7 @@
                     <button type="submit"
                             class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-medium text-sm text-white bg-emerald-600 hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500/20 transition duration-200 shadow-xs cursor-pointer group active:scale-[0.98]">
                         <i class="fa-solid fa-floppy-disk text-xs group-hover:scale-110 transition-transform"></i>
-                        <span>{{ !empty($slider) ? 'Update Slider' : 'Save Slider' }}</span>
+                        <span>{{ isset($slider) ? 'Update Slider' : 'Save Slider' }}</span>
                     </button>
 
                 </div>
