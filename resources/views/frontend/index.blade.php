@@ -93,19 +93,18 @@
     @if(isset($setting) && $setting->is_sliders  == 1)
         <div class="w-full">
             <!-- Aspect ratio use karne se yeh 1900x435 ka exact box banayega jo screen ke mutabiq scale hoga -->
-            <div class="swiper heroSwiper w-full h-[180px] xs:h-[220px] sm:h-[320px] md:h-[380px] lg:h-[435px] object-cover relative overflow-hidden">
+            <div class="swiper heroSwiper w-full h-[430px]  relative overflow-hidden">
                 <div class="swiper-wrapper">
                     @forelse($sliders as $slider)
-                        <div class="swiper-slide  relative w-full h-full">
+                        <div class="swiper-slide relative w-full h-[485px] overflow-hidden">
 
                             <!-- 1. Image Check: object-fill ya object-cover use karein taake black bars na aayein -->
                             @if($slider->is_image == 1 && $slider->image)
                                 <img src="{{ asset('storage/' . $slider->image) }}"
-                                      class="w-full h-full object-fill">
+                                     class="w-full h-[430px]  object-cover">
                             @else
                             <!-- Placeholder -->
-
-                                <div class="w-full h-full bg-gray-900"></div>
+                                <div class="w-full bg-gray-900"></div>
                             @endif
 
                         <!-- Overlay Content (Heading & Description checks) -->
