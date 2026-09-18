@@ -10,7 +10,7 @@
      x-data="mainHeaderHandler()">
 
     <header class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-4 relative">
-        <div class="grid grid-cols-3 items-center h-full w-full">
+        <div class="grid grid-cols-2 lg:grid-cols-3 items-center h-full w-full gap-2">
 
             <!-- Dynamic Store Logo & Title Section (Left Column) -->
             <div class="flex items-center justify-start">
@@ -41,9 +41,9 @@
                 </a>
             </div>
 
-            <!-- Search Wrapper (Center Column) -->
-            <div class="flex justify-center w-full">
-                <div class="search-wrapper hidden lg:block w-full max-w-xl relative z-[40]"
+            <!-- Search Wrapper (Center Column - Width Increased) -->
+            <div class="hidden lg:flex justify-center w-full col-span-1">
+                <div class="search-wrapper w-full max-w-2xl xl:max-w-3xl relative z-[40]"
                      @click.outside="showDropdown = false">
 
                     <form action="{{ route('categories') }}" method="GET"
