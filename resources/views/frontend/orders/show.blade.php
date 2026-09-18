@@ -3,7 +3,7 @@
 @section('content')
 
 
-        <div class="container mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-10 space-y-6">
+        <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-6 sm:py-10 space-y-6">
 
         <!-- ORDER HEADER -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100">

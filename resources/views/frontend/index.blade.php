@@ -155,7 +155,7 @@
     <!-- FLASH SALE SECTION -->
 
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 flex justify-between items-center">
+    <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 flex justify-between items-center">
         <div>
             <h2 class="text-xl sm:text-2xl mt-2 sm:mt-4 font-bold text-gray-900 flex items-center gap-2">
                 <i class="fa-solid fa-bolt text-amber-500 animate-bounce"></i> Flash Sales
@@ -170,7 +170,7 @@
     </div>
 
     <!-- Responsive Grid Setup -->
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2 ">
+    <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2 ">
         @forelse($flashSaleProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -230,7 +230,7 @@
 
     <!-- end FLASH SALE SECTION -->
 
-    <section class="container mx-auto px-3 sm:px-7 mb-2">
+    <section class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 mb-2">
         <div class="">
 
             <div class="mb-3 mt-2">
@@ -329,7 +329,7 @@
 
 
     <!-- BESTSELLING PRODUCTS SECTION -->
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-2 mb-2 sm:mb-2 lg:mb-1 flex justify-between items-center">
+    <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-2 mb-2 sm:mb-2 lg:mb-1 flex justify-between items-center">
         <div>
             <h2 class="text-xl sm:text-2xl mt-1 sm:mt-2 font-bold text-gray-900 flex items-center gap-2">
                 <i class="fa-solid fa-fire text-rose-500 animate-pulse"></i> Bestselling Products
@@ -345,7 +345,7 @@
         </a>
     </div>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2">
+    <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2">
         @foreach($topOrderedProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -397,7 +397,7 @@
             $hasImage3 = ($banner3 && $banner3->is_image == 1 && !empty($banner3->image) && file_exists(public_path('storage/' . $banner3->image)));
         @endphp
 
-        <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:py-2 mb-2">
+        <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:py-2 mb-2">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
                 <!-- 1st Banner (Large Left Side) -->
@@ -523,7 +523,7 @@
     <!-- 4. FEATURED PRODUCTS -->
     @if($featuredProducts->isNotEmpty())
         <!-- FEATURED PRODUCTS SECTION -->
-        <div class="container mx-auto px-3 sm:px-6 md:px-7 sm:py-1 mt-2 sm:mt-4 lg:mt-3 mx-auto flex justify-between items-center">
+        <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:py-1 mt-2 sm:mt-4 lg:mt-3  flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center mt-1 gap-2">
                     <i class="fa-solid fa-star text-amber-500 animate-spin-slow"></i> Featured Products
@@ -539,7 +539,7 @@
             </a>
         </div>
 
-        <div class="container mx-auto px-3 sm:px-10 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
+        <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -621,7 +621,7 @@
     @endif
 
     <!-- 5. TOP BRANDS SECTION -->
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 mx-auto sm:mt-4">
+    <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-2 sm:py-2 mx-auto sm:mt-4">
         <div class="flex justify-between items-center">
             <div>
                 <!-- Header updated with icon -->
@@ -637,7 +637,7 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-3 sm:px-6 md:px-7 pt-0 sm:mb-8 mb-3 lg:mb-12"
+    <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 pt-0 sm:mb-8 mb-3 lg:mb-12"
          style="margin-bottom: 20px !important;">
     @php $brandCount = count($brands ?? []); @endphp
     @if($brandCount > 6)
@@ -692,7 +692,7 @@
         @endphp
 
         <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
-            <div class="container mx-auto px-3 sm:px-6 md:px-7 py-3 sm:py-6 grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
+            <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-3 sm:py-6 grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
 
                 <div class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
                 <span class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
@@ -741,7 +741,7 @@
 
     <!-- 6. "FOR YOU" PERSONALIZED PRODUCTS SECTION -->
     @if(isset($products) && $products->isNotEmpty())
-        <div class="container mx-auto px-3 sm:px-6 md:px-7 mx-auto sm:mt-2 last:mb-9 md:last:mb-4 flex justify-between items-center">
+        <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:mt-2 last:mb-9 md:last:mb-4 flex justify-between items-center">
             <div>
                 <h2 class="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
                     <i class="fa-solid fa-wand-magic-sparkles text-emerald-600"></i> Handpicked For You
@@ -753,7 +753,7 @@
 
         <!-- GRID CONTAINER WITH ID -->
         <div id="for-you-grid"
-             class="container mx-auto px-3 sm:px-6 md:px-7 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-3">
+             class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-3">
             @include('frontend.partials.for-you-cards', ['products' => $products])
         </div>
 
