@@ -44,7 +44,7 @@
         </style>
 
         <!-- CART GRID (hamesha DOM mein maujood, sirf 'hidden' class se control hoga) -->
-        <div class="cart-grid-wrapper grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-start container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 {{ $carts->isEmpty() ? 'hidden' : '' }}">
+        <div class="cart-grid-wrapper grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-start container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 {{ $carts->isEmpty() ? 'hidden' : '' }}">
 
             <!-- Left Column: Cart Items List -->
             <div class="lg:col-span-2 space-y-3">
