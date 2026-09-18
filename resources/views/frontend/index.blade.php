@@ -789,9 +789,9 @@
                 isLoading = true;
                 page++;
 
-                // Shimmer Effect HTML (Spinner ki jagah grid mein append hoga)
+                // Shimmer Effect HTML
                 let shimmerHtml = `
-                    @for($i = 0; $i < 6; $i++)
+            @for($i = 0; $i < 6; $i++)
                 <div class="product-shimmer bg-white rounded-md sm:rounded-lg shadow-xs border border-gray-200 overflow-hidden flex flex-col h-full w-full animate-pulse">
                     <div class="bg-gray-200 h-40 xs:h-44 sm:h-60 2xl:h-57 md:h-52 lg:h-55 w-full"></div>
                     <div class="px-2 py-2 flex-grow flex flex-col justify-between gap-2">
@@ -809,27 +809,36 @@
 @endfor
                 `;
 
+                // Shimmer sirf yahan lagega, kyunke agar yahan tak pahunche hain
+                // matlab pichli response ne confirm kiya tha ke next page exist karta hai
                 $('#for-you-grid').append(shimmerHtml);
 
                 $.ajax({
                     url: "{{ route('index') }}?page=" + page,
                     type: "GET",
-                    success: function (response) {
-                        // Response aate hi shimmer cards hata dena
+                    success: function (response, status, xhr) {
                         $('.product-shimmer').remove();
 
-                        if ($.trim(response) === "") {
-                            hasMorePages = false;
+                        // Server ne jo bataya usi ke hisaab se hasMorePages set karo
+                        let serverHasMore = xhr.getResponseHeader('X-Has-More-Pages');
+                        hasMorePages = (serverHasMore === '1');
+
+                        if ($.trim(response) === "" || !hasMorePages && $.trim(response) === "") {
                             $('#no-more-products').removeClass('hidden');
                         } else {
                             $('#for-you-grid').append(response);
-                            isLoading = false;
                         }
+
+                        if (!hasMorePages) {
+                            $('#no-more-products').removeClass('hidden');
+                        }
+
+                        isLoading = false;
                     },
                     error: function (xhr) {
                         console.log(xhr.responseText);
-                        // Error aane par bhi shimmer hata dena
                         $('.product-shimmer').remove();
+                        page--;
                         isLoading = false;
                     }
                 });
@@ -839,6 +848,8 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+
+
             // Hero Swiper Initialization
             new Swiper(".heroSwiper", {
                 loop: true,

@@ -195,9 +195,11 @@ class FrontendController extends Controller
         // Variable ko $products mein assign kar diya hai taake partial view mein error na aaye
         $products = $paginatedProducts;
 
-        // Agar AJAX request ho toh partial view return karein
         if ($request->ajax()) {
-            return view('frontend.partials.for-you-cards', compact('products', 'wishlistProductIds'))->render();
+            $html = view('frontend.partials.for-you-cards', compact('products', 'wishlistProductIds'))->render();
+
+            return response($html)
+                ->header('X-Has-More-Pages', $products->hasMorePages() ? '1' : '0');
         }
 
 
