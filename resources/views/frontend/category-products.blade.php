@@ -151,73 +151,204 @@
 @endsection
 
 @push('scripts')
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // 1. Handle form input changes (Checkbox, Range Slider)
-            document.addEventListener('change', function (e) {
-                if (e.target.closest('#filterForm') && e.target.classList.contains('filter-input')) {
-                    e.preventDefault();
-                    submitFilterForm();
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // ==============================
+            // INFINITE SCROLL
+            // ==============================
+
+            let currentPage = {{ $products->currentPage() }};
+            let isLoadingMore = false;
+            let hasMorePages = {{ $products->hasMorePages() ? 'true' : 'false' }};
+
+            const mainScrollContainer = document.querySelector('main');
+            const productGrid = document.getElementById('product-grid');
+            const noMoreProducts = document.getElementById('no-more-products');
+
+
+            // --------------------------------
+            // CHECK SCROLL
+            // --------------------------------
+            function checkScrollForMoreProducts() {
+
+                if (!mainScrollContainer) return;
+                if (!hasMorePages) return;
+                if (isLoadingMore) return;
+
+                const scrollTop = mainScrollContainer.scrollTop;
+                const clientHeight = mainScrollContainer.clientHeight;
+                const scrollHeight = mainScrollContainer.scrollHeight;
+
+                // Bottom se 500px pehle next products load
+                if (scrollTop + clientHeight >= scrollHeight - 500) {
+                    loadMoreProducts();
                 }
-            });
-
-            // 2. Handle Price Slider release (mouseup / touchend)
-            window.applyPriceFilter = function (value) {
-                document.getElementById('priceLabel').innerText = Number(value).toLocaleString();
-                submitFilterForm();
-            };
-
-            // 3. Handle Category & Pagination Link Clicks via AJAX
-            window.fetchCategoryProducts = function (event, url, categorySlug) {
-                event.preventDefault();
-
-                // Optional: Update browser URL without reloading
-                window.history.pushState({}, '', url);
-
-                fetchProducts(url);
-            };
-
-            // 4. Reset Filters Handler
-            window.fetchResetFilters = function (event, url) {
-                event.preventDefault();
-                window.history.pushState({}, '', url);
-                fetchProducts(url);
-            };
-
-            // Core AJAX Fetch Function
-            function submitFilterForm() {
-                const form = document.getElementById('filterForm');
-                const formData = new FormData(form);
-                const url = form.getAttribute('action') + '?' + new URLSearchParams(formData).toString();
-
-                window.history.pushState({}, '', url);
-                fetchProducts(url);
             }
 
-            function fetchProducts(url) {
-                // Optional: Add a loading state / opacity mask to your product grid here
 
-                fetch(url, {
+            // --------------------------------
+            // LOAD MORE PRODUCTS
+            // --------------------------------
+            function loadMoreProducts() {
+
+                if (isLoadingMore || !hasMorePages) {
+                    return;
+                }
+
+                isLoadingMore = true;
+
+                currentPage++;
+
+                // Loading skeleton
+                const skeletons = [];
+
+                for (let i = 0; i < 6; i++) {
+
+                    const skeleton = document.createElement('div');
+
+                    skeleton.className =
+                        'product-shimmer bg-white rounded-md sm:rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-pulse';
+
+                    skeleton.innerHTML = `
+                <div class="bg-gray-200 h-40 sm:h-48 w-full"></div>
+
+                <div class="p-3 space-y-2">
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-3 bg-gray-200 rounded w-full"></div>
+                    <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+            `;
+
+                    productGrid.appendChild(skeleton);
+                    skeletons.push(skeleton);
+                }
+
+
+                // Current URL preserve rahegi
+                // category bhi preserve hogi
+                // sirf page change hoga
+                const url = new URL(window.location.href);
+
+                url.searchParams.set('page', currentPage);
+
+
+                fetch(url.toString(), {
+                    method: 'GET',
+
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
                     }
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Update Product Grid container (Make sure your main container has id="product-grid-container")
-                        const productContainer = document.getElementById('product-grid-container');
-                        if (productContainer && data.products !== undefined) {
-                            productContainer.innerHTML = data.products;
+
+                    .then(response => {
+
+                        if (!response.ok) {
+                            throw new Error('HTTP Error: ' + response.status);
                         }
 
-                        // Update Sidebar container (Make sure your sidebar wrapper has id="sidebar-container")
-                        const sidebarContainer = document.getElementById('sidebar-container');
-                        if (sidebarContainer && data.sidebar !== undefined) {
-                            sidebarContainer.innerHTML = data.sidebar;
-                        }
+                        return response.text();
                     })
-                    .catch(error => console.error('Error fetching filtered products:', error));
+
+                    .then(html => {
+
+                        // Skeleton remove
+                        skeletons.forEach(skeleton => {
+                            skeleton.remove();
+                        });
+
+
+                        // Agar next page empty hai
+                        if (!html.trim()) {
+
+                            hasMorePages = false;
+
+                            // currentPage ko previous page par wapas
+                            currentPage--;
+
+                            if (noMoreProducts) {
+                                noMoreProducts.classList.remove('hidden');
+                            }
+
+                            isLoadingMore = false;
+
+                            return;
+                        }
+
+
+                        // New products append
+                        productGrid.insertAdjacentHTML('beforeend', html);
+
+                        isLoadingMore = false;
+
+
+                        // Agar naye products ke baad bhi container
+                        // scrollable nahi hua to next page automatically load
+                        setTimeout(() => {
+                            checkScrollForMoreProducts();
+                        }, 100);
+                    })
+
+                    .catch(error => {
+
+                        console.error('Infinite scroll error:', error);
+
+                        // Skeleton remove
+                        skeletons.forEach(skeleton => {
+                            skeleton.remove();
+                        });
+
+                        // Failed request ki wajah se page number galat na rahe
+                        currentPage--;
+
+                        isLoadingMore = false;
+                    });
             }
+
+
+            // --------------------------------
+            // MAIN SCROLL LISTENER
+            // --------------------------------
+            if (mainScrollContainer) {
+
+                mainScrollContainer.addEventListener(
+                    'scroll',
+                    checkScrollForMoreProducts,
+                    { passive: true }
+                );
+
+                // Initial check
+                // Agar first 12 products screen se chhote hain
+                // to automatically next products load hon
+                setTimeout(() => {
+                    checkScrollForMoreProducts();
+                }, 300);
+            }
+
+
+            // --------------------------------
+            // OPTIONAL WINDOW SCROLL FALLBACK
+            // --------------------------------
+            window.addEventListener('scroll', function () {
+
+                if (!hasMorePages || isLoadingMore) {
+                    return;
+                }
+
+                const windowBottom =
+                    window.innerHeight + window.scrollY;
+
+                const documentHeight =
+                    document.documentElement.scrollHeight;
+
+                if (windowBottom >= documentHeight - 500) {
+                    loadMoreProducts();
+                }
+
+            }, { passive: true });
+
         });
     </script>
 

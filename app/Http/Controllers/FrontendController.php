@@ -392,61 +392,162 @@ class FrontendController extends Controller
 
     public function categoriesProduct(Request $request, $category = null)
     {
-        $categories = Categorie::where('parent_id', 0)->with('children')->get();
+        $categories = Categorie::where('parent_id', 0)
+            ->with('children')
+            ->get();
 
         $currentCategory = null;
-        $query = Product::with(['variants', 'prod_brand', 'mainVariantImage', 'mainVariant', 'variant_images', 'reviews'])
-            ->withCount(['orderItems', 'reviews'])
+
+        $query = Product::with([
+            'variants',
+            'prod_brand',
+            'mainVariantImage',
+            'mainVariant',
+            'variant_images',
+            'reviews'
+        ])
+            ->withCount([
+                'orderItems',
+                'reviews'
+            ])
             ->latest();
 
+
+        // ==========================
+        // CATEGORY FILTER
+        // ==========================
+
         if (!empty($category)) {
+
             $slugs = explode('/', $category);
 
-            // Nested slugs ko sahi se trace karne ke liye parent-child chain check karein
             $parent = null;
-            foreach ($slugs as $slug) {
-                $parent = Categorie::where('slug', $slug)
-                    ->when($parent, function ($q) use ($parent) {
-                        return $q->where('parent_id', $parent->id);
-                    }, function ($q) {
-                        return $q->where('parent_id', 0);
-                    })->first();
 
-                if (!$parent) break;
+            foreach ($slugs as $slug) {
+
+                $parent = Categorie::where('slug', $slug)
+
+                    ->when(
+                        $parent,
+
+                        function ($q) use ($parent) {
+                            return $q->where(
+                                'parent_id',
+                                $parent->id
+                            );
+                        },
+
+                        function ($q) {
+                            return $q->where(
+                                'parent_id',
+                                0
+                            );
+                        }
+
+                    )
+
+                    ->first();
+
+
+                if (!$parent) {
+                    break;
+                }
             }
+
 
             $currentCategory = $parent;
 
+
             if ($currentCategory) {
+
                 $getAllIds = function ($cat) use (&$getAllIds) {
+
                     $ids = [];
-                    // Naye Laravel/Eloquent relations ke mutabiq load children check karein
-                    $children = $cat->relationLoaded('children') ? $cat->children : $cat->children()->get();
+
+                    $children = $cat->relationLoaded('children')
+                        ? $cat->children
+                        : $cat->children()->get();
+
+
                     foreach ($children as $child) {
+
                         $ids[] = $child->id;
-                        $ids = array_merge($ids, $getAllIds($child));
+
+                        $ids = array_merge(
+                            $ids,
+                            $getAllIds($child)
+                        );
                     }
+
                     return $ids;
                 };
 
-                $categoryIds = array_merge([$currentCategory->id], $getAllIds($currentCategory));
-                $query->whereIn('category_id', $categoryIds);
+
+                $categoryIds = array_merge(
+                    [$currentCategory->id],
+                    $getAllIds($currentCategory)
+                );
+
+
+                $query->whereIn(
+                    'category_id',
+                    $categoryIds
+                );
             }
         }
 
+
+        // ==========================
+        // PAGINATION
+        // ==========================
+
         $products = $query->paginate(12);
-        $wishlistProductIds = auth()->check() ? auth()->user()->wishlists()->pluck('product_id')->toArray() : [];
+
+
+        // ==========================
+        // WISHLIST
+        // ==========================
+
+        $wishlistProductIds = auth()->check()
+
+            ? auth()->user()
+                ->wishlists()
+                ->pluck('product_id')
+                ->toArray()
+
+            : [];
+
+
+        // ==========================
+        // AJAX REQUEST
+        // ==========================
 
         if ($request->ajax()) {
-            return view('frontend.partials.category-products-loop', compact('products', 'wishlistProductIds'))->render();
+
+            if ($products->isEmpty()) {
+                return response('', 200); // empty response — no products left
+            }
+
+            return view(
+                'frontend.partials.category-products-loop',
+                compact('products', 'wishlistProductIds')
+            )->render();
         }
 
-        return view('frontend.category-products', compact(
-            'categories',
-            'currentCategory',
-            'products',
-            'wishlistProductIds'
-        ));
+
+        // ==========================
+        // NORMAL PAGE
+        // ==========================
+
+        return view(
+            'frontend.category-products',
+            compact(
+                'categories',
+                'currentCategory',
+                'products',
+                'wishlistProductIds'
+            )
+        );
     }
 
     public function allCategories(Request $request, $category = null)
