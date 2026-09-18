@@ -487,8 +487,8 @@
 
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100/60 text-emerald-600 flex items-center justify-center shrink-0 shadow-inner">
-                            <i class="fa-solid fa-align-left text-sm"></i>
+                        <div class=" text-emerald-600  flex items-center justify-center shrink-0 shadow-inner">
+                            <i class="fa-solid fa-align-left text-xl"></i>
                         </div>
                         <h2 class="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">Product
                             Description</h2>
