@@ -92,7 +92,7 @@
                     <a href="{{ $targetUrl }}"
                        onclick="fetchCategoryProducts(event, '{{ $targetUrl }}', '{{ $categoryPath }}')"
                        x-show="showAllCategories || {{ $index }} < categoryLimit"
-                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 px-2 rounded transition category-link {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
+                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1  rounded transition category-link {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
                         {{ $cat->name }}
                     </a>
                 @endforeach

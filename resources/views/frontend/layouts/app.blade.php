@@ -154,7 +154,7 @@
                 </div>
 
                 <!-- Password Field with Eye Icon -->
-                <div class="mb-4">
+                <div class="mb-5">
                     <label for="modalLoginPassword" class="block mb-2 text-sm font-medium text-gray-700">Password</label>
                     <div class="relative">
                         <input id="modalLoginPassword" type="password" name="password" required autocomplete="current-password" placeholder="••••••••"
@@ -179,7 +179,7 @@
                 </button>
             </form>
 
-            <div class="mt-6 text-center">
+            <div class="mt-3 text-center">
                 <p class="text-sm text-gray-600">
                     Don't have an account?
                     <button type="button" onclick="switchAuthView('register')" class="text-emerald-600 font-semibold hover:underline cursor-pointer ml-1">Create Account</button>
@@ -242,7 +242,7 @@
                     <span>Create Account</span>
                 </button>
             </form>
-            <div class="mt-6 text-center">
+            <div class="mt-3 text-center">
                 <p class="text-sm text-gray-600">
                     Already have an account?
                     <button type="button" onclick="switchAuthView('login')" class="text-emerald-600 font-semibold hover:underline cursor-pointer ml-1">Login here</button>
