@@ -691,13 +691,17 @@
             $hasBrandBannerImage = ($brandBanner && $brandBanner->is_image == 1 && !empty($brandBanner->image));
         @endphp
 
+        <!-- Outer wrapper ko w-full kar diya hai taake poori screen par aaye -->
         <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
-            <div class="container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-3 sm:py-6 grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
 
-                <div class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900/90">
-                <span class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
-                    <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
-                </span>
+            <!-- Grid ko poori width dene ke liye container class yahan se hata kar andar shift kar di hai -->
+            <div class="w-full grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
+
+                <!-- Left Text Content (Yahan gradient ko right ki taraf smooth blend kar diya hai) -->
+                <div class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900 px-6 sm:px-12  lg:pr-14">
+            <span class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
+                <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
+            </span>
 
                     <!-- Title Check (is_title) -->
                     @if(!$brandBanner || $brandBanner->is_title == 1)
@@ -725,12 +729,13 @@
                     @endif
                 </div>
 
-                <!-- Dynamic Background Image with toggle check (is_image) -->
-                <div class="relative hidden lg:block min-h-[300px] sm:min-h-[350px] lg:min-h-full">
+                <!-- Dynamic Background Image (Yahan left se black gradient overlay lagaya hai taake center mein mix ho jaye) -->
+                <div class="relative hidden lg:block min-h-[300px] sm:min-h-[350px] lg:min-h-full w-full">
                     @if($hasBrandBannerImage)
-                        <div class="absolute inset-0 bg-scroll sm:bg-fixed bg-center bg-cover"
+                        <div class="absolute inset-0 bg-scroll sm:bg-fixed bg-center bg-cover w-full h-full"
                              style="background-image: url('{{ asset('storage/' . $brandBanner->image) }}');">
-                            <div class="absolute inset-0 bg-black/40 lg:bg-gradient-to-r lg:from-gray-900 lg:via-black/50 lg:to-black/60"></div>
+                            <!-- Yahan gradient ko left se dark gray/black rakha hai taake boundary khatam ho kar match ho jaye -->
+                            <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/40 to-black/20"></div>
                         </div>
                     @endif
                 </div>
