@@ -2,198 +2,318 @@
 
 @section('content')
 
-    <!-- MAIN CONTAINER WITH MAX-W-7XL -->
-    <div class="container mx-auto px-3 sm:px-6 md:px-7  sm:py-3">
+    <div class="container mx-auto px-3 sm:px-6 md:px-7 py-6 sm:py-8">
 
-        <!-- HEADER -->
-        <div class="text-center mt-1 sm:mt-3 mb-2 sm:mb-5 px-4">
-            <h1 class="text-2xl font-bold text-gray-900">
+        {{-- PAGE HEADER --}}
+        <div class="max-w-2xl mx-auto text-center mb-7 sm:mb-10">
+
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
                 Contact Us
             </h1>
 
-            <p class="text-[16px] text-gray-500 max-w-xl mx-auto">
-                We'd love to hear from you. Send us a message.
+            <p class="mt-2 text-sm sm:text-base text-gray-500">
+                Have a question? Send us a message and our team will get back to you.
             </p>
         </div>
 
-        <!-- CONTACT SECTION -->
-        <div class="mb-12 sm:mb-16">
 
-            <!-- Success Message Alert -->
-            @if(session('success'))
-                <div class="mb-6 p-3 sm:p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm font-medium flex items-center gap-3">
-                    <svg class="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>{{ session('success') }}</span>
+        {{-- SUCCESS MESSAGE --}}
+        @if(session('success'))
+            <div class="max-w-4xl mx-auto mb-6 flex items-center gap-3
+                    rounded-xl border border-emerald-200 bg-emerald-50
+                    px-4 py-3 text-sm font-medium text-emerald-700">
+
+                <div class="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-check"></i>
                 </div>
-            @endif
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-15 md:mb-5">
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
 
-                <!-- LEFT CARD (Contact Info & Map) -->
-                <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm sm:shadow p-5 sm:p-8 border border-gray-100 sm:border-none">
 
-                    <h3 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-900">
+        {{-- MAIN CONTACT GRID --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 items-stretch">
+
+            {{-- LEFT CARD --}}
+            <div class="bg-white rounded-2xl border border-gray-200
+                    shadow-[0_8px_30px_rgba(0,0,0,0.04)]
+                    overflow-hidden flex flex-col">
+
+                {{-- Card Header --}}
+                <div class="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-gray-100">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">
                         Contact Information
-                    </h3>
+                    </h2>
 
-                    <!-- Location -->
-                    <div class="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
-                        <i class="fa-solid fa-location-dot text-red-500 text-lg sm:text-xl mt-1"></i>
-                        <div>
-                            <h4 class="font-semibold text-sm sm:text-base text-gray-800">Location</h4>
-                            <p class="text-xs sm:text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 mt-1">
+                        Reach us through any of the following options.
+                    </p>
+                </div>
+
+
+                {{-- Contact Details --}}
+                <div class="p-5 sm:p-6 space-y-4">
+
+                    {{-- LOCATION --}}
+                    <div class="group flex items-center gap-4 p-3.5 rounded-xl
+                            border border-gray-100 hover:border-gray-200
+                            hover:bg-gray-50 transition">
+
+                        <div class="w-11 h-11 rounded-xl bg-red-50
+                                flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-location-dot text-red-500"></i>
+                        </div>
+
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-semibold text-gray-900">
+                                Location
+                            </h4>
+
+                            <p class="text-sm text-gray-500 mt-0.5">
                                 Lodhran, Punjab, Pakistan
                             </p>
                         </div>
                     </div>
 
-                    <!-- Phone -->
-                    <div class="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
-                        <i class="fa-solid fa-phone text-green-500 text-lg sm:text-xl mt-1"></i>
+
+                    {{-- PHONE --}}
+                    <div class="group flex items-center gap-4 p-3.5 rounded-xl
+                            border border-gray-100 hover:border-gray-200
+                            hover:bg-gray-50 transition">
+
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50
+                                flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-phone text-emerald-600"></i>
+                        </div>
+
                         <div>
-                            <h4 class="font-semibold text-sm sm:text-base text-gray-800">Phone</h4>
-                            <p class="text-xs sm:text-sm text-gray-500">
+                            <h4 class="text-sm font-semibold text-gray-900">
+                                Phone
+                            </h4>
+
+                            <p class="text-sm text-gray-500 mt-0.5">
                                 +92 300 1234567
                             </p>
                         </div>
                     </div>
 
-                    <!-- Email -->
-                    <div class="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
-                        <i class="fa-solid fa-envelope text-blue-500 text-lg sm:text-xl mt-1"></i>
-                        <div>
-                            <h4 class="font-semibold text-sm sm:text-base text-gray-800">Email</h4>
-                            <p class="text-xs sm:text-sm text-gray-500 break-all">
+
+                    {{-- EMAIL --}}
+                    <div class="group flex items-center gap-4 p-3.5 rounded-xl
+                            border border-gray-100 hover:border-gray-200
+                            hover:bg-gray-50 transition">
+
+                        <div class="w-11 h-11 rounded-xl bg-blue-50
+                                flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-envelope text-blue-600"></i>
+                        </div>
+
+                        <div class="min-w-0">
+                            <h4 class="text-sm font-semibold text-gray-900">
+                                Email
+                            </h4>
+
+                            <p class="text-sm text-gray-500 mt-0.5 break-all">
                                 info@example.com
                             </p>
                         </div>
                     </div>
 
-                    <!-- MAP -->
-                    <div class="mt-6 sm:mt-8">
+                </div>
+
+
+                {{-- MAP --}}
+                <div class="px-5 sm:px-6 pb-5 sm:pb-6 mt-auto">
+                    <div class="overflow-hidden rounded-xl border border-gray-200">
                         <iframe
-                            src="https://www.google.com/maps?q=Lodhran,Pakistan&output=embed"
-                            width="100%"
-                            height="280"
-                            style="border:0;"
-                            allowfullscreen=""
-                            loading="lazy"
-                            class="rounded-lg sm:rounded-xl sm:h-[330px]">
+                                src="https://www.google.com/maps?q=Lodhran,Pakistan&output=embed"
+                                width="100%"
+                                height="210"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy"
+                                class="w-full h-[210px] sm:h-[230px]">
                         </iframe>
                     </div>
-
                 </div>
 
-                <!-- RIGHT CARD (Contact Form) -->
-                <div class="bg-white rounded-xl sm:rounded-2xl shadow-sm sm:shadow p-5 sm:p-8 border border-gray-100 sm:border-none">
+            </div>
 
-                    <h3 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-900">
+
+            {{-- RIGHT CARD --}}
+            <div class="bg-white rounded-2xl border border-gray-200
+                    shadow-[0_8px_30px_rgba(0,0,0,0.04)]
+                    overflow-hidden flex flex-col">
+
+                {{-- Card Header --}}
+                <div class="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-gray-100">
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">
                         Send Message
-                    </h3>
+                    </h2>
 
-                    <!-- FORM WITH ROUTE & CSRF -->
-                    <form action="{{ route('contact-us.store') }}" method="POST">
+                    <p class="text-sm text-gray-500 mt-1">
+                        Fill in the form and we'll respond as soon as possible.
+                    </p>
+                </div>
+
+
+                <form action="{{ route('contact-us.store') }}"
+                      method="POST"
+                      class="p-5 sm:p-6 flex flex-col flex-1">
+
                     @csrf
 
-                    <!-- NAME -->
-                        <div class="relative mb-4 sm:mb-5">
-                            <input type="text" name="name" id="name" value="{{ old('name') }}" placeholder=" " required
-                                   class="peer w-full border border-gray-200 rounded-xl px-4 pt-5 pb-2 sm:pt-6 sm:pb-2 text-xs sm:text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
 
-                            <label for="name"
-                                   class="absolute left-3 top-2.5 sm:top-2 text-gray-400 text-xs sm:text-base transition-all duration-200
-                                   peer-placeholder-shown:top-3.5
-                                   peer-placeholder-shown:text-xs sm:peer-placeholder-shown:text-base
-                                   peer-placeholder-shown:text-gray-400
-                                   peer-focus:top-[-10px]
-                                   peer-focus:text-xs sm:peer-focus:text-sm
-                                   peer-focus:text-emerald-600
-                                   bg-white px-2">
-                                Name
-                            </label>
-                            @error('name')
-                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                            @enderror
+                    {{-- NAME --}}
+                    <div class="mb-4">
+                        <label for="name"
+                               class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Name
+                        </label>
+
+                        <div class="relative">
+                            <i class="fa-regular fa-user absolute left-4 top-1/2
+                                  -translate-y-1/2 text-gray-400 text-sm"></i>
+
+                            <input
+                                    type="text"
+                                    name="name"
+                                    id="name"
+                                    value="{{ old('name') }}"
+                                    placeholder="Enter your name"
+                                    required
+                                    class="w-full h-11 rounded-xl border border-gray-200
+                                   bg-gray-50/50 pl-11 pr-4 text-sm text-gray-800
+                                   placeholder:text-gray-400
+                                   focus:bg-white focus:outline-none
+                                   focus:border-gray-400 focus:ring-4
+                                   focus:ring-gray-100 transition">
                         </div>
 
-                        <!-- EMAIL -->
-                        <div class="relative mb-4 sm:mb-5">
-                            <input type="email" name="email" id="email" value="{{ old('email') }}" placeholder=" " required
-                                   class="peer w-full border border-gray-200 rounded-xl px-4 pt-5 pb-2 sm:pt-6 sm:pb-2 text-xs sm:text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        @error('name')
+                        <span class="text-red-500 text-xs mt-1 block">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
 
-                            <label for="email"
-                                   class="absolute left-3 top-2.5 sm:top-2 text-gray-400 text-xs sm:text-base transition-all duration-200
-                                   peer-placeholder-shown:top-3.5
-                                   peer-placeholder-shown:text-xs sm:peer-placeholder-shown:text-base
-                                   peer-placeholder-shown:text-gray-400
-                                   peer-focus:top-[-10px]
-                                   peer-focus:text-xs sm:peer-focus:text-sm
-                                   peer-focus:text-emerald-600
-                                   bg-white px-2">
-                                Email
-                            </label>
-                            @error('email')
-                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                            @enderror
+
+                    {{-- EMAIL --}}
+                    <div class="mb-4">
+                        <label for="email"
+                               class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Email
+                        </label>
+
+                        <div class="relative">
+                            <i class="fa-regular fa-envelope absolute left-4 top-1/2
+                                  -translate-y-1/2 text-gray-400 text-sm"></i>
+
+                            <input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    value="{{ old('email') }}"
+                                    placeholder="Enter your email"
+                                    required
+                                    class="w-full h-11 rounded-xl border border-gray-200
+                                   bg-gray-50/50 pl-11 pr-4 text-sm text-gray-800
+                                   placeholder:text-gray-400
+                                   focus:bg-white focus:outline-none
+                                   focus:border-gray-400 focus:ring-4
+                                   focus:ring-gray-100 transition">
                         </div>
 
-                        <!-- SUBJECT -->
-                        <div class="relative mb-4 sm:mb-5">
-                            <input type="text" name="subject" id="subject" value="{{ old('subject') }}" placeholder=" "
-                                   class="peer w-full border border-gray-200 rounded-xl px-4 pt-5 pb-2 sm:pt-6 sm:pb-2 text-xs sm:text-sm
-                                   focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        @error('email')
+                        <span class="text-red-500 text-xs mt-1 block">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
 
-                            <label for="subject"
-                                   class="absolute left-3 top-2.5 sm:top-2 text-gray-400 text-xs sm:text-base transition-all duration-200
-                                   peer-placeholder-shown:top-3.5
-                                   peer-placeholder-shown:text-xs sm:peer-placeholder-shown:text-base
-                                   peer-placeholder-shown:text-gray-400
-                                   peer-focus:top-[-10px]
-                                   peer-focus:text-xs sm:peer-focus:text-sm
-                                   peer-focus:text-emerald-600
-                                   bg-white px-2">
-                                Subject
-                            </label>
-                            @error('subject')
-                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                            @enderror
+
+                    {{-- SUBJECT --}}
+                    <div class="mb-4">
+                        <label for="subject"
+                               class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Subject
+                        </label>
+
+                        <div class="relative">
+                            <i class="fa-regular fa-message absolute left-4 top-1/2
+                                  -translate-y-1/2 text-gray-400 text-sm"></i>
+
+                            <input
+                                    type="text"
+                                    name="subject"
+                                    id="subject"
+                                    value="{{ old('subject') }}"
+                                    placeholder="Message subject"
+                                    class="w-full h-11 rounded-xl border border-gray-200
+                                   bg-gray-50/50 pl-11 pr-4 text-sm text-gray-800
+                                   placeholder:text-gray-400
+                                   focus:bg-white focus:outline-none
+                                   focus:border-gray-400 focus:ring-4
+                                   focus:ring-gray-100 transition">
                         </div>
 
-                        <!-- MESSAGE -->
-                        <div class="relative mb-5 sm:mb-6">
-                            <textarea name="message" id="message" rows="4" placeholder=" " required
-                                      class="peer w-full border border-gray-200 rounded-xl px-4 pt-5 pb-2 sm:pt-6 sm:pb-2 text-xs sm:text-sm
-                                      focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">{{ old('message') }}</textarea>
+                        @error('subject')
+                        <span class="text-red-500 text-xs mt-1 block">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
 
-                            <label for="message"
-                                   class="absolute left-3 top-2.5 sm:top-2 text-gray-400 text-xs sm:text-base transition-all duration-200
-                                   peer-placeholder-shown:top-3.5
-                                   peer-placeholder-shown:text-xs sm:peer-placeholder-shown:text-base
-                                   peer-placeholder-shown:text-gray-400
-                                   peer-focus:top-[-10px]
-                                   peer-focus:text-xs sm:peer-focus:text-sm
-                                   peer-focus:text-emerald-600
-                                   bg-white px-2">
-                                Message
-                            </label>
-                            @error('message')
-                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                            @enderror
-                        </div>
 
-                        <!-- BUTTON -->
-                        <button type="submit"
-                                class="w-full bg-emerald-600 text-white py-2.5 sm:py-3 rounded-xl hover:bg-emerald-700 transition font-semibold text-sm sm:text-base cursor-pointer">
-                            Send Message
-                        </button>
+                    {{-- MESSAGE --}}
+                    <div class="mb-5">
+                        <label for="message"
+                               class="block text-sm font-semibold text-gray-700 mb-1.5">
+                            Message
+                        </label>
 
-                    </form>
+                        <textarea
+                                name="message"
+                                id="message"
+                                rows="5"
+                                placeholder="Write your message..."
+                                required
+                                class="w-full min-h-[125px] resize-none rounded-xl
+                               border border-gray-200 bg-gray-50/50
+                               px-4 py-3 text-sm text-gray-800
+                               placeholder:text-gray-400
+                               focus:bg-white focus:outline-none
+                               focus:border-gray-400 focus:ring-4
+                               focus:ring-gray-100 transition">{{ old('message') }}</textarea>
 
-                </div>
+                        @error('message')
+                        <span class="text-red-500 text-xs mt-1 block">
+                            {{ $message }}
+                        </span>
+                        @enderror
+                    </div>
+
+
+                    {{-- BUTTON --}}
+                    <button
+                            type="submit"
+                            class="mt-auto w-full h-12 rounded-xl
+                           bg-gray-900 text-white
+                           hover:bg-black
+                           active:scale-[0.99]
+                           transition-all duration-200
+                           font-semibold text-sm
+                           flex items-center justify-center gap-2
+                           cursor-pointer">
+
+                        <span>Send Message</span>
+
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+
+                    </button>
+
+                </form>
 
             </div>
 

@@ -316,7 +316,7 @@
 
                 <!-- PRODUCTS GRID (5 columns on lg/xl) -->
                 <div id="productGrid"
-                     class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 mb-5 sm:gap-3">
+                     class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 mb-5">
                     @include('frontend.partials.category-product-cards', ['records' => $records, 'wishlistProductIds' => $wishlistProductIds])
                 </div>
 

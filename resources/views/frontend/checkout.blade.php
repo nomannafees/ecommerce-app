@@ -361,7 +361,7 @@
 
                             <!-- JazzCash Details -->
                             <div id="content-jazzcash" class="payment-panel hidden space-y-4">
-                                <div class="p-3 bg-red-50/80 rounded-xl border border-red-100 text-xs text-red-800 leading-relaxed">
+                                <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-100 text-xs text-emerald-800 leading-relaxed">
                                     <strong>JazzCash Account:</strong> 03001234567 <br>
                                     <strong>Account Title:</strong> Your Store Name
                                 </div>

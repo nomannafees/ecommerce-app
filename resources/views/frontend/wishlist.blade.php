@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="px-4 md:px-10 pb-10 pt-6 min-h-[49vh]">
+    <div class="  pb-10 pt-6 min-h-[49vh]">
 
         <!-- HEADER -->
         <div id="wishlistHeader"
@@ -49,7 +49,7 @@
 
         <!-- WISHLIST ITEMS -->
         <div id="wishlistContainer"
-             class="space-y-4 container mx-auto {{ $wishlists->isEmpty() ? 'hidden' : '' }}">
+             class="space-y-4 container mx-auto px-4 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 {{ $wishlists->isEmpty() ? 'hidden' : '' }}">
 
         @foreach($wishlists as $item)
 
