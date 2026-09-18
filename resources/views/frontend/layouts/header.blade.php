@@ -9,7 +9,7 @@
 <div class="bg-black sticky top-0 lg:static z-[100] shadow-lg relative"
      x-data="mainHeaderHandler()">
 
-    <header class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-4 relative">
+    <header class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 relative">
         <div class="grid grid-cols-2 lg:grid-cols-3 items-center h-full w-full gap-2">
 
             <!-- Dynamic Store Logo & Title Section (Left Column) -->
