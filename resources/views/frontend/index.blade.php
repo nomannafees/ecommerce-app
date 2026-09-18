@@ -151,7 +151,9 @@
         @endif
     @endif
 
+
     <!-- FLASH SALE SECTION -->
+
     <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-4 mb-2 sm:mb-4 lg:mb-2 flex justify-between items-center">
         <div>
             <h2 class="text-xl sm:text-2xl mt-2 sm:mt-4 font-bold text-gray-900 flex items-center gap-2">
@@ -167,7 +169,7 @@
     </div>
 
     <!-- Responsive Grid Setup -->
-    <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 mb-4 gap-2">
+    <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:pt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 mb-4 gap-2 ">
         @forelse($flashSaleProducts as $index => $product)
             @php
                 $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
@@ -190,17 +192,15 @@
                     $sellingPrice = $variant->price ?? 0;
                 }
 
-                // Screen responsive display class logic based on your requirements:
-                // 2 items per row (mobile): max 6 items total (3 rows x 2 items)
-                // 3 items per row (md): max 6 items total (2 rows x 3 items)
-                // 5 items per row (lg): max 5 items total (1 row x 5 items)
-                // 6 items per row (xl/2xl): max 6 items total (1 row x 6 items)
-                if ($index < 5) {
-                    $displayClass = 'flex'; // Pehle 5 products sab screens par rahenge
+                // Screen responsive display class logic based on your exact grid requirements:
+                if ($index < 4) {
+                    $displayClass = 'flex'; // Pehle 4 items sabhi screens par dikhenge
+                } elseif ($index == 4) {
+                    $displayClass = 'flex lg:hidden xl:flex'; // 5th item: LG par hidden, baaki sab par visible
                 } elseif ($index == 5) {
-                    $displayClass = 'flex lg:hidden xl:flex'; // 6th product: Mobile(2), MD(3) aur XL(6) par dikhega, par LG(5) par hide ho jayega
+                    $displayClass = 'flex lg:hidden xl:hidden 2xl:flex'; // 6th item: Sirf Mobile, MD aur 2xl par visible, LG aur XL par hidden
                 } else {
-                    $displayClass = 'hidden'; // 6 se zyada jitne bhi honge woh sab hidden rahenge
+                    $displayClass = 'hidden'; // Baaki sab hidden
                 }
             @endphp
 
@@ -352,7 +352,7 @@
                 $avgRating = $product->reviews->avg('rating') ?? 0;
                 $reviewsCount = $product->reviews_count ?? 0;
 
-                // Screen responsive display logic
+                // Screen responsive display logic based on your exact row/column rules
                 if ($index < 10) {
                     $displayClass = 'flex';
                 } elseif ($index >= 10 && $index < 12) {
@@ -383,7 +383,6 @@
             </a>
         @endforeach
     </div>
-
     @if(isset($setting) && $setting->show_mid_banners == 1)
         @php
             // Sort order ke mutabik banners ko safely map karna agar $banners mojood ho
@@ -398,7 +397,7 @@
         @endphp
 
         <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:py-2 mb-2">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
 
                 <!-- 1st Banner (Large Left Side) -->
                 <div class="relative rounded-xl sm:rounded-2xl overflow-hidden group h-[280px] sm:h-[400px] lg:h-[500px] bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -442,7 +441,7 @@
                 </div>
 
                 <!-- Small Banners (Right Side Stack) -->
-                <div class="grid grid-rows-2 gap-4 h-[280px] sm:h-[400px] lg:h-[500px]">
+                <div class="grid grid-rows-2 gap-4 sm:gap-6 h-[280px] sm:h-[400px] lg:h-[500px]">
 
                     <!-- 2nd Banner (Top Right) -->
                     <div class="relative rounded-xl sm:rounded-2xl overflow-hidden h-full group bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -546,7 +545,7 @@
                     $avgRating = $product->reviews->avg('rating') ?? 0;
                     $reviewsCount = $product->reviews_count ?? 0;
 
-                    // Screen responsive display logic
+                    // Screen responsive display logic based on your exact row/column rules
                     if ($index < 10) {
                         $displayClass = 'flex';
                     } elseif ($index >= 10 && $index < 12) {
@@ -560,9 +559,9 @@
                     {{-- Border aur shadow ko mazeed prominent kar diya hai taaki border saaf nazar aaye --}}
                     <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
-                    <span class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
-                        Featured
-                    </span>
+                <span class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
+                    Featured
+                </span>
 
                         @include('frontend.partials.product-images-card')
 
