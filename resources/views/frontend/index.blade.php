@@ -398,7 +398,7 @@
         @endphp
 
         <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 sm:py-2 mb-2">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                 <!-- 1st Banner (Large Left Side) -->
                 <div class="relative rounded-xl sm:rounded-2xl overflow-hidden group h-[280px] sm:h-[400px] lg:h-[500px] bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -442,7 +442,7 @@
                 </div>
 
                 <!-- Small Banners (Right Side Stack) -->
-                <div class="grid grid-rows-2 gap-4 sm:gap-6 h-[280px] sm:h-[400px] lg:h-[500px]">
+                <div class="grid grid-rows-2 gap-4 h-[280px] sm:h-[400px] lg:h-[500px]">
 
                     <!-- 2nd Banner (Top Right) -->
                     <div class="relative rounded-xl sm:rounded-2xl overflow-hidden h-full group bg-gradient-to-br from-gray-900 via-gray-800 to-black">

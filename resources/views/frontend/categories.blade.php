@@ -13,7 +13,7 @@
                 🛍️ Explore Our Products
             </h1>
             <p class="text-[16px] text-gray-500 mt-0.5 max-w-md mx-auto">
-                Shop top products by category, price, color, and size.
+                Products by category, price, color, and size.
             </p>
         </div>
 
