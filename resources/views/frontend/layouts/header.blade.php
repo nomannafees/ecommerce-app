@@ -10,10 +10,10 @@
      x-data="mainHeaderHandler()">
 
     <header class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 relative">
-        <div class="grid grid-cols-2 lg:grid-cols-3 items-center h-full w-full gap-2">
+        <div class="grid grid-cols-2 lg:grid-cols-12 items-center h-full w-full gap-2">
 
             <!-- Dynamic Store Logo & Title Section (Left Column) -->
-            <div class="flex items-center justify-start">
+            <div class="col-span-1 lg:col-span-3 flex items-center justify-start">
                 <a href="{{ route('index') }}"
                    class="flex items-center gap-1.5 hover:opacity-90 transition-opacity shrink-0">
                     @if($store)
@@ -27,8 +27,8 @@
                         {{-- Show Title if enabled --}}
                         @if($store->is_title && $store->title)
                             <span class="text-base sm:text-xl font-bold tracking-tight">
-                            {{ $store->title }}
-                        </span>
+                        {{ $store->title }}
+                    </span>
                         @endif
 
                         {{-- Fallback if both toggles are off --}}
@@ -41,9 +41,9 @@
                 </a>
             </div>
 
-            <!-- Search Wrapper (Center Column - Width Increased) -->
-            <div class="hidden lg:flex justify-center w-full col-span-1">
-                <div class="search-wrapper w-full max-w-2xl xl:max-w-3xl relative z-[40]"
+            <!-- Search Wrapper (Center Column - Balanced Width) -->
+            <div class="hidden lg:flex justify-center w-full col-span-6">
+                <div class="search-wrapper w-full max-w-xl xl:max-w-2xl mx-auto relative z-[40]"
                      @click.outside="showDropdown = false">
 
                     <form action="{{ route('categories') }}" method="GET"
@@ -52,8 +52,8 @@
 
                         <!-- Search Icon added on the left side -->
                         <span class="pl-2 text-gray-400 flex items-center pointer-events-none">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </span>
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                </span>
 
                         <input type="text"
                                name="search"
@@ -127,7 +127,7 @@
             </div>
 
             <!-- Right Side Icons & Sign In Dropdown (Right Column) -->
-            <div class="flex items-center justify-end gap-2 sm:gap-5 shrink-0">
+            <div class="col-span-1 lg:col-span-3 flex items-center justify-end gap-2 sm:gap-5 shrink-0">
 
                 <!-- Mobile Search Button Icon -->
                 <button @click="mobileSearchOpen = !mobileSearchOpen"
@@ -140,8 +140,8 @@
                     <i class="fa-regular fa-heart fa-sm mb-3"></i>
                     <span id="header-wishlist-count"
                           class="wishlist-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($wishlistCount ?? 0) > 0 ? '' : 'hidden' }}">
-                    {{ $wishlistCount ?? 0 }}
-                </span>
+                {{ $wishlistCount ?? 0 }}
+            </span>
                 </a>
 
                 <!-- Cart: Desktop Only -->
@@ -149,8 +149,8 @@
                     <i class="fa-solid fa-cart-shopping fa-sm"></i>
                     <span id="header-cart-count"
                           class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($cartCount ?? 0) > 0 ? '' : 'hidden' }}">
-                    {{ $cartCount ?? 0 }}
-                </span>
+                {{ $cartCount ?? 0 }}
+            </span>
                 </a>
 
                 <!-- Divider -->
@@ -170,12 +170,12 @@
                         <div class="leading-tight text-left hidden sm:block">
                             <span class="block text-[10px] text-gray-400">Welcome</span>
                             <span class="font-semibold">
-                            @auth
+                        @auth
                                     {{ Str::limit(Auth::user()->name, 10) }}
                                 @else
                                     Sign in / Register
                                 @endauth
-                        </span>
+                    </span>
                         </div>
                     </button>
 
@@ -272,7 +272,6 @@
 
         </div>
     </header>
-
     <!-- ================= MOBILE EXPANDABLE SEARCH BAR ================= -->
     <div x-show="mobileSearchOpen" x-cloak style="display: none;" x-transition
          class="search-wrapper py-2 px-3 md:hidden w-full bg-gray-200 border-t border-gray-300 shadow-inner relative z-30">
