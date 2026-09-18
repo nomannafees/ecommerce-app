@@ -46,7 +46,7 @@
 
                 <form action="{{ route('categories') }}" method="GET"
                       @submit="handleSubmit($event)"
-                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11 ms-10">
+                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
                     <!-- Search Icon added on the left side -->
                     <span class="pl-2 text-gray-400 flex items-center pointer-events-none">
@@ -62,12 +62,12 @@
                            autocomplete="off"
                            class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
-{{--                    <button type="button"--}}
-{{--                            @click="isImageModalOpen = true"--}}
-{{--                            class="px-2.5 text-gray-500 hover:text-black transition"--}}
-{{--                            title="Search by Image">--}}
-{{--                        <i class="fa-solid fa-qrcode text-base"></i>--}}
-{{--                    </button>--}}
+                    {{--                    <button type="button"--}}
+                    {{--                            @click="isImageModalOpen = true"--}}
+                    {{--                            class="px-2.5 text-gray-500 hover:text-black transition"--}}
+                    {{--                            title="Search by Image">--}}
+                    {{--                        <i class="fa-solid fa-qrcode text-base"></i>--}}
+                    {{--                    </button>--}}
 
                     <button type="button"
                             @click="handleVoiceSearch()"
