@@ -645,7 +645,7 @@
             <div class="swiper brandsSwiper relative overflow-hidden" style="margin-bottom: -22px">
                 <div class="swiper-wrapper">
                     @foreach($brands as $brand)
-                        <div class="swiper-slide h-auto pr-2 sm:pr-3">
+                        <div class="swiper-slide h-auto pr-2 sm:pr-1">
                             <a href="{{ route('categories', ['brand' => $brand->slug]) }}"
                                class="bg-white rounded-xl p-3 sm:p-4 border border-gray-200 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition duration-300 group h-full">
                                 <div class="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mb-2 sm:mb-3">

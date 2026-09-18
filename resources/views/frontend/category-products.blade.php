@@ -32,8 +32,8 @@
                                     Explore Sub-Categories
                                 </h3>
                                 <span
-                                    class="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
-                                    {{ $currentCategory->children->count() }} Items
+                                    class="text-md font-semibold text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full">
+                                    <span class="font-bold text-black">{{ $currentCategory->children->count() }}</span>  Items
                                 </span>
                             </div>
 
