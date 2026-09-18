@@ -9,129 +9,125 @@
 <div class="bg-black sticky top-0 lg:static z-[100] shadow-lg relative"
      x-data="mainHeaderHandler()">
 
-    <header
-            class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-4 relative">
-        <div class="flex justify-between items-center h-full w-full">
+    <header class="container mx-auto flex flex-col justify-between py-3 text-white px-3 sm:px-4 relative">
+        <div class="grid grid-cols-3 items-center h-full w-full">
 
-            <!-- Dynamic Store Logo & Title Section -->
-            <a href="{{ route('index') }}"
-               class="flex items-center gap-1.5 hover:opacity-90 transition-opacity lg:ms-5 md:ms-5 xl:ms-5 2xl:ms-5  shrink-0">
-                @if($store)
-                    {{-- Show Logo if enabled --}}
-                    @if($store->is_logo && $store->logo)
-                        <img src="{{ asset('storage/' . $store->logo) }}"
-                             alt="{{ $store->title ?? 'ShopNest' }}"
-                             class="h-6 sm:h-9  w-auto max-w-[110px] sm:max-w-[150px] object-contain rounded-md">
-                    @endif
+            <!-- Dynamic Store Logo & Title Section (Left Column) -->
+            <div class="flex items-center justify-start">
+                <a href="{{ route('index') }}"
+                   class="flex items-center gap-1.5 hover:opacity-90 transition-opacity shrink-0">
+                    @if($store)
+                        {{-- Show Logo if enabled --}}
+                        @if($store->is_logo && $store->logo)
+                            <img src="{{ asset('storage/' . $store->logo) }}"
+                                 alt="{{ $store->title ?? 'ShopNest' }}"
+                                 class="h-6 sm:h-9 w-auto max-w-[110px] sm:max-w-[150px] object-contain rounded-md">
+                        @endif
 
-                    {{-- Show Title if enabled --}}
-                    @if($store->is_title && $store->title)
-                        <span class="text-base sm:text-xl font-bold tracking-tight">
+                        {{-- Show Title if enabled --}}
+                        @if($store->is_title && $store->title)
+                            <span class="text-base sm:text-xl font-bold tracking-tight">
                             {{ $store->title }}
                         </span>
+                        @endif
+
+                        {{-- Fallback if both toggles are off --}}
+                        @if(!$store->is_logo && !$store->is_title)
+                            <span class="text-base sm:text-xl font-bold">ShopNest</span>
+                        @endif
+                    @else
+                        <h1 class="text-base sm:text-xl font-bold">ShopNest</h1>
                     @endif
+                </a>
+            </div>
 
-                    {{-- Fallback if both toggles are off --}}
-                    @if(!$store->is_logo && !$store->is_title)
-                        <span class="text-base sm:text-xl font-bold">ShopNest</span>
-                    @endif
-                @else
-                    <h1 class="text-base sm:text-xl font-bold">ShopNest</h1>
-                @endif
-            </a>
+            <!-- Search Wrapper (Center Column) -->
+            <div class="flex justify-center w-full">
+                <div class="search-wrapper hidden lg:block w-full max-w-xl relative z-[40]"
+                     @click.outside="showDropdown = false">
 
-            <div class="search-wrapper hidden lg:block flex-1 max-w-xl mx-auto relative z-[40]"
-                 @click.outside="showDropdown = false">
+                    <form action="{{ route('categories') }}" method="GET"
+                          @submit="handleSubmit($event)"
+                          class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
 
-
-                <form action="{{ route('categories') }}" method="GET"
-                      @submit="handleSubmit($event)"
-                      class="w-full flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-inner relative h-11">
-
-                    <!-- Search Icon added on the left side -->
-                    <span class="pl-2 text-gray-400 flex items-center pointer-events-none">
+                        <!-- Search Icon added on the left side -->
+                        <span class="pl-2 text-gray-400 flex items-center pointer-events-none">
                         <i class="fa-solid fa-magnifying-glass text-sm"></i>
                     </span>
 
-                    <input type="text"
-                           name="search"
-                           x-model="searchQuery"
-                           @input.debounce.300ms="fetchLiveSearch()"
-                           @focus="if (searchQuery.trim() && (categoriesList.length || productsList.length)) showDropdown = true"
-                           placeholder="Search products, brands and more..."
-                           autocomplete="off"
-                           class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
+                        <input type="text"
+                               name="search"
+                               x-model="searchQuery"
+                               @input.debounce.300ms="fetchLiveSearch()"
+                               @focus="if (searchQuery.trim() && (categoriesList.length || productsList.length)) showDropdown = true"
+                               placeholder="Search products, brands and more..."
+                               autocomplete="off"
+                               class="w-full search-input pl-3 pr-2 text-sm text-gray-800 focus:outline-none bg-transparent">
 
-                    {{--                    <button type="button"--}}
-                    {{--                            @click="isImageModalOpen = true"--}}
-                    {{--                            class="px-2.5 text-gray-500 hover:text-black transition"--}}
-                    {{--                            title="Search by Image">--}}
-                    {{--                        <i class="fa-solid fa-qrcode text-base"></i>--}}
-                    {{--                    </button>--}}
+                        <button type="button"
+                                @click="handleVoiceSearch()"
+                                class="px-2 transition me-1.5"
+                                :class="isListening ? 'text-red-500 animate-pulse' : 'text-gray-500 hover:text-black'"
+                                title="Search by Voice">
+                            <i class="fa-solid fa-microphone text-base"></i>
+                        </button>
 
-                    <button type="button"
-                            @click="handleVoiceSearch()"
-                            class="px-2 transition me-1.5"
-                            :class="isListening ? 'text-red-500 animate-pulse' : 'text-gray-500 hover:text-black'"
-                            title="Search by Voice">
-                        <i class="fa-solid fa-microphone text-base"></i>
-                    </button>
+                        <button type="submit"
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </button>
+                    </form>
 
-                    <button type="submit"
-                            class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-full flex items-center justify-center transition shrink-0">
-                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                    </button>
-                </form>
+                    <!-- Suggestions -->
+                    <div id="search-suggestions"
+                         x-show="showDropdown"
+                         x-cloak
+                         style="display: none;"
+                         class="search-suggestions absolute left-0 w-full top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] mt-1 max-h-96 overflow-y-auto">
 
-                <!-- Suggestions -->
-                <div id="search-suggestions"
-                     x-show="showDropdown"
-                     x-cloak
-                     style="display: none;"
-                     class="search-suggestions absolute left-0 w-full top-[52px] bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[9999] mt-1 max-h-96 overflow-y-auto">
+                        <template x-if="isSearching">
+                            <div class="p-4 text-center text-xs text-gray-400">Searching...</div>
+                        </template>
 
-                    <template x-if="isSearching">
-                        <div class="p-4 text-center text-xs text-gray-400">Searching...</div>
-                    </template>
+                        <template x-if="!isSearching && categoriesList.length === 0 && productsList.length === 0">
+                            <div class="p-4 text-center text-xs text-gray-500">
+                                No matching results found
+                            </div>
+                        </template>
 
-                    <template x-if="!isSearching && categoriesList.length === 0 && productsList.length === 0">
-                        <div class="p-4 text-center text-xs text-gray-500">
-                            No matching results found
-                        </div>
-                    </template>
+                        <template x-if="!isSearching && categoriesList.length > 0">
+                            <div class="py-2 border-b border-gray-100">
+                                <span class="block px-4 py-1 text-[11px] font-bold tracking-wider uppercase text-gray-400">Categories</span>
+                                <template x-for="cat in categoriesList" :key="cat.id || cat.slug">
+                                    <a :href="'{{ url('/collection') }}/' + cat.slug"
+                                       class="flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition">
+                                        <i class="fa-solid fa-layer-group text-gray-400 text-xs shrink-0"></i>
+                                        <span class="truncate" x-text="cat.name || cat.title"></span>
+                                    </a>
+                                </template>
+                            </div>
+                        </template>
 
-                    <template x-if="!isSearching && categoriesList.length > 0">
-                        <div class="py-2 border-b border-gray-100">
-                            <span class="block px-4 py-1 text-[11px] font-bold tracking-wider uppercase text-gray-400">Categories</span>
-                            <template x-for="cat in categoriesList" :key="cat.id || cat.slug">
-                                <a :href="'{{ url('/collection') }}/' + cat.slug"
-                                   class="flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition">
-                                    <i class="fa-solid fa-layer-group text-gray-400 text-xs shrink-0"></i>
-                                    <span class="truncate" x-text="cat.name || cat.title"></span>
-                                </a>
-                            </template>
-                        </div>
-                    </template>
+                        <template x-if="!isSearching && productsList.length > 0">
+                            <div class="py-2">
+                                <span class="block px-4 py-1 text-[11px] font-bold tracking-wider uppercase text-gray-400">Products</span>
+                                <template x-for="prod in productsList" :key="prod.id || prod.slug">
+                                    <a :href="'{{ url('/product') }}/' + prod.slug"
+                                       class="flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition">
+                                        <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs shrink-0"></i>
+                                        <span class="truncate" x-text="prod.name || prod.title"></span>
+                                    </a>
+                                </template>
+                            </div>
+                        </template>
 
-                    <template x-if="!isSearching && productsList.length > 0">
-                        <div class="py-2">
-                            <span class="block px-4 py-1 text-[11px] font-bold tracking-wider uppercase text-gray-400">Products</span>
-                            <template x-for="prod in productsList" :key="prod.id || prod.slug">
-                                <a :href="'{{ url('/product') }}/' + prod.slug"
-                                   class="flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 hover:text-emerald-600 transition">
-                                    <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs shrink-0"></i>
-                                    <span class="truncate" x-text="prod.name || prod.title"></span>
-                                </a>
-                            </template>
-                        </div>
-                    </template>
+                    </div>
 
                 </div>
-
             </div>
 
-            <!-- Right Side Icons & Sign In Dropdown -->
-            <div class="flex items-center gap-2 sm:gap-5 shrink-0">
+            <!-- Right Side Icons & Sign In Dropdown (Right Column) -->
+            <div class="flex items-center justify-end gap-2 sm:gap-5 shrink-0">
 
                 <!-- Mobile Search Button Icon -->
                 <button @click="mobileSearchOpen = !mobileSearchOpen"
@@ -144,18 +140,17 @@
                     <i class="fa-regular fa-heart fa-sm mb-3"></i>
                     <span id="header-wishlist-count"
                           class="wishlist-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($wishlistCount ?? 0) > 0 ? '' : 'hidden' }}">
-        {{ $wishlistCount ?? 0 }}
-    </span>
+                    {{ $wishlistCount ?? 0 }}
+                </span>
                 </a>
 
                 <!-- Cart: Desktop Only -->
                 <a href="{{ route('cart') }}" class="relative text-lg hover:text-gray-300 hidden sm:block">
                     <i class="fa-solid fa-cart-shopping fa-sm"></i>
-
                     <span id="header-cart-count"
                           class="cart-count absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full px-1.5 {{ ($cartCount ?? 0) > 0 ? '' : 'hidden' }}">
-                        {{ $cartCount ?? 0 }}
-                    </span>
+                    {{ $cartCount ?? 0 }}
+                </span>
                 </a>
 
                 <!-- Divider -->
@@ -175,12 +170,12 @@
                         <div class="leading-tight text-left hidden sm:block">
                             <span class="block text-[10px] text-gray-400">Welcome</span>
                             <span class="font-semibold">
-                                @auth
+                            @auth
                                     {{ Str::limit(Auth::user()->name, 10) }}
                                 @else
                                     Sign in / Register
                                 @endauth
-                            </span>
+                        </span>
                         </div>
                     </button>
 
@@ -274,8 +269,8 @@
                 </div>
 
             </div>
-        </div>
 
+        </div>
     </header>
 
     <!-- ================= MOBILE EXPANDABLE SEARCH BAR ================= -->
