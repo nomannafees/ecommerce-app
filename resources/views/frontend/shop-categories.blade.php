@@ -25,19 +25,19 @@
         </div>
 
         <!-- CATEGORIES ACCORDION LIST CONTAINER -->
-        <div class="px-3 sm:px-4 py-3 space-y-3 max-w-2xl mx-auto">
+        <!-- Yahan openCategory state add ki gayi hai taake ek waqt mein sirf ek main category khule -->
+        <div class="px-3 sm:px-4 py-3 space-y-3 max-w-2xl mx-auto" x-data="{ openCategory: null, openSub: null }">
 
             @foreach($categories->where('parent_id', 0) as $mainCat)
                 @php
                     $subCategories = $mainCat->children ?? $categories->where('parent_id', $mainCat->id);
                 @endphp
 
-                <div class="bg-white rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden"
-                     x-data="{ open: false, openSub: null }">
+                <div class="bg-white rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-all duration-300 overflow-hidden">
 
                     <!-- MAIN CATEGORY ROW -->
                     <div class="flex items-center justify-between px-4 py-3.5 cursor-pointer select-none group"
-                         @click="open = !open">
+                         @click="openCategory = (openCategory === {{ $mainCat->id }}) ? null : {{ $mainCat->id }}; openSub = null;">
 
                         <a href="{{ route('categoriesProduct', ['category' => $mainCat->slug]) }}"
                            @click.stop
@@ -62,7 +62,7 @@
                         @if($subCategories->count() > 0)
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 bg-slate-50 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition">
                                 <i class="fa-solid fa-chevron-down text-xs transition-transform duration-300"
-                                   :class="open ? 'rotate-180' : ''"></i>
+                                   :class="openCategory === {{ $mainCat->id }} ? 'rotate-180' : ''"></i>
                             </div>
                         @endif
 
@@ -70,7 +70,7 @@
 
                     <!-- SUB CATEGORIES (Level 2) -->
                     @if($subCategories->count() > 0)
-                        <div x-show="open" x-collapse x-cloak class="border-t border-slate-100 bg-slate-50/70 divide-y divide-slate-100/80">
+                        <div x-show="openCategory === {{ $mainCat->id }}" x-collapse x-cloak class="border-t border-slate-100 bg-slate-50/70 divide-y divide-slate-100/80">
                             @foreach($subCategories as $subCat)
                                 @php
                                     $subSlugPath = $mainCat->slug . '/' . $subCat->slug;
