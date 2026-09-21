@@ -513,8 +513,6 @@
     });
 </script>
 
-
-
 <script>
     $(document).off('click', '.qty-plus, .qty-minus').on('click', '.qty-plus, .qty-minus', function () {
         let id = $(this).data('id');
