@@ -76,6 +76,7 @@ class ProductController extends Controller
             'variantImages',
             'mainVariantImage',
             'prod_brand',
+            'flashSale', // <--- Yahan flashSale relationship add ki gayi hai
             'reviews' => function ($query) {
                 $query->where('is_approved', true)
                     ->with(['user', 'images'])
@@ -93,8 +94,8 @@ class ProductController extends Controller
             ], 404);
         }
 
-        // Track user interaction
-        $user = auth('sanctum')->user() ?? auth()->user();
+        // --- TRACK USER INTERACTION ---
+        $user = auth('sanctum')->user() -> auth()->user();
 
         if ($user) {
             UserProductInteraction::updateOrCreate(
@@ -125,9 +126,24 @@ class ProductController extends Controller
                 );
             }
         }
+        // ------------------------------
 
+        // Rating calculations
         $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
         $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
+
+        // --- FLASH SALE CHECK & DATA ---
+        // Check karein ke kya is product par abhi active flash sale chal rahi hai ya nahi
+        $isFlashSaleActive = false;
+        if ($product->flashSale) {
+            $now = now();
+            if ($product->flashSale->start_time <= $now && $product->flashSale->end_time >= $now) {
+                $isFlashSaleActive = true;
+            }
+        }
+
+        // Product ke object ya response array mein flash sale status attach karna
+        $product->is_flash_sale = $isFlashSaleActive;
 
         return response()->json([
             'status' => true,
