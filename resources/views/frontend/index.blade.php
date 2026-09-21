@@ -682,34 +682,46 @@
 
 
     <!-- 5.1 FULL-WIDTH 50/50 STICKY PARALLAX BRAND SHOWCASE -->
+    <!-- 5.1 FULL-WIDTH 50/50 BACKGROUND IMAGE & CONTAINER TEXT SHOWCASE -->
     @if(isset($setting) && $setting->show_brand_banner == 1)
         @php
             // Check if image is allowed via toggle and exists
             $hasBrandBannerImage = ($brandBanner && $brandBanner->is_image == 1 && !empty($brandBanner->image));
         @endphp
 
-        <!-- Outer wrapper ko w-full kar diya hai taake poori screen par aaye -->
-        <div class="relative w-full mt-4 mb-4 sm:mb-6 bg-gray-900 overflow-hidden shadow-2xl">
+        <!-- Outer wrapper -->
+        <div class="relative w-full mt-4 mb-4 sm:mb-6 overflow-hidden shadow-2xl bg-gray-900 h-[220px] sm:h-[350px] md:h-[400px] flex items-center">
 
-            <!-- Grid ko poori width dene ke liye container class yahan se hata kar andar shift kar di hai -->
-            <div class="w-full grid grid-cols-1 lg:grid-cols-2 min-h-[220px] sm:min-h-[400px] lg:min-h-[480px]">
+            <!-- 1. Background Image (Poori width aur height par background ban kar show hogi) -->
+            @if($hasBrandBannerImage)
+                <div class="absolute inset-0 bg-scroll sm:bg-fixed bg-center bg-cover w-full h-full z-0"
+                     style="background-image: url('{{ asset('storage/' . $brandBanner->image) }}');">
+                    <!-- Dark gradient overlay taake background thori dark ho aur text wazeh (clear) nazar aaye -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-900/95 to-black/40"></div>
+                </div>
+        @else
+            <!-- Agar image na ho toh default dark background -->
+                <div class="absolute inset-0 bg-gray-900 z-0"></div>
+        @endif
 
-                <!-- Left Text Content (Yahan gradient ko right ki taraf smooth blend kar diya hai) -->
-                <div class="flex flex-col justify-center py-4 sm:py-10 lg:py-16 text-white z-10 bg-gradient-to-r from-gray-900 via-gray-900 to-gray-900 px-6 sm:px-12  lg:pr-14">
-            <span class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-2 sm:mb-6 w-max">
-                <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
-            </span>
+        <!-- 2. Content Container (Image ke upar left side par text container aayega) -->
+            <div class="relative z-10 w-full container mx-auto px-3 sm:px-8 lg:px-8 py-8">
+                <div class="max-w-xl w-full flex flex-col justify-center text-white">
+
+                <span class="inline-flex items-center gap-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] sm:text-xs font-bold uppercase px-3 sm:px-3.5 py-0.5 sm:py-1.5 rounded-full tracking-wider mb-1.5 sm:mb-6 w-max">
+                    <i class="fa-solid fa-crown text-rose-500"></i> Official Partner Showcase
+                </span>
 
                     <!-- Title Check (is_title) -->
                     @if(!$brandBanner || $brandBanner->is_title == 1)
-                        <h2 class="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 sm:mb-6 leading-tight">
+                        <h2 class="text-xl sm:text-3xl md:text-2xl lg:text-3xl font-extrabold tracking-tight mb-1 sm:mb-3 leading-tight text-white drop-shadow-md">
                             {{ $brandBanner->name ?? 'Exclusive Brand Showcase' }}
                         </h2>
                     @endif
 
                 <!-- Description Check (is_description) -->
                     @if(!$brandBanner || $brandBanner->is_description == 1)
-                        <p class="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed mb-3 sm:mb-8 line-clamp-2 sm:line-clamp-none">
+                        <p class="text-gray-200 text-xs 2xl:text-lg lg:text-lg leading-relaxed mb-4 sm:mb-8 line-clamp-2 sm:line-clamp-none drop-shadow">
                             {{ $brandBanner->description ?? 'Discover our premium collections and official brand partners with exceptional quality and style tailored just for you.' }}
                         </p>
                     @endif
@@ -718,26 +730,16 @@
                     @if(!$brandBanner || $brandBanner->is_button == 1)
                         <div>
                             <a href="{{ route('frontendProduct') }}"
-                               class="inline-flex items-center gap-2 sm:gap-3 bg-white text-gray-900 font-bold px-5 sm:px-8 py-2 sm:py-4 rounded-xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-xl group text-xs sm:text-base">
+                               class="inline-flex items-center gap-2 sm:gap-3 bg-white text-gray-900 font-bold px-5 py-2  rounded-xl hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-xl group text-xs sm:text-base">
                                 <span>{{ $brandBanner->button_name ?? 'Explore Collection' }}</span>
                                 <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
                             </a>
                         </div>
                     @endif
-                </div>
 
-                <!-- Dynamic Background Image (Yahan left se black gradient overlay lagaya hai taake center mein mix ho jaye) -->
-                <div class="relative hidden lg:block min-h-[300px] sm:min-h-[350px] lg:min-h-full w-full">
-                    @if($hasBrandBannerImage)
-                        <div class="absolute inset-0 bg-scroll sm:bg-fixed bg-center bg-cover w-full h-full"
-                             style="background-image: url('{{ asset('storage/' . $brandBanner->image) }}');">
-                            <!-- Yahan gradient ko left se dark gray/black rakha hai taake boundary khatam ho kar match ho jaye -->
-                            <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/40 to-black/20"></div>
-                        </div>
-                    @endif
                 </div>
-
             </div>
+
         </div>
     @endif
 
