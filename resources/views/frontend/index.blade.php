@@ -538,25 +538,29 @@
             </a>
         </div>
 
-        <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
+        <div class="container mx-auto px-3 sm:px-8 md:px-8 lg:px-8 2xl:px-8 3xl:px-8 4xl:px-8 py-2 sm:py-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 mb-2 sm:mb-8">
             @foreach($featuredProducts as $index => $product)
                 @php
                     $isWishlisted = in_array($product->id, $wishlistProductIds ?? []);
                     $avgRating = $product->reviews->avg('rating') ?? 0;
                     $reviewsCount = $product->reviews_count ?? 0;
 
-                    // Screen responsive display logic based on your exact row/column rules
+                    // Screen-wise display logic
                     if ($index < 10) {
+                        // Yeh pehle 10 items hain jo har screen par show honge
                         $displayClass = 'flex';
                     } elseif ($index >= 10 && $index < 12) {
+                        // Yeh 11th aur 12th items hain:
+                        // - Mobile, sm, md, lg, aur 2xl par show honge
+                        // - Sirf xl screen par hidden rahenge (5 columns ki 2 rows poori karne ke liye)
                         $displayClass = 'flex xl:hidden 2xl:flex';
                     } else {
+                        // 12 ke baad wale saare items hidden rahenge
                         $displayClass = 'hidden';
                     }
                 @endphp
 
                 <a href="{{ route('product.detail', $product->slug) }}" class="group {{ $displayClass }}">
-                    {{-- Border aur shadow ko mazeed prominent kar diya hai taaki border saaf nazar aaye --}}
                     <div class="bg-white rounded-sm sm:rounded-lg shadow-sm border border-gray-300 overflow-hidden hover:shadow-lg transition duration-300 relative flex flex-col h-full w-full">
 
                 <span class="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-md shadow">
