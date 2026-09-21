@@ -22,6 +22,7 @@ use App\Http\Controllers\BrandsBannerController;
 use App\Http\Controllers\FlashSaleController;
 
 
+
 Route::get('/clear-cache', function () {
     Artisan::call('config:cache');
     Artisan::call('optimize:clear');
@@ -99,7 +100,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-orders/{id}/restore', [FrontendController::class, 'restoreOrder'])
         ->name('order.restore')
         ->middleware('auth');
-    Route::post('/buy-now', [App\Http\Controllers\FrontendController::class, 'buyNow'])->name('buy.now');
+    Route::post('/buy-now', [FrontendController::class, 'buyNow'])->name('buy.now');
 
     Route::middleware(['auth'])->group(function () {
         Route::post('/reviews/store', [FrontendController::class, 'storeReview'])->name('reviews.store');

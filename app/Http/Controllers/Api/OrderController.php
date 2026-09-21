@@ -192,4 +192,52 @@ class OrderController extends Controller
             'data'    => $order
         ], 200);
     }
+
+    /**
+     * Cancel kiye hue order ko restore karne ke liye API
+     */
+    public function restoreOrder(Request $request, $id)
+    {
+        // 1. User ID check (Token support / Request parameter support)
+        $user_id = $request->user_id;
+
+        if (!$user_id) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'User ID is required or user is not authenticated.'
+            ], 401);
+        }
+
+        // 2. Find order belonging to the authenticated user
+        $order = Order::where('id', $id)
+            ->where('user_id', $user_id)
+            ->first();
+
+        // 3. Check if order exists
+        if (!$order) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        // 4. Check if order status is cancelled
+        if ($order->status !== 'cancelled') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Only cancelled orders can be restored'
+            ], 400);
+        }
+
+        // 5. Update order status back to pending
+        $order->status = 'pending';
+        $order->save();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Order restored successfully',
+            'data'    => $order
+        ], 200);
+    }
+
 }

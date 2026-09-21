@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user-orders', [\App\Http\Controllers\Api\OrderController::class, 'orders']);
     Route::get('/orders-detail/{id}', [\App\Http\Controllers\Api\OrderController::class, 'orderDetail']);
     Route::post('/cancel-order/{id}', [\App\Http\Controllers\Api\OrderController::class, 'cancelOrder']);
+    Route::post('/orders/restore/{id}', [\App\Http\Controllers\Api\OrderController::class, 'restoreOrder']);
 
 
    // user profile
