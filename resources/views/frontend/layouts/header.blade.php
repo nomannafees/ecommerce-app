@@ -350,7 +350,7 @@
                     </div>
 
                     <!-- MAIN DROPDOWN WRAPPER -->
-                    <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50 [--dd-h:37.5vw] md:[--dd-h:25vw]"
+                    <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50 [--dd-h:37.5vw] md:[--dd-h:25.2vw]"
                          style="margin-top: 0px !important;">
 
                         <!-- LEVEL 1: Main Categories Box -->
