@@ -76,7 +76,7 @@ class ProductController extends Controller
             'variantImages',
             'mainVariantImage',
             'prod_brand',
-            'flashSale', // <--- 1. Yahan relationship add ki gayi hai
+            'flashSale',
             'reviews' => function ($query) {
                 $query->where('is_approved', true)
                     ->with(['user', 'images'])
@@ -113,9 +113,12 @@ class ProductController extends Controller
             $guestToken = $request->cookie('guest_unique_token') ?? $request->header('X-Guest-Token');
 
             if ($guestToken) {
+                // Error fix: md5() lagane se lamba token chota aur secure ho jata hai (fits in VARCHAR 255)
+                $guestSessionId = md5($guestToken);
+
                 UserProductInteraction::updateOrCreate(
                     [
-                        'session_id' => $guestToken,
+                        'session_id' => $guestSessionId,
                         'product_id' => $product->id
                     ],
                     [
@@ -132,7 +135,7 @@ class ProductController extends Controller
         $product->avg_rating = round($product->reviews->avg('rating'), 1) ?: 0;
         $product->total_reviews = $product->reviews_count ?? $product->reviews->count();
 
-        // --- 2. FLASH SALE CHECK & DATA ---
+        // --- FLASH SALE CHECK & DATA ---
         $isFlashSaleActive = false;
         if ($product->flashSale) {
             $now = now();
