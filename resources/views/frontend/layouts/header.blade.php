@@ -211,14 +211,14 @@
 
                         @auth
                             <a href="{{ route('account.menu') }}"
-                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                               class="flex items-center gap-2 px-4 cursor-pointer py-2.5 text-sm text-gray-800 hover:bg-gray-100">
                                 <i class="fa-solid fa-user"></i>
                                 Account
                             </a>
                         @else
                             <button type="button"
                                     onclick="handleNavAuthClick(event)"
-                                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left">
+                                    class="w-full flex items-center cursor-pointer gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left">
                                 <i class="fa-solid fa-user"></i>
                                 Account
                             </button>
@@ -226,14 +226,14 @@
 
                         @auth
                             <a href="{{ route('frontend.orders.index') }}"
-                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100">
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 cursor-pointer">
                                 <i class="fa-solid fa-bag-shopping"></i>
                                 My Orders
                             </a>
                         @else
                             <button type="button"
                                     onclick="handleNavAuthClick(event)"
-                                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left">
+                                    class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-100 text-left cursor-pointer">
                                 <i class="fa-solid fa-bag-shopping"></i>
                                 My Orders
                             </button>

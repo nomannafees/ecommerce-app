@@ -38,7 +38,7 @@
         @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
 
         {{-- CATEGORIES HEADER WITH CLEAR FILTERS --}}
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center justify-between mb-0">
             <h2 class="font-bold text-sm tracking-tight">
                 <span>Categories</span>
             </h2>
@@ -52,7 +52,7 @@
             @endif
         </div>
 
-        <div class="flex flex-col gap-1.5 pb-2">
+            <div class="flex flex-col pb-1">
             @if(isset($currentCategory) && $currentCategory)
                 @if($currentCategory->parent)
                     @php
@@ -60,44 +60,51 @@
                         $backSlug = $buildCategoryPath($parentCategory);
                         $backUrl = url('/collection/' . $backSlug);
                     @endphp
-                    <a href="{{ $backUrl }}"
-                       onclick="fetchCategoryProducts(event, '{{ $backUrl }}', '{{ $backSlug }}')"
-                       class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline category-link">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        Back to {{ $parentCategory->name }}
-                    </a>
+
+                    <!-- Upar parent par jaane ke liye link aur current category ka naam -->
+                        <a href="{{ $backUrl }}"
+                           onclick="fetchCategoryProducts(event, '{{ $backUrl }}', '{{ $backSlug }}')"
+                           class="text-xs text-emerald-600 font-semibold py-1.5 flex items-center gap-1 hover:underline category-link">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            {{ $currentCategory->name }}
+                        </a>
+
                 @else
-                    @php $allCatUrl = url('/collection'); @endphp
-                    <a href="{{ $allCatUrl }}"
-                       onclick="fetchCategoryProducts(event, '{{ $allCatUrl }}', '')"
-                       class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 hover:underline category-link">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        All Categories
-                    </a>
+                    <!-- Jab user root/parent category par ho -->
+                        @php $allCatUrl = url('/collection'); @endphp
+                        <a href="{{ $allCatUrl }}"
+                           onclick="fetchCategoryProducts(event, '{{ $allCatUrl }}', '')"
+                           class="text-xs text-emerald-600 font-semibold mb-1 flex items-center gap-1 mt-1 hover:underline category-link">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            {{ $currentCategory->name }}
+                        </a>
+                    @endif
                 @endif
-            @endif
 
-            @if(isset($displayCategories) && $displayCategories->count() > 0)
-                @foreach($displayCategories as $index => $cat)
-                    @php
-                        $categoryPath = $buildCategoryPath($cat);
-                        $currentUrlCategory = trim(request()->route('category') ?? '', '/');
-                        $isCategorySelected = $currentUrlCategory === trim($categoryPath, '/');
+            <!-- Neeche baqi sub-categories ya list show karne ke liye -->
+                @if(isset($displayCategories) && $displayCategories->count() > 0)
+                    <div class=" flex flex-col ">
+                        @foreach($displayCategories as $index => $cat)
+                            @php
+                                $categoryPath = $buildCategoryPath($cat);
+                                $currentUrlCategory = trim(request()->route('category') ?? '', '/');
+                                $isCategorySelected = $currentUrlCategory === trim($categoryPath, '/');
 
-                        $activeQueryParams = array_filter(request()->except('category'));
-                        $queryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
-                        $targetUrl = url('/collection/' . $categoryPath) . $queryString;
-                    @endphp
+                                $activeQueryParams = array_filter(request()->except('category'));
+                                $queryString = !empty($activeQueryParams) ? '?' . http_build_query($activeQueryParams) : '';
+                                $targetUrl = url('/collection/' . $categoryPath) . $queryString;
+                            @endphp
 
-                    <a href="{{ $targetUrl }}"
-                       onclick="fetchCategoryProducts(event, '{{ $targetUrl }}', '{{ $categoryPath }}')"
-                       x-show="showAllCategories || {{ $index }} < categoryLimit"
-                       class="text-xs sm:text-sm text-gray-700 hover:text-black py-1  rounded transition category-link {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
-                        {{ $cat->name }}
-                    </a>
-                @endforeach
-            @endif
-        </div>
+                            <a href="{{ $targetUrl }}"
+                               onclick="fetchCategoryProducts(event, '{{ $targetUrl }}', '{{ $categoryPath }}')"
+                               x-show="showAllCategories || {{ $index }} < categoryLimit"
+                               class="text-xs sm:text-sm text-gray-700 hover:text-black py-1 rounded transition category-link {{ $isCategorySelected ? 'bg-gray-100 font-bold text-black' : '' }}">
+                                {{ $cat->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
 
         @if(isset($displayCategories) && $displayCategories->count() > 6)
             <button type="button"

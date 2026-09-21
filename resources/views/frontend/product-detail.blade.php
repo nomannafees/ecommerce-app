@@ -150,7 +150,7 @@
                         @php $thumbIndex = 0; @endphp
                         @foreach($product->variants->unique('variant_image_id') as $v)
                             @if($v->variantImage)
-                                <div class="shrink-0 min-w-[20%]">
+                                <div class="shrink-0 min-w-[15%]">
                                     <img onclick="changeSwiperSlide({{ $thumbIndex }}, this)"
                                          src="{{ asset('storage/' . $v->variantImage->image_path) }}"
                                          class="thumb cursor-pointer shadow-sm rounded-lg h-18 w-full object-cover border-2 {{ $v->variantImage->is_main ? 'border-gray-300' : 'border-transparent' }}"
