@@ -350,11 +350,11 @@
                     </div>
 
                     <!-- MAIN DROPDOWN WRAPPER -->
-                    <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50"
+                    <div class="hidden group-hover/dropdown:flex absolute left-0 top-full z-50 "
                          style="margin-top: 0px !important;">
 
                         <!-- LEVEL 1: Main Categories Box -->
-                        <div class="w-[16rem] bg-white h-[27.7rem] overflow-y-auto custom-scrollbar p-2">
+                        <div class="w-[16rem] bg-white aspect-[64/121] overflow-y-auto custom-scrollbar p-2">
                             <ul class="space-y-0.5 relative">
                                 @foreach($categories->where('parent_id',0) as $mainCat)
                                     @php
@@ -396,7 +396,7 @@
                                          x-cloak
                                          style="display: none;"
                                          @mouseenter="activeMain = {{ $mainCat->id }}"
-                                         class="absolute left-0 top-0 w-[16rem] bg-white h-[27.7rem] border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
+                                         class="absolute left-0 top-0 w-[16rem] bg-white aspect-[64/121] border-r border-gray-200 p-2 z-50 overflow-y-auto custom-scrollbar">
 
                                         <ul class="space-y-0.5">
                                             @foreach($subCategories as $subCat)
@@ -440,7 +440,7 @@
                                                     x-cloak
                                                     style="display: none;"
                                                     @mouseenter="activeMain = {{ $mainCat->id }}; activeSub = {{ $subCat->id }};"
-                                                    class="absolute left-64 top-0 bg-white w-[16rem] h-[27.7rem] p-2 z-50 overflow-y-auto custom-scrollbar">
+                                                    class="absolute left-64 top-0 bg-white w-[16rem] aspect-[64/121] p-2 z-50 overflow-y-auto custom-scrollbar">
 
                                                 <ul class="space-y-0.5">
                                                     @foreach($childCategories as $childCat)

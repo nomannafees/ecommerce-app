@@ -37,7 +37,7 @@
                                 </span>
                             </div>
 
-                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2 sm:gap-4">
+                            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-2">
                                 @foreach($currentCategory->children as $subCat)
                                     @php
                                         $currentRequestCategory = request('category');
@@ -45,14 +45,14 @@
                                     @endphp
                                     <a href="{{ route('categories', array_merge(request()->except('page'), ['category' => $nestedSlug])) }}"
                                        class="group bg-white border border-gray-200/80 rounded-xl overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col text-center relative">
-                                        <div class="w-full h-24 sm:h-40 bg-gray-50 overflow-hidden relative">
+                                        <div class="w-full h-24 sm:h-45 overflow-hidden relative px-3 py-3">
                                             <img
                                                 src="{{ $subCat->image ? asset('storage/cat_image/' . $subCat->image) : asset('images/no-image.png') }}"
                                                 alt="{{ $subCat->name }}"
-                                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500 ease-out">
+                                                class="w-full h-full object-cover rounded-xl bg-white group-hover:scale-105 transition duration-500 ease-out">
                                         </div>
                                         <div
-                                            class="p-2.5 flex items-center justify-center bg-white border-t border-gray-100/60">
+                                            class="px-2.5 pb-2.5 flex items-center justify-center bg-white">
                                             <h4 class="font-medium text-xs sm:text-sm text-gray-800 group-hover:text-emerald-600 transition-colors duration-200 line-clamp-1">
                                                 {{ $subCat->name }}
                                             </h4>
