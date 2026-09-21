@@ -238,13 +238,13 @@
     </form>
 </aside>
 
-<script>
-    // Color/Size checkboxes ab Brand ki tarah multi-select hain.
-    // Jaise hi koi color ya size checkbox toggle ho, filter form ko submit/fetch karo
-    // (agar aapke pass pehle se koi global 'filterForm change' listener hai jo Brand ke liye
-    // kaam kar raha hai, to yeh alag se add karne ki zarurat nahi — is listener ko sirf
-    // tab use karo agar filter change par koi automatic fetch/submit nahi ho raha).
-    $(document).on('change', '#filterForm input[type="checkbox"]', function () {
-        fetchFilteredProducts(true);
-    });
-</script>
+{{--<script>--}}
+{{--    // Color/Size checkboxes ab Brand ki tarah multi-select hain.--}}
+{{--    // Jaise hi koi color ya size checkbox toggle ho, filter form ko submit/fetch karo--}}
+{{--    // (agar aapke pass pehle se koi global 'filterForm change' listener hai jo Brand ke liye--}}
+{{--    // kaam kar raha hai, to yeh alag se add karne ki zarurat nahi — is listener ko sirf--}}
+{{--    // tab use karo agar filter change par koi automatic fetch/submit nahi ho raha).--}}
+{{--    $(document).on('change', '#filterForm input[type="checkbox"]', function () {--}}
+{{--        fetchFilteredProducts(true);--}}
+{{--    });--}}
+{{--</script>--}}

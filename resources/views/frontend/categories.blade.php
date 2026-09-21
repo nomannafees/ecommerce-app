@@ -384,6 +384,7 @@
     </script>
 
     <script>
+
         // --- GLOBAL VARIABLES ---
         let currentAjaxReq = null;
         let page = 1;

@@ -36,7 +36,7 @@ class BrandController extends Controller
             'name'           => 'required|string|max:255',
             'button_name'    => 'nullable|string|max:255',
             'description'    => 'nullable|string',
-            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5000',
             'is_title'       => 'nullable|boolean',
             'is_image'       => 'nullable|boolean',
             'is_description' => 'nullable|boolean',
