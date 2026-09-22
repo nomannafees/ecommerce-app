@@ -1131,6 +1131,24 @@
     });
 </script>
 
+<script>
+    function syncCategoryDropdownHeight() {
+        const slider = document.querySelector('.heroSwiper');
+        if (!slider) return;
+
+        const h = slider.offsetHeight;
+        if (h > 0) {
+            document.documentElement.style.setProperty('--dd-h', (h + 8) + 'px');
+        }
+    }
+
+    window.addEventListener('load', syncCategoryDropdownHeight);
+    window.addEventListener('resize', syncCategoryDropdownHeight);
+
+    // Swiper ki images thori der se render hoti hain, is liye ek chhota delay bhi
+    setTimeout(syncCategoryDropdownHeight, 300);
+</script>
+
 @stack('scripts')
 
 </body>
